@@ -1,5 +1,11 @@
 # Pd4P3
-A java implementation of the Pd++ library, a C++ native library of Pure Data's signal objects.  This library is designed to eventually work with Processing 3. 
+A java implementation of the Pd++ library, a C++ native library of Pure Data's signal objects.  This library is designed to eventually be a library option in Processing 3. 
+
+# Pd++
+Pd++ is a C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
+
+# Versions (Win)
+This version of the library right now only works on Windows 10.  The .dll in the /lib folder are built for Windows.  If you want to use this on MacOS or Linux then for now you would have to build Pd++, portaudio and jPortAudio for your architecture.  This will be updated soon to include MacOS and Linux builds. 
 
 # Using Eclipse
 STEP 1. Download Eclipse for Java (eclipse.org)
