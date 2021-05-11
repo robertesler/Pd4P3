@@ -1,6 +1,9 @@
 # Pd4P3
 A java implementation of the Pd++ library, a C++ native library of Pure Data's signal objects.  This library is designed to eventually be a library option in Processing 3. 
 
+# Copyright
+This software is copyrighted by Robert Esler, 2021.  
+
 # Pd++
 Pd++ is a C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
 
