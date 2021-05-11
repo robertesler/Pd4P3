@@ -1,0 +1,66 @@
+package com.pdplusplus;
+
+public class Oscillator extends PdMaster {
+	
+	
+	//These are the JNI functions
+	public long pointer;
+	
+	private static native long allocate0();
+	private static native void free0(long ptr);
+	
+	private native double perform0(double f, long ptr);
+	private native void setPhase0(double ph, long ptr);
+	
+	//These match the Pd++ lib
+	public Oscillator() {
+		this.pointer = allocate0();
+	}
+	
+	public static Oscillator allocate() {
+		return new Oscillator();
+	}
+	
+	public static void free(Oscillator osc) {
+		Oscillator.free0(osc.pointer);
+	}
+	
+	public double perform(double f) {
+		return perform0(f, this.pointer);
+	}
+	
+	public void setPhase(double phase) {
+		setPhase0(phase, this.pointer);
+	}
+	
+	
+	public void test() {
+		
+		this.SET_DEBUG(false);
+		
+		Oscillator osc = new Oscillator();
+		Oscillator osc2 = new Oscillator();
+		Oscillator osc3 = new Oscillator();
+		
+		int numOfRuns = 100000;
+		int counter = 0;
+		long startTime = System.nanoTime();;
+		
+		for(int i = 0; i < numOfRuns; i++)
+		{
+			double output = osc.perform(100) * ((osc2.perform(1) * .5) + .5) * ((osc3.perform(2) * .5) + .5);
+			if(this.DEBUG())
+				System.out.printf("%d : %f%n", counter++, output);
+		}
+
+		long time = System.nanoTime() - startTime;
+		
+		System.out.printf("Each osc.perform averaged %,d ns%n", time/numOfRuns);
+		System.out.printf("Total time was: %, d ns%n", time);
+		Oscillator.free(osc);
+		Oscillator.free(osc2);
+	}
+	
+	
+
+}
