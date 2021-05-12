@@ -8,6 +8,12 @@ package com.pdplusplus;
 
 public class PdAlgorithm extends PdMaster {
 
+	//Open our Native Library
+	static {
+		//This is pd++ lib
+		System.loadLibrary("pdplusplusTest");
+	}
+	
 	//This is our output, you could create more channels if you like, just update play() channel count in Pd.java
 		protected static double outputL = 0;
 		protected static double outputR = 0;

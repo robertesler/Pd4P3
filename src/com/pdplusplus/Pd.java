@@ -6,25 +6,26 @@ import com.portaudio.*;
  * 
  * */
 
-public class Pd extends PdMaster {
+public class Pd extends PdMaster implements Runnable {
 
-		//Open our Native Library
-		static {
-			//This is pd++ lib
-			System.loadLibrary("pdplusplusTest");
-		}
+		
 	
 		static StreamParameters streamParameters = new StreamParameters();
 		static StreamParameters inputStreamParameters = new StreamParameters();
 		static double sampleRate;
 		static BlockingStream stream;
 		private static boolean play = true;
-		
+		static PdAlgorithm pd;
+		static Thread scheduler;
 		
 		//This bit here is to make sure we only create one instance of this class
 		private static Pd singleton = new Pd();
 		
-		public static Pd getInstance() {
+		public static Pd getInstance(PdAlgorithm pda) {
+			pd = pda;
+			scheduler = new Thread(singleton);
+			scheduler.setName("scheduler");
+			scheduler.setPriority(Thread.MAX_PRIORITY);
 			return singleton;
 		}
 	
@@ -66,7 +67,7 @@ public class Pd extends PdMaster {
 		
 		//Method to write data to the ring buffer
 		private static void writeData( BlockingStream stream, int framesPerBuffer,
-				int numFrames, int sampleRate, int channels, PdAlgorithm pd )
+				int numFrames, int sampleRate, int channels)
 		{
 			float[] buffer = new float[framesPerBuffer * channels];
 			float[] input = new float[framesPerBuffer * channels];	
@@ -92,31 +93,41 @@ public class Pd extends PdMaster {
 				}
 				stream.write( buffer, framesToWrite );
 				framesLeft -= framesToWrite;
+				Thread.yield();
 				if(framesLeft == 0) framesLeft = numFrames; //this should loop through our buffer
 			}
 			
 		}
 		
-		public static void start(PdAlgorithm pd)
+		public void run()
 		{
 			
-			play = true;
-			int framesPerBuffer = 256;
-			int flags = 0;
+			try {
+				play = true;
+				int framesPerBuffer = pd.getBlockSize();
+				int flags = 0;
 			
-			// Open a stream for output.
-			stream = PortAudio.openStream( inputStreamParameters, streamParameters,
-					(int) sampleRate, framesPerBuffer, flags );
-
-			int numFrames = (int) (sampleRate * 4); // fill buffer, enough for 4 seconds
-
-			stream.start();
-
-			writeData( stream, framesPerBuffer, numFrames, (int) sampleRate, streamParameters.channelCount, pd );
+				// Open a stream for output.
+				stream = PortAudio.openStream( inputStreamParameters, streamParameters,
+						(int) sampleRate, framesPerBuffer, flags );
+				
+				//int numFrames = (int) (sampleRate * 4); // fill buffer, enough for 4 seconds
+				int numFrames = framesPerBuffer;
+				stream.start();
+				writeData( stream, framesPerBuffer, numFrames, (int) sampleRate, streamParameters.channelCount );
+				
+			} catch (Exception e) {
+	            // Throwing an exception
+	            System.out.println("Pd Thread Exception caught: " + e);
+	        }
 			
 		}
 		
-		public static void stop(PdAlgorithm pd) {
+		public void start() {
+			scheduler.start();
+		}
+		
+		public void stop() {
 			play = false;
 			stream.stop();
 			stream.close();
