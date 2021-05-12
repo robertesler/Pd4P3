@@ -4,6 +4,9 @@ A java implementation of the Pd++ library, a C++ native library of Pure Data's s
 # Copyright
 This software is copyrighted by Robert Esler, 2021.  
 
+# Author(s)
+Pd4P3 is written by Robert Esler with much help from Lisa Tolentino.  Pd++ is written by Robert Esler.  Pure Data is written by Miller Puckette and others:  see https://github.com/pure-data/pure-data
+
 # Pd++
 Pd++ is a C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
 
