@@ -3,13 +3,11 @@ import com.portaudio.*;
 
 /*
  * This is a utility class for Pd++ it will start and stop the audio process
- * 
+ * Includes the process block for PortAudio
  * */
 
 public class Pd extends PdMaster implements Runnable {
 
-		
-	
 		static StreamParameters streamParameters = new StreamParameters();
 		static StreamParameters inputStreamParameters = new StreamParameters();
 		static double sampleRate;
@@ -24,8 +22,7 @@ public class Pd extends PdMaster implements Runnable {
 		public static Pd getInstance(PdAlgorithm pda) {
 			pd = pda;
 			scheduler = new Thread(singleton);
-			scheduler.setName("scheduler");
-			scheduler.setPriority(Thread.MAX_PRIORITY);
+			scheduler.setName("pd-scheduler");
 			return singleton;
 		}
 	
@@ -66,23 +63,23 @@ public class Pd extends PdMaster implements Runnable {
 		}
 		
 		//Method to write data to the ring buffer
-		private static void writeData( BlockingStream stream, int framesPerBuffer,
-				int numFrames, int sampleRate, int channels)
+		private static void writeData( BlockingStream stream, int framesPerBuffer, int channels)
 		{
 			float[] buffer = new float[framesPerBuffer * channels];
 			float[] input = new float[framesPerBuffer * channels];	
 			
-			int framesLeft = numFrames;
 			while( play )
 			{
 				int index = 0;
 				int inputIndex = 0;
-				int framesToWrite = (framesLeft > framesPerBuffer) ? framesPerBuffer
-						: framesLeft;
 				
-				stream.read(input, framesToWrite);
-				
-				for( int j = 0; j < framesToWrite; j++ )
+				stream.read(input, framesPerBuffer);
+				/*
+				 * This is the process block, it sends the input stream to the PdAlgorithm.runAlgorithm() method
+				 * If you wanted more than 2 channels of input or output you would have to update this method and
+				 * PdAlgorithm to reflect the # of channels.
+				 * */
+				for( int j = 0; j < framesPerBuffer; j++ )
 				{
 					float in1 = input[inputIndex++];
 					float in2 = input[inputIndex++];
@@ -91,10 +88,8 @@ public class Pd extends PdMaster implements Runnable {
 					buffer[index++] = (float)PdAlgorithm.outputL;
 					buffer[index++] = (float)PdAlgorithm.outputR;
 				}
-				stream.write( buffer, framesToWrite );
-				framesLeft -= framesToWrite;
-				Thread.yield();
-				if(framesLeft == 0) framesLeft = numFrames; //this should loop through our buffer
+				stream.write( buffer, framesPerBuffer );
+				
 			}
 			
 		}
@@ -111,10 +106,8 @@ public class Pd extends PdMaster implements Runnable {
 				stream = PortAudio.openStream( inputStreamParameters, streamParameters,
 						(int) sampleRate, framesPerBuffer, flags );
 				
-				//int numFrames = (int) (sampleRate * 4); // fill buffer, enough for 4 seconds
-				int numFrames = framesPerBuffer;
 				stream.start();
-				writeData( stream, framesPerBuffer, numFrames, (int) sampleRate, streamParameters.channelCount );
+				writeData( stream, framesPerBuffer, streamParameters.channelCount );
 				
 			} catch (Exception e) {
 	            // Throwing an exception
@@ -124,15 +117,23 @@ public class Pd extends PdMaster implements Runnable {
 		}
 		
 		public void start() {
+			scheduler.setPriority(Thread.MAX_PRIORITY);
+			scheduler.start();
+		}
+		
+		//overloaded start() to set thread priority if necessary
+		public void start(int priority)
+		{
+			scheduler.setPriority(priority);
 			scheduler.start();
 		}
 		
 		public void stop() {
-			play = false;
+			play = false;//stops process block
 			stream.stop();
 			stream.close();
-			pd.free();
-			PortAudio.terminate();
+			pd.free(); //frees memory from C++ side of the lib
+			PortAudio.terminate();//ends PortAudio stream
 			System.out.println( "JPortAudio test complete." );
 		}
 }

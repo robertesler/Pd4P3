@@ -17,7 +17,7 @@ class Main  {
 		/*
 		 * This is run on a separate thread
 		 * */
-		pd.start(); //This would go in the setup() method
+		pd.start(4); //This would go in the Processing setup() method
 		
 		/*
 		 * This is run on the main thread
@@ -43,7 +43,7 @@ class Main  {
 			{
 				freq1 = Float.parseFloat(name);
 				music.setFreq(freq1);
-				System.out.println("freq1: " + freq1);
+				System.out.println("freq: " + freq1);
 			}
 			else if(name.contentEquals("q"))
 			{
@@ -85,11 +85,11 @@ class Main  {
 		@Override
 		//All of your DSP code goes here
 		public void runAlgorithm(double inputL, double inputR) {
-			outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
+				outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
 		}
 		
 		@Override
-		//Always free your objects created above, this will avoid memory leaks in the native C++ library
+		//Always free your Pd++ objects created above, this will avoid memory leaks in the native C++ library
 		public void free() {
 			Oscillator.free(osc1);
 			Oscillator.free(osc2);
@@ -102,7 +102,7 @@ class Main  {
 		}
 		
 		//updates freq
-		synchronized float getFreq() {
+		 float getFreq() {
 			return oscFreq;
 		}
 		
