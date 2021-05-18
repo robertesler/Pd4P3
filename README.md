@@ -13,6 +13,14 @@ Pd++ is a C++ library based on the signal objects of Pure Data.  More informatio
 # Versions (Win)
 This version of the library right now only works on Windows 10.  The .dll in the /lib folder are built for Windows.  If you want to use this on MacOS or Linux then for now you would have to build Pd++, portaudio and jPortAudio for your architecture.  This will be updated soon to include MacOS and Linux builds. 
 
+# Test in Processing 3
+Download or clone this repository.
+Copy folder to your Processing/libraries directory
+You may need to copy the jportaudio_x64.dll and pdplusplusTest.dll to the /library folder.  I'm still working on this part of the library.
+Open Processing and find a Pd4P3 example.  
+Open the example and run it.  
+Hopefully it works.  If not submit an issue.
+
 # Using Eclipse
 STEP 1. Download Eclipse for Java (eclipse.org)
 
