@@ -47,36 +47,36 @@ class RealPole extends PdMaster {
 			return perform0(input, coef, this.pointer);
 		}
 		
-		void set(double value) {
+		public void set(double value) {
 			set0(value, this.pointer);
 		}
 		 
 	    //! For all types
-		void clear() {
+		public void clear() {
 			clear0(this.pointer);
 		}
 	    
-		void setLast(double last) {
+		public void setLast(double last) {
 			setLast0(last, this.pointer);
 		}
 	    
-		void setLastReal(double lastreal) {
+		public void setLastReal(double lastreal) {
 			setLastReal0(lastreal, this.pointer);
 		}
 	    
-		void setLastImaginary(double lastimag) {
+		public void setLastImaginary(double lastimag) {
 			setLastImaginary0(lastimag, this.pointer);
 		}
 	    
-		double getLast() {
+		public double getLast() {
 			return getLast0(this.pointer);
 		}
 	    
-		double getLastReal() {
+		public double getLastReal() {
 			return getLastReal0(this.pointer);
 		}
 	    
-		double getLastImaginary() {
+		public double getLastImaginary() {
 			return getLastImaginary0(this.pointer);
 		}
 	
@@ -128,36 +128,36 @@ class RealZero extends PdMaster {
 				return perform0(input, coef, this.pointer);
 			}
 			
-			void set(double value) {
+			public void set(double value) {
 				set0(value, this.pointer);
 			}
 			 
 		    //! For all types
-			void clear() {
+			public void clear() {
 				clear0(this.pointer);
 			}
 		    
-			void setLast(double last) {
+			public void setLast(double last) {
 				setLast0(last, this.pointer);
 			}
 		    
-			void setLastReal(double lastreal) {
+			public void setLastReal(double lastreal) {
 				setLastReal0(lastreal, this.pointer);
 			}
 		    
-			void setLastImaginary(double lastimag) {
+			public void setLastImaginary(double lastimag) {
 				setLastImaginary0(lastimag, this.pointer);
 			}
 		    
-			double getLast() {
+			public double getLast() {
 				return getLast0(this.pointer);
 			}
 		    
-			double getLastReal() {
+			public double getLastReal() {
 				return getLastReal0(this.pointer);
 			}
 		    
-			double getLastImaginary() {
+			public double getLastImaginary() {
 				return getLastImaginary0(this.pointer);
 			}
 	
@@ -208,36 +208,36 @@ class RealZeroReverse extends PdMaster {
 		return perform0(input, coef, this.pointer);
 	}
 	
-	void set(double value) {
+	public void set(double value) {
 		set0(value, this.pointer);
 	}
 	 
     //! For all types
-	void clear() {
+	public void clear() {
 		clear0(this.pointer);
 	}
     
-	void setLast(double last) {
+	public void setLast(double last) {
 		setLast0(last, this.pointer);
 	}
     
-	void setLastReal(double lastreal) {
+	public void setLastReal(double lastreal) {
 		setLastReal0(lastreal, this.pointer);
 	}
     
-	void setLastImaginary(double lastimag) {
+	public void setLastImaginary(double lastimag) {
 		setLastImaginary0(lastimag, this.pointer);
 	}
     
-	double getLast() {
+	public double getLast() {
 		return getLast0(this.pointer);
 	}
     
-	double getLastReal() {
+	public double getLastReal() {
 		return getLastReal0(this.pointer);
 	}
     
-	double getLastImaginary() {
+	public double getLastImaginary() {
 		return getLastImaginary0(this.pointer);
 	}
 }
@@ -288,36 +288,36 @@ class ComplexPole extends PdMaster {
 			return perform0(real, imag,  realCoef, imagCoef, this.pointer);
 		}
 		
-		void set(double real, double imag) {
+		public void set(double real, double imag) {
 			set0(real, imag, this.pointer);
 		}
 		 
 	    //! For all types
-		void clear() {
+		public void clear() {
 			clear0(this.pointer);
 		}
 	    
-		void setLast(double last) {
+		public void setLast(double last) {
 			setLast0(last, this.pointer);
 		}
 	    
-		void setLastReal(double lastreal) {
+		public void setLastReal(double lastreal) {
 			setLastReal0(lastreal, this.pointer);
 		}
 	    
-		void setLastImaginary(double lastimag) {
+		public void setLastImaginary(double lastimag) {
 			setLastImaginary0(lastimag, this.pointer);
 		}
 	    
-		double getLast() {
+		public double getLast() {
 			return getLast0(this.pointer);
 		}
 	    
-		double getLastReal() {
+		public double getLastReal() {
 			return getLastReal0(this.pointer);
 		}
 	    
-		double getLastImaginary() {
+		public double getLastImaginary() {
 			return getLastImaginary0(this.pointer);
 		}
 	
@@ -374,31 +374,31 @@ class ComplexZero extends PdMaster {
 			}
 			 
 		    //! For all types
-			void clear() {
+			public void clear() {
 				clear0(this.pointer);
 			}
 		    
-			void setLast(double last) {
+			public void setLast(double last) {
 				setLast0(last, this.pointer);
 			}
 		    
-			void setLastReal(double lastreal) {
+			public void setLastReal(double lastreal) {
 				setLastReal0(lastreal, this.pointer);
 			}
 		    
-			void setLastImaginary(double lastimag) {
+			public void setLastImaginary(double lastimag) {
 				setLastImaginary0(lastimag, this.pointer);
 			}
 		    
-			double getLast() {
+			public double getLast() {
 				return getLast0(this.pointer);
 			}
 		    
-			double getLastReal() {
+			public double getLastReal() {
 				return getLastReal0(this.pointer);
 			}
 		    
-			double getLastImaginary() {
+			public double getLastImaginary() {
 				return getLastImaginary0(this.pointer);
 			}
 		
@@ -451,36 +451,36 @@ class ComplexZeroReverse extends PdMaster {
 				return perform0(real, imag,  realCoef, imagCoef, this.pointer);
 			}
 			
-			void set(double real, double imag) {
+			public void set(double real, double imag) {
 				set0(real, imag, this.pointer);
 			}
 			 
 		    //! For all types
-			void clear() {
+			public void clear() {
 				clear0(this.pointer);
 			}
 		    
-			void setLast(double last) {
+			public void setLast(double last) {
 				setLast0(last, this.pointer);
 			}
 		    
-			void setLastReal(double lastreal) {
+			public void setLastReal(double lastreal) {
 				setLastReal0(lastreal, this.pointer);
 			}
 		    
-			void setLastImaginary(double lastimag) {
+			public void setLastImaginary(double lastimag) {
 				setLastImaginary0(lastimag, this.pointer);
 			}
 		    
-			double getLast() {
+			public double getLast() {
 				return getLast0(this.pointer);
 			}
 		    
-			double getLastReal() {
+			public double getLastReal() {
 				return getLastReal0(this.pointer);
 			}
 		    
-			double getLastImaginary() {
+			public double getLastImaginary() {
 				return getLastImaginary0(this.pointer);
 			}
 		

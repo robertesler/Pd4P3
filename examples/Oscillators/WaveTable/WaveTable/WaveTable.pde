@@ -36,7 +36,23 @@ import com.portaudio.*;
  */
  class MyMusic extends PdAlgorithm {
    
-   float dummy = 0;
+   TabRead4 tab4 = new TabRead4();
+   float freq = 0;
+   int tableSize = 128;
+   double[] table = new double[tableSize+4];//extra points for interpolation
+   
+   public void MyMusic() {
+     
+     //make a square wave table
+     for(int i = 0; i < tableSize+3; i++)
+     {
+         if(i > tableSize/2)
+           table[i] = 1;
+           else
+             table[i] = 0;
+     }
+     tab4.setTable(table);
+   }
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
@@ -45,17 +61,18 @@ import com.portaudio.*;
    }
   
   //We use synchronized to communicate with the audio thread
-   synchronized void setFloat(float f1) {
-     dummy = f1;
+   synchronized void setFreq(float f1) {
+     freq = f1;
+     notify();//this tells audio thread something has happened.
    }
    
-   synchronized float getFloat() {
-     return dummy;
+   synchronized float getFreq() {
+     return freq;
    }
    
    //Free all objects created from Pd4P3 lib
    void free() {
-     
+     TabRead4.free(tab4);
      
    }
    

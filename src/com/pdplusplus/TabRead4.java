@@ -33,19 +33,19 @@ public class TabRead4 extends PdMaster {
 			return perform0(index, this.pointer);
 		}
 		
-		void setTable(double[] table) {
+		public void setTable(double[] table) {
 			setTable0(table, this.pointer);
 		}
 		
-		long getTableSize() {
+		public long getTableSize() {
 			return getTableSize0(this.pointer);
 		}
 		
-		void setOnset(double point) {
+		public void setOnset(double point) {
 			setOnset0(point, this.pointer);
 		}
 		
-		double getOnset() {
+		public double getOnset() {
 			return getOnset0(this.pointer);
 		}
 }

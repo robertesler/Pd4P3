@@ -1,5 +1,5 @@
 import com.pdplusplus.*;
-import com.portaudio.*;
+import com.pdplusplus.*;
 
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
@@ -97,28 +97,27 @@ import com.portaudio.*;
   //We use synchronized to communicate with the audio thread
    synchronized void setModIndex(float f1) {
      modIndex = f1;
-     notify();//this tells audio thread something has happened.
    }
    
-   float getModIndex() {
+   synchronized float getModIndex() {
+      
      return modIndex;
    }
    
     synchronized void setCarrierFreq(float f1) {
      carrierFreq = f1;
-     notify();//this tells audio thread something has happened.
    }
    
-   float getCarrierFreq() {
+   synchronized float getCarrierFreq() {
+    
      return carrierFreq;
    }
    
    synchronized void setBang(boolean b) {
      bang = b;
-     notify();
    }
    
-   boolean getBang() {
+  synchronized boolean getBang() { 
      return bang;
    }
    

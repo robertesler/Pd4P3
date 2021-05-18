@@ -25,8 +25,8 @@ public class Oscillator extends PdMaster {
 		Oscillator.free0(osc.pointer);
 	}
 	
-	public double perform(double f) {
-		return perform0(f, this.pointer);
+	public double perform(double frequency) {
+		return perform0(frequency, this.pointer);
 	}
 	
 	public void setPhase(double phase) {

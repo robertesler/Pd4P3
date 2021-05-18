@@ -1,5 +1,5 @@
 import com.pdplusplus.*;
-import com.portaudio.*;
+
 
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
@@ -17,7 +17,6 @@ import com.portaudio.*;
    
    //start the Pd engine thread
    pd.start();
-   
  }
  
  void draw() {
@@ -50,7 +49,7 @@ import com.portaudio.*;
   //We use synchronized to communicate with the audio thread
    synchronized void setFreq(float f1) {
      oscFreq = f1;
-     notify();//this tells audio thread something has happened.
+     notify();
    }
    
    synchronized float getFreq() {

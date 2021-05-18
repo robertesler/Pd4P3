@@ -37,7 +37,7 @@ public class VariableDelay extends PdMaster {
 		delayWrite0(delayTime, this.pointer);
 	}
 	
-	double delayRead(double delayTime) {
+	public double delayRead(double delayTime) {
 		return delayRead0(delayTime, this.pointer);
 	}
 }
