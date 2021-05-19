@@ -12,6 +12,7 @@ public class PdAlgorithm extends PdMaster {
 	static {
 		//This is pd++ lib
 		System.loadLibrary("pdplusplusTest");
+		System.out.println("Attempting to load pdplusplus.dll");
 	}
 	
 	//This is our output, you could create more channels if you like, just update play() channel count in Pd.java

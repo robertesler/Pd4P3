@@ -8,8 +8,9 @@ class Main  {
 	//And an instance of your inherited class, may look different from below
 	static MyMusic music = new Main(). new MyMusic();
 	//In Processing you would need to create a Pd singleton
-	static Pd pd = Pd.getInstance(music);
-	 
+	//static Pd pd = Pd.getInstance(music);
+	static Pd pd = Pd.getInstance(music); 
+	
 	public static float freq1 = 400;
 	 
 	public static void main(String [] args)  {
@@ -17,7 +18,8 @@ class Main  {
 		/*
 		 * This is run on a separate thread
 		 * */
-		pd.start(4); //This would go in the Processing setup() method
+
+		pd.start(); //This would go in the Processing setup() method
 		
 		/*
 		 * This is run on the main thread
@@ -85,7 +87,10 @@ class Main  {
 		@Override
 		//All of your DSP code goes here
 		public void runAlgorithm(double inputL, double inputR) {
-				outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
+			
+			outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
+//			outputL = inputL;
+//			outputR = inputR;
 		}
 		
 		@Override
@@ -96,13 +101,13 @@ class Main  {
 		}
 		
 		//synchronized will update the audio thread
-		synchronized void setFreq(float freq1) {
+		 synchronized void setFreq(float freq1) {
 			oscFreq = freq1;
-			notify();
+			System.out.println("Main: setFreq(freq1) = " + freq1);
 		}
 		
 		//updates freq
-		 float getFreq() {
+		float getFreq() {
 			return oscFreq;
 		}
 		
