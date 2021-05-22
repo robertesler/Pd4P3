@@ -71,7 +71,7 @@ import com.portaudio.*;
      //filter the wavetable
      vcf.setQ(getQ());
      double out[] = vcf.perform( tab4.perform(loop), getFreq() ) ;
-     outputL = outputR = out[0] * amplitude;
+     outputL = outputR = out[1] * amplitude;
      
    }
  

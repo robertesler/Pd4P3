@@ -6,19 +6,22 @@ import com.portaudio.*;
  MyMusic music;
  
  double bins[];
+ double smooth[];
  int counter = 0;
+
 
  void setup() {
    size(640, 360);
-   background(255);
+   background(210, 210, 210);
     
    music = new MyMusic();
    
    pd = Pd.getInstance(music);
-   pd.setFFTWindow(32);
+   pd.setFFTWindow(64);
    bins = new double[pd.getFFTWindow()];
+   smooth = new double[pd.getFFTWindow()];
    music.createHann(pd.getFFTWindow());
-  // bins = new double[music.getFFTWindow()];
+  
    //start the Pd engine thread
    pd.start();
   
@@ -26,12 +29,24 @@ import com.portaudio.*;
  }
  
  void draw() {
-  
+  background(210, 210, 210);
   bins = music.getBins();
+  fill(0, 100, 200);
+  noStroke();
   
-  fill(50);
-  text((float)bins[counter++], 10, 10);  // Text wraps within text box
-  if(counter == pd.getFFTWindow()) counter = 0;
+  for(int i = 0; i < pd.getFFTWindow(); i++)
+  {
+    float x, y, w, h;
+    smooth[i] += (bins[i] - smooth[i]) * .6;
+    w = width/(pd.getFFTWindow() * .5);
+    x = w * i;
+    h = (float)-smooth[i] * height * 6;
+    y = height;
+    rect(x, y, w, h);
+
+  }
+ 
+ 
  }
  
  public void dispose() {
@@ -49,6 +64,8 @@ import com.portaudio.*;
    rFFT rfft = new rFFT();
    rIFFT rifft = new rIFFT();
    Oscillator osc = new Oscillator();
+   LowPass lop = new LowPass();
+   Noise noise = new Noise();
    double[] bins;
    double[] hannWindow;
    double[] fftBin;
@@ -57,7 +74,7 @@ import com.portaudio.*;
    int index = 0;
    
    /*
-     We need to create a Hanning Window to smooth the FFT input and output
+     We need to create a Hanning Window to smooth the FFT input
    */
    void createHann(int ws) {
      double winHz = 0;
@@ -68,7 +85,7 @@ import com.portaudio.*;
         winHz = this.getSampleRate()/windowSize;
      }
      else {
-       windowSize = 64;
+       windowSize = 32;
        println("Window size cannot be zero!");
      }
      
@@ -85,20 +102,18 @@ import com.portaudio.*;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     
+    
+     //get our Hanning window
     double hann = hannWindow[counter++];
+    lop.setCutoff(800);
+    double input = lop.perform( noise.perform() ) + osc.perform(400) * .5 ;
+        
+    fftBin = rfft.perform(input * hann);
     
-    //get our Hanning smoothed input
-    double input = ((in1 + in2) * .5) * hann;
-   
-    
-    fftBin = rfft.perform(input);
-   
-    double out = rifft.perform(fftBin) * hann ;
-    
-    
+    //Calculate magnitude of each bin
     if(counter == windowSize) 
     {
+      //Real FFT puts the real on the front half or the window array, and imaginary on the back half
       for(int i = 0,  j = windowSize-1; i < windowSize/2; i++, j--) {
           double real = fftBin[i];
           double imag = fftBin[j];
@@ -113,7 +128,7 @@ import com.portaudio.*;
        counter = 0;
     }
      
-     outputL = outputR = out/windowSize; 
+     outputL = outputR = input; 
      
   }
   
@@ -136,6 +151,8 @@ import com.portaudio.*;
      rFFT.free(rfft);
      rIFFT.free(rifft);
      Oscillator.free(osc);
+     LowPass.free(lop);
+     Noise.free(noise);
      
    }
    

@@ -48,7 +48,7 @@ import com.portaudio.*;
    void runAlgorithm(double in1, double in2) {
      double[] out = vcf.perform( noise.perform(), getFreq());
      vcf.setQ(getQ());
-     outputL = outputR =  (out[0] + out[1]) * getQ() * .333;//psuedo normalize amplitude
+     outputL = outputR =  (/*out[0] + */out[1]) * getQ() * .333;//psuedo normalize amplitude
      
    }
   
