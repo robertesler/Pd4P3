@@ -7,8 +7,7 @@ import com.pdplusplus.*;
  
  float modulationIndex = 400;
  float carrier = 100;
- float delayTime = 500;
- float delayFeedback = .3;
+ float mix = 0;
  boolean circleDraw = false;
 
  void setup() {
@@ -18,7 +17,7 @@ import com.pdplusplus.*;
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
-   
+
    //start the Pd engine thread
    pd.start();
    
@@ -29,14 +28,11 @@ import com.pdplusplus.*;
    carrier = map(mouseX, 0, width, 400.0, 1200.0);
    music.setCarrierFreq(carrier);
    
-   delayTime = map(mouseX, 0, width, 50.0, 300.0);
-   music.setTime(delayTime);
-
+   mix = map(mouseX, 0, width, .1, 1);
+   music.setMix(mix);
+   
    modulationIndex = map(mouseY, 0, height, 10.0, 350.0);
    music.setModIndex(modulationIndex);
-   
-   delayFeedback = map(mouseY, 0, height, .1, .9);
-   music.setFeedback(delayFeedback);
 
    if(circleDraw)
    {
@@ -70,44 +66,35 @@ import com.pdplusplus.*;
     Oscillator osc2 = new Oscillator();
     Oscillator osc3 = new Oscillator();
     Line line = new Line();
-    VariableDelay vd = new VariableDelay();
+    Reverb rev = new Reverb();
     float modFreq = 300;
     float modIndex = 100;
     float carrierFreq = 200;
-    float amplitude = 1;
-    float delayTime = 500;
-    float pDelayTime = 500;//for lerp(), previous value
-    float delayFeedback = .3;
-    float pDelayFeedback = .3;//for lerp(), previous value
+    float amplitude = .9;
+    float mix = .7;
     boolean bang = false;
     float attack = 50;
     float release = 750;
     double env = 0;
-    double t = 0; //smoothing
-    double out = 0;
+     
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     
-     //Classic FM 
+ 
+     //From the Classic FM sketch 
      double fm = osc1.perform( carrierFreq + ( osc2.perform(carrierFreq * 2.5)* getModIndex()) ) * (amplitude * env );
-     t = t - .0001 * (t - getTime()); //smooth our delayTime to get rid of crackles
-     //Our delayed output with doppler
-     vd.delayWrite(out * getFeedback());//feedback our output with an amplitude multiplier less than 1. 
-     out = vd.perform( getTime() *  t ) + (double)fm; //add fm to our delay line  
-    
-    
-     outputL = outputR = out;
+     double wet = rev.perform(fm) * getMix();//multiply by a mix factor    
+     outputL = outputR = fm + wet;//wet plus dry
 
      /*
-     This is how to do an envelope using Line()
+     This is how to do an envelope, just attack and release for now, using Line()
      */
      if(getBang())
      {
-     env = line.perform(1, attack);  
+       env = line.perform(1, attack);  
      }
      else
      {
-      env = line.perform(0, release); 
+       env = line.perform(0, release); 
      }
      
      if(env == 1)
@@ -136,22 +123,6 @@ import com.pdplusplus.*;
      return carrierFreq;
    }
    
-   synchronized void setTime(float f1) {
-     delayTime = f1;
-   }
-   
-   synchronized float getTime() {
-     return delayTime;
-   }
-   
-   synchronized void setFeedback(float f1) {
-     delayFeedback = f1;
-   }
-   
-   synchronized float getFeedback() {
-     return delayFeedback;
-   }
-   
    synchronized void setBang(boolean b) {
      bang = b;
    }
@@ -160,12 +131,20 @@ import com.pdplusplus.*;
      return bang;
    }
    
+   synchronized void setMix(float m) {
+     mix = m;
+   }
+   
+   synchronized float getMix() {
+      return mix;  
+   }
+   
    void free() {
      Oscillator.free(osc1);
      Oscillator.free(osc2);
      Oscillator.free(osc3);
      Line.free(line);
-     VariableDelay.free(vd);
+     rev.free();
    }
    
  }
