@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * Real Fast Fourier Transform.  Takes a signal input and returns a window of bins. 
+ * The first half of the returned array is the real part, the second half is the imaginary.
+ * */
+
 public class rFFT extends PdMaster {
 
 	//These are the JNI functions

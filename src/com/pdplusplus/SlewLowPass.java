@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * Slew low pass filter, or [slop~] in Pd.  It's frequency response varies based on the state of the filter, or slew.  
+ * It is common to use something like this in dynamics processing like limiting and companding. 
+ * */
+
 public class SlewLowPass extends PdMaster {
 
 	//These are the JNI functions

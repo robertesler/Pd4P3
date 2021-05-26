@@ -1,5 +1,11 @@
 package com.pdplusplus;
 
+/*
+ * This is just a utility class for Sigmund.  Since Sigmund, in C++ returns a struct, we need
+ * a class on the Java side to write all of the appropriate values to.  
+ * This is the same as C++'s sigmundPackage{} struct. (except double pointers instead of arrays in C++)
+ * */
+
 public class SigmundPackage {
 	
 	public double pitch = 0;

@@ -1,5 +1,18 @@
 package com.pdplusplus;
 
+/*
+ * This is a collection of classes that include all of Pd's raw filters:
+ * Real Pole [rpole~]
+ * Real Zero [rzero~]
+ * Real Zero Reverse [rzero_rev~]
+ * 
+ * Complex Pole [cpole~]
+ * Complex Zero [czero~]
+ * Complex Zero Reverse [czero_rev~]
+ * 
+ * Only use these if you know what you're doing.  But they can be used to create custom filters, EQs, etc.
+ * */
+
 
 class RealPole extends PdMaster {
 	

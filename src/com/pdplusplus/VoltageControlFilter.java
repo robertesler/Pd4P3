@@ -1,5 +1,13 @@
 package com.pdplusplus;
 
+/*
+ * This is a one pole complex filter.  It outputs a real and imaginary value which ultimately
+ * correlate to the resonant low pass and bandpass values respectively.  It outputs a pair of values, 
+ * e.g the lowpass and bandpass pairs.  You can use one or both.  
+ * 
+ * The center frequency and Q can also be set at the signal level for interesting effects.
+ * */
+
 public class VoltageControlFilter extends PdMaster {
 	
 	//These are the JNI functions

@@ -1,5 +1,9 @@
 package com.pdplusplus;
 
+/*
+ * Real Inverse Fast Fourier Transform.  Takes a window of real/imag values from rFFT.
+ * */
+
 public class rIFFT extends PdMaster {
 
 	

@@ -1,5 +1,9 @@
 package com.pdplusplus;
 
+/*
+ * Complex Fast Fourier Transform, takes a real and imaginary input.
+ * */
+
 public class cFFT extends PdMaster{
 
 	//These are the JNI functions

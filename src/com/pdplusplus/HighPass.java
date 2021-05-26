@@ -1,5 +1,9 @@
 package com.pdplusplus;
 
+/*
+ * A one pole high pass filter.  
+ * */
+
 public class HighPass {
 
 	//These are the JNI functions

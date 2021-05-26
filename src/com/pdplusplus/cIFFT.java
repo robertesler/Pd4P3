@@ -1,5 +1,11 @@
 package com.pdplusplus;
 
+/*
+ * Complex Inverse Fast Fourier Transform.  Takes an array of real and imaginary inputs.
+ * The real and imaginary are interleaved from cFFT. 
+ * It returns a pair of doubles, the real and imaginary part.
+ * */
+
 public class cIFFT extends PdMaster {
 	
 	//These are the JNI functions

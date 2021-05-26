@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * This is a cosine lookup table routine.  It functions a lot like any other cosine function,
+ * but it is much faster, so good for audio and real-time application.
+ * */
+
 public class Cosine extends PdMaster {
 	
 	public long pointer;

@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * SampleHold samples its input when its control value decreases.  This can be used in a variety
+ * of ways such as in samplers, square waves, LFOs etc...
+ * */
+
 public class SampleHold extends PdMaster {
 
 	//These are the JNI functions

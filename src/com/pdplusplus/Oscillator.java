@@ -1,5 +1,11 @@
 package com.pdplusplus;
 
+/*
+ * A sine wave oscillator.  It takes a frequency, and it's phase can also be set by using setPhase().
+ * It is actually a cosine wave as it starts at 1, but obviously you can make it a true sine wave by 
+ * setting it's phase.  Phase should be based on 0 - 1 values, so .5 is equal to 180 degrees.
+ * */
+
 public class Oscillator extends PdMaster {
 	
 	

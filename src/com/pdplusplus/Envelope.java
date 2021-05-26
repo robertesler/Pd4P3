@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * This is an envelope follower.  It's output of the perform() method is in dB.  The speed of this method is
+ * based on the period and window size.  
+ * */
+
 public class Envelope extends PdMaster {
 
 	//These are the JNI functions

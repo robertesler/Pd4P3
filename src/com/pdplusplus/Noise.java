@@ -1,5 +1,9 @@
 package com.pdplusplus;
 
+/*
+ * A pseudo-random white noise generator.
+ * */
+
 public class Noise extends PdMaster {
 
 	//This is the C++ class pointer 

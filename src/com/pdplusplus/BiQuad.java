@@ -1,5 +1,12 @@
 package com.pdplusplus;
 
+/*
+ * Standard biquad filter with two poles and two zeros.  This can be used to make custom filters.  More information on how
+ * to use this see H09.ssb.modulation.pd in Pure Data.
+ * */
+
+
+
 public class BiQuad extends PdMaster {
 
 	//These are the JNI functions

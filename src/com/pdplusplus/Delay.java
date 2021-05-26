@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * This is a basic delay line.  Based on the delay time the input is delayed to the return value
+ *  of the perform() function.  If want a more robust delay use VariableDelay.
+ * */
+
 public class Delay extends PdMaster {
 
 	//These are the JNI functions

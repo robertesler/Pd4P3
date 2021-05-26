@@ -1,5 +1,9 @@
 package com.pdplusplus;
 
+/*
+ * A one pole low pass filter.
+ * */
+
 public class LowPass extends PdMaster {
 
 	//These are the JNI functions

@@ -11,6 +11,7 @@ class Main  {
 	//static Pd pd = Pd.getInstance(music);
 	static Pd pd = Pd.getInstance(music); 
 	
+	
 	public static float freq1 = 400;
 	 
 	public static void main(String [] args)  {
@@ -18,9 +19,8 @@ class Main  {
 		/*
 		 * This is run on a separate thread
 		 * */
-
+	
 		pd.start(); //This would go in the Processing setup() method
-		
 		/*
 		 * This is run on the main thread
 		 * */
@@ -72,25 +72,36 @@ class Main  {
 	    }
 	    return true;
 	}
+	
 
 	/*
 	 *This is how you would use Pd++ in Processing , inherit the PdAlgorithm class
 	 * */
+	
 	
 	class MyMusic extends PdAlgorithm {
 		
 		//create new objects like this
 		Oscillator osc1 = new Oscillator();
 		Oscillator osc2 = new Oscillator();
+		Phasor phasor = new Phasor();
+		VariableDelay vd = new VariableDelay();
 		float oscFreq = 300;
 		
 		@Override
 		//All of your DSP code goes here
 		public void runAlgorithm(double inputL, double inputR) {
 			
-			outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
-//			outputL = inputL;
-//			outputR = inputR;
+//			outputL = outputR = osc1.perform(getFreq()) * .5 + osc2.perform(getFreq() * 1.5) *.5;
+			
+			// variable delay example showing doppler
+			
+		    double n = osc2.perform(getFreq());
+		    double d = (osc1.perform(5) + 10) * 3;
+		    vd.delayWrite(n);
+		    outputL = .2*vd.perform(d);
+		    outputR = outputL;
+		    			
 		}
 		
 		@Override
@@ -98,6 +109,9 @@ class Main  {
 		public void free() {
 			Oscillator.free(osc1);
 			Oscillator.free(osc2);
+			Phasor.free(phasor);
+			VariableDelay.free(vd);
+			
 		}
 		
 		//synchronized will update the audio thread
@@ -112,5 +126,5 @@ class Main  {
 		}
 		
 	}
-	
+
 }

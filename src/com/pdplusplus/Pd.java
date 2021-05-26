@@ -4,6 +4,8 @@ import com.portaudio.*;
 /*
  * This is a utility class for Pd++ it will start and stop the audio process
  * Includes the process block for PortAudio
+ * 
+ *  @author Robert Esler
  * */
 
 public class Pd extends PdMaster implements Runnable {
@@ -30,7 +32,6 @@ public class Pd extends PdMaster implements Runnable {
 			
 			//Initialize Portaudio
 			PortAudio.initialize();
-			
 			// Get the default device and setup the stream parameters.
 			int deviceId = PortAudio.getDefaultOutputDevice();
 			DeviceInfo deviceInfo = PortAudio.getDeviceInfo( deviceId );
@@ -38,10 +39,13 @@ public class Pd extends PdMaster implements Runnable {
 			int inputDeviceId = PortAudio.getDefaultInputDevice();
 			DeviceInfo inputDeviceInfo = PortAudio.getDeviceInfo(inputDeviceId);
 			
+			
 			//pass info to Pd++, then all objects inherit this information, set your important stuff here
 			this.setSampleRate((long)sampleRate);
+			/*
 			this.setBlockSize(64);
-			this.setFFTWindow(512);
+			this.setFFTWindow(64);
+			*/
 			
 			System.out.println( "  deviceId    = " + deviceId );
 			System.out.println( "  inputDeviceId   = " + inputDeviceId);

@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * A sawtooth (ramp) wave generator.  Its output is 0-1.  You can combine this with Cosine to
+ * create a cosine wave.  Just FYI.  : )
+ * */
+
 public class Phasor extends PdMaster {
 	
 	public long pointer;

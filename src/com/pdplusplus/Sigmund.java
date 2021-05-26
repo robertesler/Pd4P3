@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * Sigmund is a high functioning analysis tool.  It can detect pitches or notes in complex audio streams.
+ * It has a lot of features but its basically a high quality pitch detector.  
+ * */
+
 public class Sigmund extends PdMaster {
 	
 	//These are the JNI functions

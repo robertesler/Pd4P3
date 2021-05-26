@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * Threshold detects if a signal is above or below a given threshold.  It has a debounce time which 
+ * will eliminate multiple triggers within a given time period.  Use setValues() to configure this
+ * */
+
 public class Threshold extends PdMaster {
 
 	//These are the JNI functions

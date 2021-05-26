@@ -1,5 +1,16 @@
 package com.pdplusplus;
 
+/*
+ * This is a sound file reader.  It only reads uncompressed file formats.  On the C++ side it uses Perry Cook's and 
+ * Gary Scavone's Synthesis Toolkit classes, which are just as good as Pd's soundfiler object.  
+ * I've heard little to no difference between the two, and using STK was much more practical.  
+ * 
+ * Sound files are loaded into memory before playing, use getArray to read the data into RAM. The read() method
+ * will only return the size of the file, you can use this to set your array size before copying. 
+ * To write sound files you need a type and format.  See the constants below for those values.  It writes
+ * directly to disk.  
+ * */
+
 public class SoundFiler extends PdMaster {
 
 	//types

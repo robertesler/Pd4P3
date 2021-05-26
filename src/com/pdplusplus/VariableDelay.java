@@ -1,5 +1,12 @@
 package com.pdplusplus;
 
+/*
+ * A delay line that uses 4-point polynomial interpolation to read from a delay line.  
+ * Use delayWrite() and delayRead() to write and read from the delay.  The input to the 
+ * perform() method is the delayTime, so this could be combined with an oscillator to 
+ * create some interesting effects.  
+ * */
+
 public class VariableDelay extends PdMaster {
 
 	
@@ -33,8 +40,8 @@ public class VariableDelay extends PdMaster {
 		return perform0(delayTime, this.pointer);
 	}
 	
-	public void delayWrite(double delayTime) {
-		delayWrite0(delayTime, this.pointer);
+	public void delayWrite(double data) {
+		delayWrite0(data, this.pointer);
 	}
 	
 	public double delayRead(double delayTime) {

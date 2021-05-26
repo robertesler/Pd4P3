@@ -1,5 +1,13 @@
 package com.pdplusplus;
 
+/*
+ * From: https://github.com/pure-data/pure-data/tree/master/extra/bob~
+ * "Imitates a Moog resonant filter by Runge-Kutte numerical integration of
+a differential equation approximately describing the dynamics of the circuit."
+
+So it's basically a resonant filter...
+ * */
+
 public class BobFilter extends PdMaster {
 	
 	//These are the JNI functions

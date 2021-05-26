@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * This class will create a time-based ramp to a desired value.  It is really useful
+ * in building envelopes.  Time is based on the samplerate and not an external clock.
+ * */
+
 public class Line extends PdMaster {
 
 	//These are the JNI functions

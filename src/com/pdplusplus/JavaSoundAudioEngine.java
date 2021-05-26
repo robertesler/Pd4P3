@@ -12,6 +12,16 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.DataLine;
 
 
+/*
+ * This is a audio engine, similar to the Pd class that writes/reads audio to and from the 
+ * hardware.  
+ * 
+ * It is a bit slow in my testing, so I've stuck with jPortAudio.  A lot of this code was adapted from
+ * Phil Burk's Jsyn library.  
+ * 
+ *  @author Robert Esler
+ * */
+
 public class JavaSoundAudioEngine extends PdMaster implements Runnable {
 
 	private static AudioFormat audioFormat;

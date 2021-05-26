@@ -1,5 +1,10 @@
 package com.pdplusplus;
 
+/*
+ * Band pass filter.  Takes a signal input. You can set the center frequency using setCenterFrequency(double) or
+ * set the Q using setQ(double).  
+ * */
+
 public class BandPass extends PdMaster {
 
 	

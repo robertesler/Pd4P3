@@ -1,5 +1,24 @@
 package com.pdplusplus;
 
+/*
+ * This is the super class that all classes inherit.  It contains methods for setting the sample rate, block size, etc.
+ * It also contains helpful conversion methods from Pd like midi to frequency, db to rms, etc.  
+ * 
+ * Pd for Processing 3, aka Pd++ for Java, is not meant to be a one-to-one representation of Pure Data objects in a 
+ * programming language.  It is meant to provide the most essential signal processing objects in an object oriented
+ * venue like Java or C++.  You still will have to do certain logic and math like you would in any other programming
+ * language.  
+ * 
+ * Things like [moses] or [route] or [select] are not necessary because they can be accomplished by using standard
+ * routines like if and switch statements.  
+ * 
+ * MIDI is also not included since that involves a separate interface.  MIDI is just data anyway and you can easily create
+ * classes that handle MIDI like [makenote] yourself.  If you are interested in MIDI see portmidi or Java Sound's MIDI 
+ * support.  They should work with Java or C++ and are probably thread safe for use with this library.  (fingers crossed
+ * because I've never tested it with MIDI) : )
+ * */
+
+
 public class PdMaster {
 
 	//Sample Rate and Blocks

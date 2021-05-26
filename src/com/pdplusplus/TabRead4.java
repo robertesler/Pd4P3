@@ -1,5 +1,11 @@
 package com.pdplusplus;
 
+/*
+ * TabRead4 is a table reader that uses 4-point polynomial interpolation.  You will need to create
+ * an array for it to read.  This is good for file playback or wavetable synthesizers, among other things.
+ * I think it sounds better than linear interpolation but call me a polygnome!
+ * */
+
 public class TabRead4 extends PdMaster {
 
 	 	
