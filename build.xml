@@ -39,11 +39,11 @@
 
 	<target name="dist" depends="build,javadoc">
 		<zip destfile="../Pd4P3.zip">
-			<zipfileset dir="." prefix="sound">
+			<zipfileset dir="." prefix="Pd4P3">
+				<exclude name="_config.yml" />
 				<exclude name="build.xml" />
 				<exclude name="bin/**" />
 				<exclude name="docs/**" />
-				<exclude name="examples/**" />
 				<exclude name="src/**" />
 			</zipfileset>
 		</zip>
