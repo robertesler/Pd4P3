@@ -55,7 +55,7 @@ public class Pd extends PdMaster implements Runnable {
 			
 	private Pd () {
 	
-		audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getChannels(), true, USE_BIG_ENDIAN);
+		
 		Line.Info[] lines;
 		
 		//Get default device
@@ -67,11 +67,22 @@ public class Pd extends PdMaster implements Runnable {
             Mixer mixer = AudioSystem.getMixer(mixers[i]);
 
             lines = mixer.getTargetLineInfo();
+            
             deviceInfo.maxInputs = scanMaxChannels(lines);
             // Remember first device that supports input.
             if ((defaultInputDeviceID < 0) && (deviceInfo.maxInputs > 0)) {
                 defaultInputDeviceID = i;
                 System.out.println("Input Device: " + deviceInfo.name + " max chs: " + deviceInfo.maxInputs);
+                /*
+                 * For now both the max input and output number of channels need to match.  So we look at both and
+                 * set the channel number to the lowest, either 1 or 2.  0 probably will throw an error. and
+                 * the library wouldn't work anyway.  You need at least 1 input and output.
+                 * */
+                if(deviceInfo.maxInputs < 2)
+                {
+                	this.setChannels(1);
+                }
+                
             }
             
             
@@ -81,12 +92,18 @@ public class Pd extends PdMaster implements Runnable {
             if ((defaultOutputDeviceID < 0) && (deviceInfo.maxOutputs > 0)) {
                 defaultOutputDeviceID = i;
                 System.out.println("Output Device: " + deviceInfo.name + " max chs: " + deviceInfo.maxOutputs);
+                
+                if(deviceInfo.maxOutputs < 2)
+                {
+                	this.setChannels(1);
+                }
             }
 
             deviceRecords.add(deviceInfo);
+             
         }
         
-        
+       audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getChannels(), true, USE_BIG_ENDIAN);
        DataLine.Info infoOutput = new DataLine.Info(SourceDataLine.class, audioFormat);
         
        Mixer outputMixer = AudioSystem.getMixer(mixers[defaultOutputDeviceID]);
@@ -101,7 +118,7 @@ public class Pd extends PdMaster implements Runnable {
        }
        output = (SourceDataLine)outputLine;
        
-       
+       audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), 1, true, USE_BIG_ENDIAN);
       DataLine.Info infoInput = new DataLine.Info(TargetDataLine.class, audioFormat);
       Mixer inputMixer = AudioSystem.getMixer(mixers[defaultInputDeviceID]);
       Line inputLine;
@@ -228,13 +245,29 @@ public class Pd extends PdMaster implements Runnable {
             int k = 0;
             for(int i = 0; i < framesPerBuffer; i++)
             {
-            	int indexL = k++;
-            	int indexR = k++;
             	
-            	pd.runAlgorithm((double)inputDoubleBuffer[indexL], (double)inputDoubleBuffer[indexR]);
+            	if(channels == 1)
+            	{
+            		int index = k++;
+            		
             	
-            	outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
-            	outputDoubleBuffer[indexR] =(float) PdAlgorithm.outputR;
+            		pd.runAlgorithm((double)inputDoubleBuffer[index], 0);
+            	
+            		outputDoubleBuffer[index] = (float)(PdAlgorithm.outputL + PdAlgorithm.outputR) * .5f;
+            		
+            		
+            	}
+            	
+            	if(channels == 2)
+            	{
+            		int indexL = k++;
+            		int indexR = k++;
+            	
+            		pd.runAlgorithm((double)inputDoubleBuffer[indexL], (double)inputDoubleBuffer[indexR]);
+            	
+            		outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
+            		outputDoubleBuffer[indexR] =(float) PdAlgorithm.outputR;
+            	}
             }
 
             //This writes our audio block to the output stream
@@ -370,19 +403,19 @@ public class Pd extends PdMaster implements Runnable {
 		System.out.println( "JavaSound test complete." );
 	}
 	
-	public void setChannels(int ch) {
+	private void setChannels(int ch) {
 		channels = ch;
 	}
 	
-	public int getChannels() {
+	private int getChannels() {
 		return channels;
 	}
 	
-	public void setBitDepth(int bd) {
+	private void setBitDepth(int bd) {
 		bitDepth = bd;
 	}
 	
-	public int getBitDepth() {
+	private int getBitDepth() {
 		return bitDepth;
 	}
 		

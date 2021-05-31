@@ -2,7 +2,8 @@ package com.pdplusplus;
 import com.portaudio.*;
 
 /*
- * This is a utility class for Pd++ it will start and stop the audio process
+ * PortAudio support
+ * This will start and stop the audio process
  * Includes the process block for PortAudio
  * 
  *  @author Robert Esler
