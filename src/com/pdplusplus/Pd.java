@@ -118,7 +118,6 @@ public class Pd extends PdMaster implements Runnable {
        }
        output = (SourceDataLine)outputLine;
        
-       audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), 1, true, USE_BIG_ENDIAN);
       DataLine.Info infoInput = new DataLine.Info(TargetDataLine.class, audioFormat);
       Mixer inputMixer = AudioSystem.getMixer(mixers[defaultInputDeviceID]);
       Line inputLine;
