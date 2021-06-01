@@ -1,6 +1,5 @@
 import com.pdplusplus.*;
 
-
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;

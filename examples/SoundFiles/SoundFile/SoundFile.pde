@@ -1,11 +1,10 @@
 import com.pdplusplus.*;
-import com.portaudio.*;
 
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
  //Change your file path to your .wav or .aiff audio file
- String file = "C:\\Users\\rwe8\\Desktop\\IntroPodcast.wav";
+ String file = "C:\\Users\\rwe8\\Documents\\Processing\\libraries\\Pd4P3\\examples\\SoundFiles\\SoundFile\\Bach.wav";
  
  void setup() {
    size(640, 360);
@@ -22,7 +21,10 @@ import com.portaudio.*;
  }
  
  void draw() {
-  
+   background(255);
+  String s = "Prelude in C-minor by J.S Bach";
+fill(50);
+text(s, 10, 10, 80, 80);  // Text wraps within text box
  }
  
  public void dispose() {

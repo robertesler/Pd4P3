@@ -1,5 +1,4 @@
 import com.pdplusplus.*;
-import com.portaudio.*;
 
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;

@@ -1,5 +1,4 @@
 import com.pdplusplus.*;
-import com.pdplusplus.*;
 
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
@@ -32,6 +31,7 @@ import com.pdplusplus.*;
    
    if(circleDraw)
    {
+     background(255);
        color c = color(map(modulationIndex, 10, 350, 10, 255), map(carrier, 400, 1200, 10, 255), map(mouseX, 0, width, 10, 255));  // Define color 'c'
       fill(c);  // Use color variable 'c' as fill color
       noStroke();  // Don't draw a stroke around shapes
