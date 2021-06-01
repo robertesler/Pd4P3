@@ -18,7 +18,7 @@ Pd4P3 stands for "Pd++ for Processing 3". The backbone of the library is written
 
 The backend of Pd4P3 uses the Java Sound API with the option of JPortAudio for Win/MacOS.  There are some latency issues with JPortAudio and MacOS I am still trying to figure out, but both JPortAudio and the Java Sound API work fine in Windows 10.  
 
-The classes in Pd4P3 function like most Java classes, there is input to the class, like a frequency, and output, a sine wave.  There is nothing special to the signal chain, the output or return value of every signal object, with a few exceptions like FFT, is a double precision number.  You can add/subtract/multiply/divide these numbers with other objects and make complex processes/synthesizers/etc.  Unlike Java Sound or JSyn (which is still awesome btw), there are abstract concepts like Mixers, Lines, Ports, Circuits, Synthesizers, Instruments, etc.  Pd4P3 is always just numbers, just like in Pure Data, and you can deal with those numbers how you like.  
+The classes in Pd4P3 function like most Java classes, there is input to the class methods, like a frequency, and output, a sine wave.  There is nothing special to the signal chain, the output or return value of every signal object, with a few exceptions like FFT, is a double precision number.  You can add/subtract/multiply/divide these numbers with other objects and make complex processes/synthesizers/etc.  Unlike Java Sound or JSyn (which is still awesome btw), there are no abstract concepts like Mixers, Lines, Ports, Circuits, Synthesizers, Instruments, etc.  Pd4P3 is always just numbers, just like in Pure Data, and you can deal with those numbers how you like.  
 
 # Pure Data to Pd4P3 object table
 These are the Pd objects emulated in Pd4P3.
