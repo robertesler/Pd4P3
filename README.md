@@ -65,6 +65,8 @@ dbtopow() | [dbtopow]
 
 The only major missing Pd objects are [readsf~] and [writesf~] which read/write sound files directly from disk, not into RAM.  Since this is usually something you would use to play long sound files I have not included yet in the library.  If this is your main goal then you can either use Java's sound file read/write capabilities, another library, or just use SoundFiler which will read the file into RAM first.  
 
+What about [adc~] and [dac~]?  The PdAlgorithm abstract class handles input and output.  You will see a method called `runAlgorithm(double in1, double in2)` the arguments represent the input from the microphone(s) and the public members `outputL` and `outputR` represent the output to the system.  
+
 Otherwise everything else in Pd can be easily implemented using standard Java methods or syntax, like math (+ - * /) or Math.sqrt, or basic logic used in [sel], [moses], [route] using if or switch statements.  Any questions just contact the author: robertesler.
 
 # Test in Processing 3
