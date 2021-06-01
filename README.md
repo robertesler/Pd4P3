@@ -15,7 +15,9 @@ This version of the library right now only works on Windows 10 and MacOS.  The .
 
 # How Pd4P3 Works
 Pd4P3 stands for "Pd++ for Processing 3". The backbone of the library is written in C++ and accessed via the Java Native Interface (JNI).  Pd++ is a C++ implementation of most of Pure Data's signal processing objects, so what you make in Pure Data should sound the same in Pd++ or Pd4P3, theoretically.  The syntax is also the same between Pd++ and Pd4P3, so what you write in Processing using this library should be able to be copied and pasted to a C++ project, like a JUCE plugin for example, with a few minor alterations.  This way you can test out your ideas quickly in Pure Data, implement a prototype in Processing and then easily deploy the same code to an audio plugin format.  There are obviously a few more steps to actually accomplish this but that would be the workflow.
+
 The backend of Pd4P3 uses the Java Sound API with the option of JPortAudio for Win/MacOS.  There are some latency issues with JPortAudio and MacOS I am still trying to figure out, but both JPortAudio and the Java Sound API work fine in Windows 10.  
+
 The classes in Pd4P3 function like most Java classes, there is input to the class, like a frequency, and output, a sine wave.  There is nothing special to the signal chain, the output or return value of every signal object, with a few exceptions like FFT, is a double precision number.  You can add/subtract/multiply/divide these numbers with other objects and make complex processes/synthesizers/etc.  Unlike Java Sound or JSyn (which is still awesome btw), there are abstract concepts like Mixers, Lines, Ports, Circuits, Synthesizers, Instruments, etc.  Pd4P3 is always just numbers, just like in Pure Data, and you can deal with those numbers how you like.  
 
 # Pure Data to Pd4P3 object table
