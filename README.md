@@ -13,8 +13,10 @@ You can download the Processing library here: https://www.robertesler.com/softwa
 # Pd++
 Pd++ is a standalone C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
 
-# Versions (Win/MacOS)
-This version of the library right now only works on Windows 10 and MacOS.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS.  If you want to use this on Linux then for now you would have to build Pd++, portaudio and jPortAudio for your architecture.  This will be updated soon to a Linux build option. 
+# Versions (Win/MacOS/Linux)
+This version of the library right now works on Windows 10, MacOS and Linux Ubuntu 20.x.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS, the .so for linux.  The linux version does not have support for PortAudio right now.  
+
+NOTE: Linux users, there is some "wild" code in the STK file read/write functions.  I've added in the Stk.h a way to handle endianness based on STK's code style which is `#define __LITTLE_ENDIAN__ 1`.  Since different versions of Linux on different architectures may be big or little endian this may break the SoundFiler class and throw an error.  Until I can make a decent patch of this, you would have just have to build the Pd++ lib with the JNI bindings for your endianness.  Contact the author if you need help with this.  See the Pd++ distribution, there should be makefiles for this.  
 
 # How Pd4P3 Works
 Pd4P3 stands for "Pd++ for Processing 3". The backbone of the library is written in C++ and accessed via the Java Native Interface (JNI).  Pd++ is a C++ implementation of most of Pure Data's signal processing objects, so what you make in Pure Data should sound the same in Pd++ or Pd4P3, theoretically.  The syntax is also the same between Pd++ and Pd4P3, so what you write in Processing using this library should be able to be copied and pasted to a C++ project, like a JUCE plugin for example, with a few minor alterations.  This way you can test out your ideas quickly in Pure Data, implement a prototype in Processing and then easily deploy the same code to an audio plugin format.  There are obviously a few more steps to actually accomplish this but that would be the workflow.
