@@ -9,6 +9,7 @@ Pd4P3 is written by Robert Esler with much help from Lisa Tolentino.  Pd++ is wr
 
 # P3 library
 You can download the Processing library here: https://www.robertesler.com/software/Pd4P3.zip
+This is a 20-minute tutorial if you need it: https://youtu.be/zxsB6UWKb6g
 
 # Pd++
 Pd++ is a standalone C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
