@@ -1,5 +1,5 @@
 # Pd4P3
-A java implementation of the Pd++ library, a C++ native library of Pure Data's signal objects.  This library will also work in Processing 3. 
+A real-time audio synthesis library for Processing 3. Pd4P3 implements Pure Data's signal processing objects via Pd++ native code.  Pd4P3 stands for "Pd++ for Processing 3".
 
 # Copyright
 This software is copyrighted by Robert Esler, 2021.  
@@ -19,7 +19,7 @@ This version of the library right now works on Windows 10, MacOS and Linux Ubunt
   
 
 # How Pd4P3 Works
-Pd4P3 stands for "Pd++ for Processing 3". The backbone of the library is written in C++ and accessed via the Java Native Interface (JNI).  Pd++ is a C++ implementation of most of Pure Data's signal processing objects, so what you make in Pure Data should sound the same in Pd++ or Pd4P3, theoretically.  The syntax is also the same between Pd++ and Pd4P3, so what you write in Processing using this library should be able to be copied and pasted to a C++ project, like a JUCE plugin for example, with a few minor alterations.  This way you can test out your ideas quickly in Pure Data, implement a prototype in Processing and then easily deploy the same code to an audio plugin format.  There are obviously a few more steps to actually accomplish this but that would be the workflow.
+The backbone of the library is written in C++ and accessed via the Java Native Interface (JNI).  Pd++ is a C++ implementation of most of Pure Data's signal processing objects, so what you make in Pure Data should sound the same in Pd++ or Pd4P3, theoretically.  The syntax is also the same between Pd++ and Pd4P3, so what you write in Processing using this library should be able to be copied and pasted to a C++ project, like a JUCE plugin for example, with a few minor alterations.  This way you can test out your ideas quickly in Pure Data, implement a prototype in Processing and then easily deploy the same code to an audio plugin format.  There are obviously a few more steps to actually accomplish this but that would be the workflow.
 
 The backend of Pd4P3 uses the Java Sound API with the option of JPortAudio for Win/MacOS.  There are some latency issues with JPortAudio and MacOS I am still trying to figure out, but both JPortAudio and the Java Sound API work fine in Windows 10.  
 
