@@ -74,13 +74,14 @@ What about [adc~] and [dac~]?  The PdAlgorithm abstract class handles input and 
 
 Otherwise everything else in Pd can be easily implemented using standard Java methods or syntax, like math (+ - * /) or Math.sqrt, or basic logic used in [sel], [moses], [route] using if or switch statements.  Any questions just contact the author: robertesler.
 
-# Test in Processing 3
+# Build Java Library for Processing 3
+If you wanted to make edits to the Java code or add your own classes you could re-build the library easily by:
 
 1. Download or clone this repository.
 2. Download Ant (https://ant.apache.org/bindownload.cgi) and install
 3. Navigate to the repository home folder using the Command Line
 4. Type: `ant`
-5. Then type: `ant install`, this make a Processing-ready library dummy folder and a .zip file in the directory just above the repository.
+5. Then type: `ant install`, this makes a Processing-ready library dummy folder and a .zip file in the directory just above the repository.
 6. Copy the .zip file to ~/Documents/Processing/libraries/ and then unzip the file
 7. Open Processing and find a Pd4P3 example.  
 8. Open the example and run it.  
