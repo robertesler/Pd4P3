@@ -43,8 +43,8 @@
 				<exclude name="_config.yml" />
 				<exclude name="build.xml" />
 				<exclude name="bin/**" />
-				<exclude name="docs/**" />
-				<exclude name="src/**" />
+				
+				
 			</zipfileset>
 		</zip>
 		<copy file="library.properties" toFile="../Pd4P3.txt" />
