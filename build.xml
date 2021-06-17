@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="javadoc">
-		<javadoc bottom="Pd for Processing" destdir="docs" verbose="false" doctitle="Javadocs: Pd for Processing" public="true" windowtitle="Javadocs: Pd for Processing" additionalparam="-notimestamp">
+		<javadoc bottom="Pd for Processing" destdir="reference" verbose="false" doctitle="Javadocs: Pd for Processing" public="true" windowtitle="Javadocs: Pd for Processing" additionalparam="-notimestamp">
 			<fileset dir="src" defaultexcludes="yes">
 				<include name="**/*" />
 			</fileset>
