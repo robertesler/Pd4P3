@@ -14,8 +14,8 @@ This is a 20-minute tutorial if you need it: https://youtu.be/zxsB6UWKb6g
 # Pd++
 Pd++ is a standalone C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
 
-# Versions (Win/MacOS/Linux)
-This version of the library right now works on Windows 10, MacOS and Linux Ubuntu 20.x.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS, the .so for linux.  The linux version does not have support for PortAudio right now.  
+# Versions (Win/MacOS/Linux/Rpi)
+This version of the library right now works on Windows 10, MacOS and Linux Ubuntu 20.x.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS, the .so for linux.  The linux version does not have support for PortAudio right now.  This library has also been tested on the Raspberry Pi and works as expected based on the limitations of the hardware.  I am able to get full duplex audio on an Rpi 3 with an occasional audio interruption. More details below on how the build more Rpi.
   
 
 # How Pd4P3 Works
@@ -74,8 +74,17 @@ What about [adc~] and [dac~]?  The PdAlgorithm abstract class handles input and 
 
 Otherwise everything else in Pd can be easily implemented using standard Java methods or syntax, like math (+ - * /) or Math.sqrt, or basic logic used in [sel], [moses], [route] using if or switch statements.  Any questions just contact the author: robertesler.
 
+# Build for the Raspberry Pi
+Since the Pi OS is a version of linux you can build the dynamic library, or .so, using the makefile provided by the Pd++ repository. 
+1. Go to: https://bitbucket.org/resler/pd/wiki/Home and clone the Pd++ library in a separate folder. 
+2. Navigate to ../Pd++/ 
+3. In the Makefile you will see the line: `/usr/lib/jvm/java-1.11.0-openjdk-amd64/include/`, change the `java-1.11.0-openjdk-amd64` to whatever version of java that is installed for your OS, on mine I had to change it to `java-11-openjdk-armhf`.
+4. Type `make`  
+5. This will create a libpdplusplusTest.so in the /build folder.  Copy it to your Pd4P3/library folder in your /home/pi/sketchbook/libraries/.
+6. Open Processing and open a Pd4P3 example to test the build was successful.  
+
 # Build Java Library for Processing 3
-If you wanted to make edits to the Java code or add your own classes you could re-build the library easily by:
+If you wanted to make edits to the Java code or add your own classes you could re-build the library easily:
 
 1. Download or clone this repository.
 2. Download Ant (https://ant.apache.org/bindownload.cgi) and install
