@@ -15,7 +15,7 @@ This is a 20-minute tutorial if you need it: https://youtu.be/zxsB6UWKb6g
 Pd++ is a standalone C++ library based on the signal objects of Pure Data.  More information can be found here: https://bitbucket.org/resler/pd/src/master/
 
 # Versions (Win/MacOS/Linux/Rpi)
-This version of the library right now works on Windows 10, MacOS and Linux Ubuntu 20.x.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS, the .so for linux.  The linux version does not have support for PortAudio right now.  This library has also been tested on the Raspberry Pi and works as expected based on the limitations of the hardware.  I am able to get full duplex audio on an Rpi 3 with an occasional audio interruption. More details below on how the build more Rpi.
+This version of the library right now works on Windows 10, MacOS and Linux Ubuntu 20.x.  The .dll in the /lib folder are built for Windows, the .dylibs are for MacOS, the .so for linux.  The linux version does not have support for PortAudio right now.  This library has also been tested on the Raspberry Pi and works as expected based on the limitations of the hardware.  I am able to get full duplex audio on an Rpi 3 with an occasional audio interruption. More details below on how to build for the Rpi.
   
 
 # How Pd4P3 Works
