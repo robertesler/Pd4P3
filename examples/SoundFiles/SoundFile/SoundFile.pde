@@ -35,8 +35,13 @@ text(s, 10, 10, 80, 80);  // Text wraps within text box
 }
  
  /*
-   This is where you should put all of your music/audio behavior and DSP
+   This is an example of how to read an audio file into RAM.  SoundFiler only reads uncompressed file formats
+   such as .wav, .aif, or raw formats.  See the code documentation here: https://github.com/robertesler/Pd4P3/blob/main/src/com/pdplusplus/SoundFiler.java
+   for more details.  
+   You must also provide the direct path of the file, see the example above for Windows.  Linux or MacOS use
+   the standard UNIX path system.
  */
+ 
  class MyMusic extends PdAlgorithm {
    
    SoundFiler wav = new SoundFiler();
@@ -54,7 +59,13 @@ text(s, 10, 10, 80, 80);  // Text wraps within text box
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
      
-     //loop an audio file
+     /*loop a stereo audio file, stereo audio files are interleaved so soundFile[0] is the left channel
+       and soundFile[1] is the right channel and so forth.  If your file is mono just use something like:
+       outputL = outputR = soundFile[counter++];
+       If you have multiple channel output greater than stereo you could use a loop but you would also have
+       to change the Pd.java to accept more than two outputs.  If you require that kind of functionality contact
+       the author of Pd4P3 for help.
+     */
       if(counter != fileSize)
       {
           outputL = soundFile[counter++];
