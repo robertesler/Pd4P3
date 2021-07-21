@@ -52,7 +52,7 @@ import com.pdplusplus.*;
    SoundFiler wav = new SoundFiler();
    float freqShift = 0;
    double[] soundFile;
-   String file = "C:\\Users\\rwe8\\Documents\\Pd4P3\\Pd4P3\\examples\\Filters\\SSB\\Bach.wav";
+   String file = "C:\\Users\\***\\Documents\\Pd4P3\\Pd4P3\\examples\\Filters\\SSB\\Bach.wav";
    double fileSize;
    int counter = 0;
    double ch1 = 0;

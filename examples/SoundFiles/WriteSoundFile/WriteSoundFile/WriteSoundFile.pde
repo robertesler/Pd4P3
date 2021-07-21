@@ -42,7 +42,7 @@ import com.pdplusplus.*;
    SoundFiler wav = new SoundFiler();
    int size = (int)this.getSampleRate() * 8;//4 seconds of audio * 2 channels
    double[] sound = new double[size];
-   String fileName = "C:\\Users\\rwe8\\Desktop\\Pd4P3_test.wav";
+   String fileName = "C:\\Users\\***\\Desktop\\Pd4P3_test.wav";
    int sampleCounter = 0;
    float freq = 0;
    

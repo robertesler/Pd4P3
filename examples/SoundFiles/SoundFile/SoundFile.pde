@@ -4,7 +4,7 @@ import com.pdplusplus.*;
  Pd pd;
  MyMusic music;
  //Change your file path to your .wav or .aiff audio file
- String file = "C:\\Users\\rwe8\\Documents\\Processing\\libraries\\Pd4P3\\examples\\SoundFiles\\SoundFile\\Bach.wav";
+ String file = "C:\\Users\\***\\Documents\\Processing\\libraries\\Pd4P3\\examples\\SoundFiles\\SoundFile\\Bach.wav";
  
  void setup() {
    size(640, 360);
