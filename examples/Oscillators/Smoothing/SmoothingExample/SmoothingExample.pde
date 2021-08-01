@@ -60,7 +60,7 @@ import com.pdplusplus.*;
    
    //This method will also smooth the amplitude to avoid clicks
    synchronized float getAmp() {
-     smooth = smooth - .02 * (smooth - amp);
+     smooth = smooth - .004 * (smooth - amp);
      return smooth;
    }
    
