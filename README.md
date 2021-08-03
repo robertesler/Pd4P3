@@ -44,6 +44,7 @@ LowPass    | [lop~]
 Noise      | [noise~]
 Oscillator | [osc~]
 Phasor     | [phasor~]
+ReadSoundFile | [readsf~]*
 Included in RawFilter:
   RealPole | [rpole~]
   RealZero | [rzero~]
@@ -59,6 +60,7 @@ TabRead4   | [tabread4]
 Threshold  | [threshold~]  
 VariableDelay | [vd~] and [delwrite~]
 VoltageControlFilter | [vcf~]
+WriteSoundFile | [writesf~]*
 cFFT     |   [fft~]
 cIFFT    |   [ifft~]
 rFFT      |  [rfft~]
@@ -71,7 +73,7 @@ ftom()    |  [ftom]
 powtodb() |  [powtodb]
 dbtopow() | [dbtopow]
 
-The only major missing Pd objects are [readsf~] and [writesf~] which read/write sound files directly from disk, not into RAM.  Since this is usually something you would use to play long sound files I have not included yet in the library.  If this is your main goal then you can either use Java's sound file read/write capabilities, another library, or just use SoundFiler which will read the file into RAM first.  
+*Pd objects are [readsf~] and [writesf~] are current in alpha and not yet tested on all platforms.  Stay tuned.
 
 What about [adc~] and [dac~]?  The PdAlgorithm abstract class handles input and output.  You will see a method called `runAlgorithm(double in1, double in2)` the arguments represent the input from the microphone(s) and the public members `outputL` and `outputR` represent the output to the system.  
 
