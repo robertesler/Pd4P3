@@ -4,7 +4,7 @@ package com.pdplusplus;
  * A one pole high pass filter.  
  * */
 
-public class HighPass {
+public class HighPass extends PdMaster {
 
 	//These are the JNI functions
 	public long pointer;
