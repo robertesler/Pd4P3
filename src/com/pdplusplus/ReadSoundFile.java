@@ -10,7 +10,7 @@ package com.pdplusplus;
  * in milliseconds using the overloaded method.
  * 
  * You can change the buffer size using setBufferSize().  The size 
- * is in bytes so 2^X, default is 1024 or 2^10.
+ * is in bits so 2^X, default is 1024 or 2^10.
  * 
  * Use start() and stop() to begin to read or stop.  
  * 
@@ -29,7 +29,7 @@ public class ReadSoundFile extends PdMaster {
 	private static native double[] start0(long ptr);
 	private static native void stop0(long ptr);
 	private static native void print0(long ptr);
-	private static native void setBufferSize0(int bytes, long ptr);
+	private static native void setBufferSize0(int bits, long ptr);
 	private static native int getBufferSize0(long ptr);
 	private static native boolean isComplete0(long ptr);
 	
