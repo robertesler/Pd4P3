@@ -115,6 +115,7 @@ public class Pd extends PdMaster implements Runnable {
              
         }
         
+        
        audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getChannels(), true, USE_BIG_ENDIAN);
        DataLine.Info infoOutput = new DataLine.Info(SourceDataLine.class, audioFormat);
         
@@ -293,7 +294,7 @@ public class Pd extends PdMaster implements Runnable {
             		pd.runAlgorithm((double)inputDoubleBuffer[indexL], (double)inputDoubleBuffer[indexR]);
             	
             		outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
-            		outputDoubleBuffer[indexR] =(float) PdAlgorithm.outputR;
+            		outputDoubleBuffer[indexR] =(float)PdAlgorithm.outputR;
             	}
             }
 
@@ -342,8 +343,8 @@ public class Pd extends PdMaster implements Runnable {
             		} else if (sampleR < Short.MIN_VALUE) {
             			sampleR = Short.MIN_VALUE;
             		}
-            		outputByteBuffer[byteIndex++] = (byte) sampleL; // little end
-            		outputByteBuffer[byteIndex++] = (byte) (sampleL >> 8); // big end
+            		outputByteBuffer[byteIndex++] = (byte) sampleR; // little end
+            		outputByteBuffer[byteIndex++] = (byte) (sampleR >> 8); // big end
             	}
             }
 
