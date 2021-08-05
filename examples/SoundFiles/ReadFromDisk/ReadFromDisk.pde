@@ -87,8 +87,8 @@ boolean stop = true;
     The onset is in milliseconds.
   */
   void openSoundFile() {
-       readsf.open("C:\\Users\\rwe8\\Desktop\\IntroPodcast.wav"); 
-     //readsf.open("C:\\Users\\rwe8\\Desktop\\IntroPodcast.wav", 1200); 
+       readsf.open("C:\\Users\\***\\Desktop\\IntroPodcast.wav"); 
+     //readsf.open("C:\\Users\\&&&\\Desktop\\IntroPodcast.wav", 1200); 
   }
   
   //This will terminate the reading of the file.  Call open() before start();

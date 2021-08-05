@@ -112,9 +112,9 @@ Please report at https://github.com/robertesler/Pd4P3/issues
      You must always call open() before start()
    */
    void setSoundFile() {
-    writesf.open("C:\\Users\\rwe8\\Desktop\\Test.wav", channels);
+    writesf.open("C:\\Users\\***\\Desktop\\Test.wav", channels);
     //You can also specify different uncompressed formats and bit depths, see docs for more
-    //writesf.open("C:\\Users\\rwe8\\Desktop\\Test.wav", channels, FILE_AIF, STK_SINT24);
+    //writesf.open("C:\\Users\\&&&\\Desktop\\Test.wav", channels, FILE_AIF, STK_SINT24);
    }
    
    /*
