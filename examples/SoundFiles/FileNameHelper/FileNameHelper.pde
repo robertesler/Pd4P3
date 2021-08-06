@@ -47,7 +47,6 @@ void draw() {
      
       if(path.charAt(0) == '~')
       {
-        println("~");
          String[] p = splitTokens(path, "~");
          //add home path and format for Windows e.g. \ vs /
          path = System.getProperty("user.home") + p[0].replace("/", "\\");
@@ -120,8 +119,6 @@ void draw() {
        String userDir = System.getProperty("user.dir");
        String[] str = splitTokens(userDir, "/");
        String[] p = splitTokens(path, "/");
-       println(userDir + " = str: " + str.length);
-       println("p: " + p.length);
        
        int newLength = str.length - (p.length - 1);
        String newPath = "";
