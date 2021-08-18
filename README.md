@@ -73,7 +73,7 @@ ftom()    |  [ftom]
 powtodb() |  [powtodb]
 dbtopow() | [dbtopow]
 
-*Pd objects are [readsf~] and [writesf~] are current in alpha and not yet tested on all platforms.  Stay tuned.
+*Pd objects [readsf~] and [writesf~] are currently in alpha and not fully tested on all platforms. 
 
 What about [adc~] and [dac~]?  The PdAlgorithm abstract class handles input and output.  You will see a method called `runAlgorithm(double in1, double in2)` the arguments represent the input from the microphone(s) and the public members `outputL` and `outputR` represent the output to the system.  
 
