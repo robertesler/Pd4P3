@@ -91,10 +91,10 @@ import com.pdplusplus.*;
      hannWindow = new double[windowSize];
      bins = new double[windowSize];
         
-       osc.setPhase(.5);
+       osc.setPhase(0);
      for(int i = 0; i < windowSize; i++)
      {
-       hannWindow[i] = ((osc.perform(winHz)* .5) + .5);
+       hannWindow[i] = ((osc.perform(winHz)* -.5) + .5);
        bins[i] = 0;
      }
    }
@@ -118,7 +118,7 @@ import com.pdplusplus.*;
           double imag = fftBin[j];
           //sqrt( real^2 + imag^2) = freq bin magnitude
           double magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
-   
+         
           bins[i] = magnitude/windowSize;//scale it by ws
       
         }

@@ -70,6 +70,7 @@ import com.pdplusplus.*;
          state = 4;
          banner = "Stop Band";
       }
+      
    }
    music.setFilter(state);
    textSize(32);
@@ -104,10 +105,12 @@ import com.pdplusplus.*;
    int filter = 0;
    float cutoff = 100;
    float bw = 1;
+   double out = 0;
    
    void runAlgorithm(double in1, double in2) {
      //We'll use noise to hear the difference
      double n = noise.perform();
+     
      switch (getFilter()) {
        case 1:
          bp.setCenterFrequency(getCutoff());
@@ -128,7 +131,7 @@ import com.pdplusplus.*;
          outputL = outputR = notch.perform(n);
          break;
        default: 
-          outputL = outputR = n;
+          outputL = outputR = n * .5;
       
      }
      
