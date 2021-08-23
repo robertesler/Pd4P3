@@ -45,8 +45,8 @@ class Convolution2 extends PdMaster {
      createHann(512);
    }
    
-   Convolution2(int ws) {
-   
+   Convolution2(int ws, int ov) {
+     overlap = ov;
      rfft = new rFFT(ws);//for our input, aka filter
      rifft = new rIFFT(ws);
      rfft2 = new rFFT(ws);//for our Synth, aka control
@@ -176,14 +176,12 @@ public float rsqrt(float x) {
        println("Window size cannot be zero!");
      }
 
-     osc.setPhase(0);
-     for(int j = 0; j < overlap; j++)
-     {
-       for(int i = 0; i < windowSize; i++)
-       {
-         hann[i] = (float)((osc.perform(winHz)* -.5) + .5);
-       }
-     }  
+     osc.setPhase(0);     
+     for(int i = 0; i < windowSize; i++)
+      {
+        hann[i] = (float)((osc.perform(winHz)* -.5) + .5);
+      }
+       
  }
   
     //emulate [clip~], a = input, b = low range, c = high range
