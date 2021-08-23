@@ -112,6 +112,7 @@ again for clean output.
       for(int i = 0; i < this.getFFTWindow(); i++)
         fft = rfft.perform(buffer.get(i)*hann[i]);
       
+      
       /*
       do something with our frequency bins here
       Remember with rFFT the first half of the array is real

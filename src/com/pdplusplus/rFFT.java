@@ -11,6 +11,7 @@ public class rFFT extends PdMaster {
 		public long pointer;
 		
 		private static native long allocate0();
+		private static native long allocate0(int window);
 		private static native void free0(long ptr);
 		private static native double[] perform0(double input, long ptr);
 	
@@ -21,6 +22,14 @@ public class rFFT extends PdMaster {
 		
 		public static rFFT allocate() {
 			return new rFFT();
+		}
+		
+		public rFFT(int window) {
+			this.pointer = allocate0(window);
+		}
+		
+		public static rFFT allocate(int window) {
+			return new rFFT(window);
 		}
 		
 		public static void free(rFFT rfft) {
