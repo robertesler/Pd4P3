@@ -8,6 +8,12 @@ not sound as good.
 This code is just for reference, if you want to perform convolution
 timbre stamping then use the Convolution class as in the Timbre Stamp
 example.
+
+Much thanks to Lisa Tolentino for helping with some of the overlapping
+code.  
+
+Similar code exists in Convolution.cpp, from the Pd++ lib, if that interests you.
+https://bitbucket.org/resler/pd/src/master/Pd%2B%2B/MyClasses/Convolution.cpp
 */
 
 class Convolution2 extends PdMaster {

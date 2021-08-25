@@ -2,9 +2,14 @@ import com.pdplusplus.*;
 
 /*
 This is an example of timbre stamp convolution.  
+I borrowed the voice.wav and bell.aiff samples
+from Pure Data in the ../doc/sound/ folder
+as per the Timbre Stamp help patch.  You can use
+any uncompressed audio files you like.
+
+The x-axis adjusts the squelch.  See below for more.
 */
 
-//declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
 
@@ -16,7 +21,7 @@ This is an example of timbre stamp convolution.
    music = new MyMusic();
    pd = Pd.getInstance(music);
 
-  ;
+  //Change these to your own uncompressed audio file paths
    String f1 = "C:\\Users\\&&&\\Desktop\\voice.wav";
    String f2 = "C:\\Users\\&&&\\Desktop\\bell.aiff";
    music.openSoundFile(f1, f2);
@@ -34,12 +39,17 @@ This is an example of timbre stamp convolution.
  public void dispose() {
    //stop Pd engine
    pd.stop();
-  println("Pd4P3 audio engine stopped.");
-    super.dispose();
+   println("Pd4P3 audio engine stopped.");
+   super.dispose();
 }
  
  /*
-   This is where you should put all of your music/audio behavior and DSP
+   The filter input, or 1st arg, is the main "input", the control
+   input, 2nd arg, is the stamp.  You can try switching them and 
+   see what happens.
+   
+   The squelch kind of acts like raw compression of the filter input.
+   
  */
  class MyMusic extends PdAlgorithm {
    
@@ -64,14 +74,14 @@ This is an example of timbre stamp convolution.
       if(index != fileSize)
       {   
           voice = (float)( soundFile[index++] ) * .5;
-          if(index == fileSize) index = 0;
+          if(index == fileSize) index = 0;//loop
       }
       
      //our second sound file
      if(index2 != fileSize2)
       {
           bell = (float)( soundFile2[index2++]  ) * .5;
-          if(index2 == fileSize2) index2 = 0;
+          if(index2 == fileSize2) index2 = 0;//loop
       }
       
       
