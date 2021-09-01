@@ -31,8 +31,8 @@ The classes in Pd4P3 function like most Java classes, there is input to the clas
 # Pure Data to Pd4P3 object table
 These are the Pd objects emulated in Pd4P3.
 | Class    |   Pd Object |
-| --------- | ------------ |
-| BandPass |   [bp~] |
+ --------- | ------------ 
+ BandPass |   [bp~] 
 BiQuad    |  [biquad~]
 BobFilter  | [bob~]
 Cosine     | [cos~]
