@@ -41,20 +41,7 @@ class PAF extends PdMaster {
     p = 1 - q
     */
     
-    /*
-    double w = phasor.perform(f);
-    double a = line1.perform(index, 50);
-    double sh = samphold.perform(cf, w);
-    double q = wrap.perform((float)sh);
-    double k = sh - q;
-    double p = 1 - q;
-    double modulator = a * cos1.perform((w *.5)-.25);
-    double carrier = p * cos2.perform(k * w) + q * cos3.perform((k+1)*w);
-    double g = tabread.perform(modulator + 100 );
-    double paf = g * modulator * carrier;
-    */
-    
-    
+    //Keep in mind cos.perform(x) - .25 is a sine wave
     phase = phasor.perform(f);
     modulator = (cos1.perform((phase * .5) - .25) * line1.perform(index, 50));
     gauss = tabread.perform(modulator + tabSize/2);

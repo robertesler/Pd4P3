@@ -1,5 +1,4 @@
 //This class mimic's Pd's wrap~ object
-//This mimics the wrap~ object in Pure Data
 class Wrap {
 
   

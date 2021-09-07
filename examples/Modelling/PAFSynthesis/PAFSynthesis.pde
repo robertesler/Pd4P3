@@ -1,12 +1,25 @@
 import com.pdplusplus.*;
 
-//declare Pd and create new class that inherits PdAlgorithm
+/*
+This sketch demonstrates phase aligned formant synthesis.  This
+algorithm is patented by IRCAM but allowable for open source or
+educational purposes, but don't go selling software with this unless
+you contact them first. 
+
+One use of PAF is speech synthesis, but it is useful for making
+synths or vocoders.  
+
+Use mouse X/Y to control the frequency and index of the
+synthesizer.  
+
+The animation is the frequency bands and their amplitude.
+*/
+
  Pd pd;
  MyMusic music;
  
 double bins[];
- double smooth[];
- int counter = 0;
+double smooth[];
 
  void setup() {
    size(640, 360);
@@ -29,6 +42,7 @@ double bins[];
   
    float f = map(mouseX, 0, width, 50, 250);
    float index = map(mouseY, 0, height, 200, 10);
+   //We set the center frequency to 1/10 of the fundamental.  
    music.setFreq(f, f/10, index);
    background(255);
    fill(0);
@@ -61,7 +75,8 @@ double bins[];
 }
  
  /*
-   This is where you should put all of your music/audio behavior and DSP
+   This class implements a PAF object and then analyzes it.
+   The FFT bin magnitude is then sent back to P3 for drawing.
  */
  class MyMusic extends PdAlgorithm {
    
@@ -74,7 +89,7 @@ double bins[];
    double centerFreq = 10;
    double index = 50;
    double[] sf = new double[1];
-   boolean recording = false;
+   boolean recording = false;//Set this to true if you want to record what you do.
    
    double[] bins;
    double[] hannWindow;
@@ -85,8 +100,10 @@ double bins[];
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-        //get our Hanning window
+      
+     //get our Hanning window
      double hann = hannWindow[counter++];
+     //perform our PAF with freq, center freq and modulation index
      double out = paf.perform(getFreq(), getCenterFreq(), getIndex());
      
      sf[0] = out;
@@ -151,7 +168,7 @@ double bins[];
   
   void setSynth() {
     if(recording)
-      writesf.open("C:\\Users\\rwe8\\Desktop\\paf.wav", 1);
+      writesf.open("C:\\Users\\&&&\\Desktop\\paf.wav", 1);
     
      paf.setSynth(); 
   }

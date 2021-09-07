@@ -26,7 +26,7 @@ double[] smooth;
    pd = Pd.getInstance(music);
    tab = new double[music.getNumOfFilters()];
    smooth =  new double[music.getNumOfFilters()];
-   music.setAudioFile("C:\\Users\\rwe8\\Desktop\\P3-Tests\\voice.wav");
+   music.setAudioFile("C:\\Users\\&&&\\Desktop\\voice.wav");
    //start the Pd engine thread
    pd.start();
    

@@ -26,7 +26,7 @@ import com.pdplusplus.*;
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
-   music.loadAudioFile("C:\\Users\\&&&\\Desktop\\P3-Tests\\voice.wav");
+   music.loadAudioFile("C:\\Users\\&&&\\Desktop\\voice.wav");
    //start the Pd engine thread
    pd.start();
    
