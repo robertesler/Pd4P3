@@ -3,8 +3,6 @@ import com.pdplusplus.*;
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
- //Change your file path to your .wav or .aiff audio file
- String file = "C:\\Users\\***\\Documents\\Processing\\libraries\\Pd4P3\\examples\\SoundFiles\\SoundFile\\Bach.wav";
  
  void setup() {
    size(640, 360);
@@ -12,7 +10,14 @@ import com.pdplusplus.*;
    
    
    music = new MyMusic();
-   music.readFile(file);
+   /*
+   You can use Processing's data path which is relative to the sketch, ./data/filename.wav or whatever. 
+   Or see FileNameHelper.pde example for more ideas.  
+   */
+   String path = this.dataPath("");
+   //format this for your OS, / for Unix, \\ for Win
+   path = path + "\\Bach.wav";
+   music.readFile(path);
    
    pd = Pd.getInstance(music);
    //start the Pd engine thread

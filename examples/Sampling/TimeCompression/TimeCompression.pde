@@ -26,7 +26,11 @@ import com.pdplusplus.*;
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
-   music.loadAudioFile("C:\\Users\\&&&\\Desktop\\voice.wav");
+   //You can use Processing's data path which is ./data/filename.wav or whatever.  Or see FileNameHelper example
+   String path = this.dataPath("");
+   //format this for your OS, / for Unix, \\ for Win
+   path = path + "\\voice.wav";
+   music.loadAudioFile(path);
    //start the Pd engine thread
    pd.start();
    

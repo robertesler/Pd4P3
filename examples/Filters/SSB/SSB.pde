@@ -12,7 +12,11 @@ import com.pdplusplus.*;
    
    
    music = new MyMusic();
-   music.setSSB();
+   //You can use Processing's data path which is ./data/filename.wav or whatever.  Or see FileNameHelper example
+   String path = this.dataPath("");
+   //format this for your OS, / for Unix, \\ for Win
+   path = path + "\\Bach.wav";
+   music.setSSB(path);
    pd = Pd.getInstance(music);
    
    //start the Pd engine thread
@@ -52,7 +56,7 @@ import com.pdplusplus.*;
    SoundFiler wav = new SoundFiler();
    float freqShift = 0;
    double[] soundFile;
-   String file = "C:\\Users\\***\\Documents\\Pd4P3\\Pd4P3\\examples\\Filters\\SSB\\Bach.wav";
+   //String file = "C:\\Users\\***\\Documents\\Pd4P3\\Pd4P3\\examples\\Filters\\SSB\\Bach.wav";
    double fileSize;
    int counter = 0;
    double ch1 = 0;
@@ -90,7 +94,7 @@ import com.pdplusplus.*;
      
    }
   
-  public void setSSB() {
+  public void setSSB(String file) {
     /*
       According to H09.ssb.modulation.pd this creates a pair of allpass
       filters that shift the input by 90 degrees, making them suitable
