@@ -1,8 +1,12 @@
 import com.pdplusplus.*;
 
 /*
-This sketch demonstrates pitched and unpitched signal separation.
-Use the X/Y to hear the "clean" vs "dirty" signal of the sample.
+This sketch is a phase vocoder reverberator example.  It is adapted from
+Pure Data's pvoc.reverb or "Piano Reverb" example.  
+
+This sketch is pretty processor intensive.  Depending on your system
+it may take a few seconds for the JVM to optimize and hear undistorted 
+sound.
 */
 
  Pd pd;
@@ -42,10 +46,7 @@ Use the X/Y to hear the "clean" vs "dirty" signal of the sample.
 }
  
  /*
-   This class will analyze the signal and test whether the signal is 
-   "clean" or the coherent, or "dirty" or incoherent.  This will determine
-   which bins are pitch and which are noise.  Then we can balance between each
-   and remove one or the other. 
+   This class will play a sample and pass it through our reverberator.
  */
  class MyMusic extends PdAlgorithm {
    

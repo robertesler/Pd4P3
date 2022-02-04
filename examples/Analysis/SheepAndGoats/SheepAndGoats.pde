@@ -3,6 +3,10 @@ import com.pdplusplus.*;
 /*
 This sketch demonstrates pitched and unpitched signal separation.
 Use the X/Y to hear the "clean" vs "dirty" signal of the sample.
+
+This sketch is pretty processor intensive.  Depending on your system
+it may take a few seconds for the JVM to optimize and hear undistorted 
+sound.
 */
 
  Pd pd;
@@ -19,7 +23,7 @@ Use the X/Y to hear the "clean" vs "dirty" signal of the sample.
    //You can use Processing's data path which is ./data/filename.wav or whatever.  Or see FileNameHelper example
    String path = this.dataPath("");
    //format this for your OS, / for Unix, \\ for Win
-   path = path + "\\gong.wav";
+   path = path + "\\voice.wav";
    music.setSoundFile(path);
    //start the Pd engine thread
    pd.start();
@@ -29,10 +33,10 @@ Use the X/Y to hear the "clean" vs "dirty" signal of the sample.
  void draw() {
   background(255);
   fill(0);
-  float d = map(mouseX, 0, width, 0, 100);
-  float c = map(mouseY, 0, height, 100, 0);
-  //String s = "clean: " + str(c) + ", dirty: " + str(d);
-  //text(s, (width/2)-80, 20);
+  float d = map(mouseX, 0, width, 80, 100);
+  float c = map(mouseY, 0, height, 30, 0);
+  String s = "clean: " + str(c) + ", dirty: " + str(d);
+  text(s, (width/2)-80, 20);
   music.setClean(c);
   music.setDirty(d);
  }

@@ -97,7 +97,7 @@ class Analysis extends PdMaster {
        buffer.remove(0); 
       }
   
-      //Now we perform our FFTs and multiply by our Hann window
+      //Now we perform our FFT and multiply by our Hann window
       for(int i = 0; i < this.getFFTWindow(); i++)
       {
        fft = rfft.perform(buffer.get(i)*hann[i]);
@@ -168,8 +168,6 @@ class Analysis extends PdMaster {
           switchA[i] = a;
           switchB[i] = b;
           
-         // println(a + " | " + b);
-          
           //switch2
           double ir = incReal[i] + 1e-015;
           double c = ((divideByPrevA[i] - ir) * abc[i]) + ir;
@@ -188,6 +186,7 @@ class Analysis extends PdMaster {
           
        }
        
+       //Let's put Humpty Dumpty back together again.
        for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
       {
         //send the switched values to rifft
