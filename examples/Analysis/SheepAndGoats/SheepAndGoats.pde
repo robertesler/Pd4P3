@@ -11,7 +11,7 @@ sound.
 
  Pd pd;
  MyMusic music;
- 
+ final int fftWindowSize = 2048;
  void setup() {
    size(640, 360);
    background(255);
@@ -19,7 +19,8 @@ sound.
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
-   pd.setFFTWindow(2048);
+   //make sure to set the FFT window size in Pd4P3
+   pd.setFFTWindow(fftWindowSize);
    //You can use Processing's data path which is ./data/filename.wav or whatever.  Or see FileNameHelper example
    String path = this.dataPath("");
    //format this for your OS, / for Unix, \\ for Win

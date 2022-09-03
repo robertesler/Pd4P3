@@ -45,34 +45,34 @@ class Analysis extends PdMaster {
    Analysis() {
       this.setFFTWindow(2048); 
 
-      rfft = new rFFT(this.getFFTWindow());
-      rifft = new rIFFT(this.getFFTWindow());
-      fft  = new double[this.getFFTWindow()];
-      hann = new double[this.getFFTWindow()];
-      decision  = new double[this.getFFTWindow()];
-      previous = new double[this.getFFTWindow()];
-      pianoRev = new double[this.getFFTWindow()];
-      abc = new double[this.getFFTWindow()];
-      switchA = new double[this.getFFTWindow()];
-      switchB = new double[this.getFFTWindow()];
-      switchC = new double[this.getFFTWindow()];
-      switchD = new double[this.getFFTWindow()];
-      divideByPrevA = new double[this.getFFTWindow()];
-      divideByPrevB = new double[this.getFFTWindow()];
-      buffer = new ArrayList<Double>(this.getFFTWindow());
-      in = new double[this.getFFTWindow()/overlap];
-      sum = new double[this.getFFTWindow()];
-      ifft = new double[this.getFFTWindow()];
-      ifftWas = new double[this.getFFTWindow()];
-      ampReal = new double[this.getFFTWindow()];
-      ampImag = new double[this.getFFTWindow()];
-      incReal = new double[this.getFFTWindow()];
-      incImag = new double[this.getFFTWindow()];
-      real = new double[this.getFFTWindow()];
-      imag = new double[this.getFFTWindow()];
-      lastReal = new double[this.getFFTWindow()];
-      lastImag = new double[this.getFFTWindow()];
-      createHann(this.getFFTWindow());
+      rfft = new rFFT(fftWindowSize);
+      rifft = new rIFFT(fftWindowSize);
+      fft  = new double[fftWindowSize];
+      hann = new double[fftWindowSize];
+      decision  = new double[fftWindowSize];
+      previous = new double[fftWindowSize];
+      pianoRev = new double[fftWindowSize];
+      abc = new double[fftWindowSize];
+      switchA = new double[fftWindowSize];
+      switchB = new double[fftWindowSize];
+      switchC = new double[fftWindowSize];
+      switchD = new double[fftWindowSize];
+      divideByPrevA = new double[fftWindowSize];
+      divideByPrevB = new double[fftWindowSize];
+      buffer = new ArrayList<Double>(fftWindowSize);
+      in = new double[fftWindowSize/overlap];
+      sum = new double[fftWindowSize];
+      ifft = new double[fftWindowSize];
+      ifftWas = new double[fftWindowSize];
+      ampReal = new double[fftWindowSize];
+      ampImag = new double[fftWindowSize];
+      incReal = new double[fftWindowSize];
+      incImag = new double[fftWindowSize];
+      real = new double[fftWindowSize];
+      imag = new double[fftWindowSize];
+      lastReal = new double[fftWindowSize];
+      lastImag = new double[fftWindowSize];
+      createHann(fftWindowSize);
      
     
    }
@@ -86,7 +86,7 @@ class Analysis extends PdMaster {
   
   double doFFT(double filter) {
     
-    int hop = this.getFFTWindow()/overlap;
+    int hop = fftWindowSize/overlap;
     in[(int)sampleCounter] = filter;
     
     if(sampleCounter == hop-1)
@@ -98,13 +98,13 @@ class Analysis extends PdMaster {
       }
   
       //Now we perform our FFT and multiply by our Hann window
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
        fft = rfft.perform(buffer.get(i)*hann[i]);
       }
       
       //Get the real and imaginary parts
-      for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
+      for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {
           real[i] = fft[i];
           imag[i] = fft[j]; 
@@ -113,7 +113,7 @@ class Analysis extends PdMaster {
  /*****************BEGINNING of Analysis************/
       
       //Step 1: get magnitude of each bin, get previous amplitude of real/imag
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
        {
           double r = real[i];
           double im = imag[i];
@@ -140,7 +140,7 @@ class Analysis extends PdMaster {
       double [] shiftB = lrshift2.perform(decision, -1);
      
       //Choose whether to "punch" in a new amp/inc pair, aka decision
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
        {
            double a = (decision[i] - previous[i]) * 1e+020;
            a = clip(a, 0, 1);
@@ -155,7 +155,7 @@ class Analysis extends PdMaster {
        }
        
       //Switch between pairs of inputs
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
          //switch1
           double r = real[i];
@@ -187,7 +187,7 @@ class Analysis extends PdMaster {
        }
        
        //Let's put Humpty Dumpty back together again.
-       for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
+       for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {
         //send the switched values to rifft
           pianoRev[i] = switchA[i];
@@ -198,15 +198,15 @@ class Analysis extends PdMaster {
       
       
       //resynthesize our FFT block, multiply by our Hann window and normalizer
-       for(int i = 0; i < this.getFFTWindow(); i++)
+       for(int i = 0; i < fftWindowSize; i++)
        {
-        ifft[i] = (rifft.perform(pianoRev)* hann[i]) / (this.getFFTWindow()*4);
+        ifft[i] = (rifft.perform(pianoRev)* hann[i]) / (fftWindowSize*4);
        }
  
       // Now we overlap our windows, and add them together
-      for(int i = 0 ; i < this.getFFTWindow(); i++)
+      for(int i = 0 ; i < fftWindowSize; i++)
       {
-          sum[i] = ifft[i] + (i+hop < this.getFFTWindow() ? ifftWas[i+hop] : 0);
+          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
       }
       
       ifftWas = sum;
@@ -238,7 +238,7 @@ class Analysis extends PdMaster {
    if(buffer.size() == 0)
     {
       double d= 0;
-       for(int i = 0; i < this.getFFTWindow(); i++)
+       for(int i = 0; i < fftWindowSize; i++)
        {
          buffer.add(d);
        }

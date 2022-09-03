@@ -7,7 +7,7 @@ import com.pdplusplus.*;
  double bins[];
  double smooth[];
  int counter = 0;
-
+ final int fftWindowSize = 64;
 
  void setup() {
    size(640, 360);
@@ -16,10 +16,11 @@ import com.pdplusplus.*;
    music = new MyMusic();
    
    pd = Pd.getInstance(music);
-   pd.setFFTWindow(64);
-   bins = new double[pd.getFFTWindow()];
-   smooth = new double[pd.getFFTWindow()];
-   music.createHann(pd.getFFTWindow());
+   //Make sure to set the FFT window size in Pd4P3
+   pd.setFFTWindow(fftWindowSize);
+   bins = new double[fftWindowSize];
+   smooth = new double[fftWindowSize];
+   music.createHann(fftWindowSize);
   
    //start the Pd engine thread
    pd.start();
@@ -33,11 +34,11 @@ import com.pdplusplus.*;
   fill(0, 100, 200);
   noStroke();
   
-  for(int i = 0; i < pd.getFFTWindow(); i++)
+  for(int i = 0; i < fftWindowSize; i++)
   {
     float x, y, w, h;
     smooth[i] += (bins[i] - smooth[i]) * .6;
-    w = width/(pd.getFFTWindow() * .5);
+    w = width/(fftWindowSize * .5);
     x = w * i;
     h = (float)-smooth[i] * height * 6;
     y = height;

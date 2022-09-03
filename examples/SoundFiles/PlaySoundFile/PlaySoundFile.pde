@@ -14,9 +14,7 @@ import com.pdplusplus.*;
    You can use Processing's data path which is relative to the sketch, ./data/filename.wav or whatever. 
    Or see FileNameHelper.pde example for more ideas.  
    */
-   String path = this.dataPath("");
-   //format this for your OS, / for Unix, \\ for Win
-   path = path + "\\Bach.wav";
+   String path = this.dataPath("Bach.wav");
    music.readFile(path);
    
    pd = Pd.getInstance(music);

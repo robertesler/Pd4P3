@@ -22,8 +22,8 @@ The x-axis adjusts the squelch.  See below for more.
    pd = Pd.getInstance(music);
 
   //Change these to your own uncompressed audio file paths
-   String f1 = "C:\\Users\\&&&\\Desktop\\voice.wav";
-   String f2 = "C:\\Users\\&&&\\Desktop\\bell.aiff";
+   String f1 = dataPath("voice.wav");
+   String f2 = dataPath("gong.wav");
    music.openSoundFile(f1, f2);
    //start the Pd engine thread
    pd.start();

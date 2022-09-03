@@ -87,8 +87,9 @@ boolean stop = true;
     The onset is in milliseconds.
   */
   void openSoundFile() {
-       readsf.open("C:\\Users\\&&&\\Desktop\\Test.wav"); 
-     //readsf.open("C:\\Users\\&&&\\Desktop\\Test.wav", 1200); 
+       String path = dataPath("gong.wav");
+       readsf.open(path); 
+     //readsf.open(path, 800); 
   }
   
   //This will terminate the reading of the file.  Call open() before start();

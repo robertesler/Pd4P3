@@ -35,24 +35,24 @@ class Analysis extends PdMaster {
    float[] out = new float[overlap];
    
    Analysis() {
-      this.setFFTWindow(2048); 
+      //this.setFFTWindow(2048); 
 
-      rfft = new rFFT(this.getFFTWindow());
-      rifft = new rIFFT(this.getFFTWindow());
-      fft  = new double[this.getFFTWindow()];
-      hann = new double[this.getFFTWindow()];
-      sheep  = new double[this.getFFTWindow()];
-      tempSheep = new double[this.getFFTWindow()];
-      buffer = new ArrayList<Double>(this.getFFTWindow());
-      in = new double[this.getFFTWindow()/overlap];
-      sum = new double[this.getFFTWindow()];
-      ifft = new double[this.getFFTWindow()];
-      ifftWas = new double[this.getFFTWindow()];
-      tempReal = new double[this.getFFTWindow()];
-      tempImag = new double[this.getFFTWindow()];
-      tempClean = new double[this.getFFTWindow()];
-      tempDirty = new double[this.getFFTWindow()];
-      createHann(this.getFFTWindow());
+      rfft = new rFFT(fftWindowSize);
+      rifft = new rIFFT(fftWindowSize);
+      fft  = new double[fftWindowSize];
+      hann = new double[fftWindowSize];
+      sheep  = new double[fftWindowSize];
+      tempSheep = new double[fftWindowSize];
+      buffer = new ArrayList<Double>(fftWindowSize);
+      in = new double[fftWindowSize/overlap];
+      sum = new double[fftWindowSize];
+      ifft = new double[fftWindowSize];
+      ifftWas = new double[fftWindowSize];
+      tempReal = new double[fftWindowSize];
+      tempImag = new double[fftWindowSize];
+      tempClean = new double[fftWindowSize];
+      tempDirty = new double[fftWindowSize];
+      createHann(fftWindowSize);
       
       for(int i = 0; i < 8; i++)
       {
@@ -70,7 +70,7 @@ class Analysis extends PdMaster {
   
   double doFFT(double filter) {
     
-    int hop = this.getFFTWindow()/overlap;
+    int hop = fftWindowSize/overlap;
     in[(int)sampleCounter] = filter;
     
     if(sampleCounter == hop-1)
@@ -82,7 +82,7 @@ class Analysis extends PdMaster {
       }
   
       //Now we perform our FFTs and multiply by our Hann window
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
        fft = rfft.perform(buffer.get(i)*hann[i]);
       }
@@ -91,7 +91,7 @@ class Analysis extends PdMaster {
     Our pitch/unpitched separation, get the magnitudes of the real and imag components
     ************/
     
-      for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
+      for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {
           double real = fft[i];
           double imag = fft[j];
@@ -108,7 +108,7 @@ class Analysis extends PdMaster {
       double[] i1 = lrshift[2].perform(tempImag, 1); 
       double[] i2 = lrshift[3].perform(tempImag, -1);
    
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
          double a = r1[i] + tempReal[i];
          double b = r2[i] + tempReal[i];
@@ -127,7 +127,7 @@ class Analysis extends PdMaster {
       
       
       //Let's separate clean and dirty signals
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
           double cl = getClean();
           double a = (sheep[i] - ((cl*cl)/1250) ) * 1e+20;
@@ -135,7 +135,7 @@ class Analysis extends PdMaster {
       }
       
       //Let's separate clean and dirty signals
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
           double d = getDirty();
           double a = (sheep[i] - ((d*d)/1250) ) * 1e+20;
@@ -147,7 +147,7 @@ class Analysis extends PdMaster {
       double[] d1 = lrshift[6].perform(tempDirty, 1);
       double[] d2 = lrshift[7].perform(tempDirty, -1);
       
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
       {
           double a = c1[i] * tempClean[i];
           double b = c2[i] * a;
@@ -155,13 +155,13 @@ class Analysis extends PdMaster {
          
           double c = d1[i] * tempDirty[i];
           double d = d2[i] * c;
-          sheep[i] = (b + d) / this.getFFTWindow();
+          sheep[i] = (b + d) / fftWindowSize;
       }
       
        //Zero DC bin
       sheep[0] = 0;
      
-      for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
+      for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {  
          tempSheep[i] = sheep[i] * fft[i];
          tempSheep[j] = sheep[i] * fft[j];
@@ -171,15 +171,15 @@ class Analysis extends PdMaster {
       
       
       //resynthesize our FFT block, multiply by our Hann window again
-       for(int i = 0; i < this.getFFTWindow(); i++)
+       for(int i = 0; i < fftWindowSize; i++)
        {
         ifft[i] = rifft.perform(tempSheep)* hann[i];
        }
  
       // Now we overlap our windows, and add them together
-      for(int i = 0 ; i < this.getFFTWindow(); i++)
+      for(int i = 0 ; i < fftWindowSize; i++)
       {
-          sum[i] = ifft[i] + (i+hop < this.getFFTWindow() ? ifftWas[i+hop] : 0);
+          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
       }
       
       ifftWas = sum;
@@ -219,7 +219,7 @@ class Analysis extends PdMaster {
    if(buffer.size() == 0)
     {
       double d= 0;
-       for(int i = 0; i < this.getFFTWindow(); i++)
+       for(int i = 0; i < fftWindowSize; i++)
        {
          buffer.add(d);
        }

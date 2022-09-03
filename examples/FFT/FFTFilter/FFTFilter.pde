@@ -13,7 +13,7 @@ again for clean output.
  double bins[];
  double smooth[];
  int counter = 0;
-
+ final int fftWindowSize = 512;
 
  void setup() {
    size(640, 360);
@@ -22,10 +22,11 @@ again for clean output.
    music = new MyMusic();
    
    pd = Pd.getInstance(music);
-   pd.setFFTWindow(512);
+   //make sure to set the FFT window size in Pd4P3
+   pd.setFFTWindow(fftWindowSize);
    music.createHann();
-   bins = new double[pd.getFFTWindow()];
-   smooth = new double[pd.getFFTWindow()];
+   bins = new double[fftWindowSize];
+   smooth = new double[fftWindowSize];
    //start the Pd engine thread
    pd.start();
   
@@ -35,18 +36,18 @@ again for clean output.
  //We will draw our frequency bin data to the screen
  void draw() {
  background(210, 210, 210);  
- float f = map(mouseX, 0, width, 0, pd.getFFTWindow()/2);
+ float f = map(mouseX, 0, width, 0, fftWindowSize/2);
  music.setFilter((int)f);
  bins = music.getBins();
  
  fill(0, 100, 200);
   noStroke();
   
-  for(int i = 0; i < pd.getFFTWindow(); i++)
+  for(int i = 0; i < fftWindowSize; i++)
   {
     float x, y, w, h;
     smooth[i] += (bins[i] - smooth[i]) * .6;
-    w = width/(pd.getFFTWindow()*.5);
+    w = width/(fftWindowSize*.5);
     x = w * i;
     h = (float)-smooth[i] * height * 6;
     y = height;
@@ -73,21 +74,21 @@ again for clean output.
  */
  class MyMusic extends PdAlgorithm {
    
-   rFFT rfft = new rFFT(this.getFFTWindow());
-   rIFFT rifft = new rIFFT(this.getFFTWindow());
+   rFFT rfft = new rFFT(fftWindowSize);
+   rIFFT rifft = new rIFFT(fftWindowSize);
    Oscillator osc = new Oscillator();
    Noise noise = new Noise();
    boolean writeAudio = false;//set this true if you want to make a recording
    int overlap = 4;
-   double[] fft  = new double[this.getFFTWindow()];
-   double[] hann = new double[this.getFFTWindow()];
-   ArrayList<Double> buffer = new ArrayList<Double>(this.getFFTWindow());
-   double[] in = new double[this.getFFTWindow()/overlap];
-   double[] sum = new double[this.getFFTWindow()];
-   double[] ifft = new double[this.getFFTWindow()];
-   double[] ifftWas = new double[this.getFFTWindow()];
-   double[] filter = new double[this.getFFTWindow()/2];
-   double[] bins = new double[this.getFFTWindow()];
+   double[] fft  = new double[fftWindowSize];
+   double[] hann = new double[fftWindowSize];
+   ArrayList<Double> buffer = new ArrayList<Double>(fftWindowSize);
+   double[] in = new double[fftWindowSize/overlap];
+   double[] sum = new double[fftWindowSize];
+   double[] ifft = new double[fftWindowSize];
+   double[] ifftWas = new double[fftWindowSize];
+   double[] filter = new double[fftWindowSize/2];
+   double[] bins = new double[fftWindowSize];
    long sampleCounter = 0;
    
    //Generate white noise, run it through our filter, mono output
@@ -106,7 +107,7 @@ again for clean output.
    
   double doFFT(double input) {
     
-    int hop = this.getFFTWindow()/overlap;
+    int hop = fftWindowSize/overlap;
     in[(int)sampleCounter] = input;
  
     /* now for every overlap, or hop size, add our input to the end
@@ -124,7 +125,7 @@ again for clean output.
       }
       
       //Now we perform our FFT and multiply by our Hann window
-      for(int i = 0; i < this.getFFTWindow(); i++)
+      for(int i = 0; i < fftWindowSize; i++)
         fft = rfft.perform(buffer.get(i)*hann[i]);
       
       
@@ -134,7 +135,7 @@ again for clean output.
       the back half is imaginary.
       In this example we are just applying a very broad linear band filter.
       */
-      for(int i = 0, j = this.getFFTWindow()-1; i < this.getFFTWindow()/2; i++, j--)
+      for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {
            double gain = filter[i];
            fft[i] *= gain;//real
@@ -149,7 +150,7 @@ again for clean output.
       }
       
       //resynthesize our FFT block, multiply by our Hann window again
-       for(int i = 0; i < this.getFFTWindow(); i++)
+       for(int i = 0; i < fftWindowSize; i++)
         ifft[i] = rifft.perform(fft)* hann[i];
  
       /* Now we overlap our windows, and add them together
@@ -158,8 +159,8 @@ again for clean output.
          just zeros at the end that will carry over to the next
          block.  Genius!
       */
-      for(int i = 0 ; i < this.getFFTWindow(); i++)
-          sum[i] = ifft[i] + (i+hop < this.getFFTWindow() ? ifftWas[i+hop] : 0);
+      for(int i = 0 ; i < fftWindowSize; i++)
+          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
       
       ifftWas = sum;
       
@@ -167,7 +168,7 @@ again for clean output.
     }
     
     sampleCounter++;
-   return  sum[(int)sampleCounter]/(this.getFFTWindow()*1.5);//divide by 3N/2
+   return  sum[(int)sampleCounter]/(fftWindowSize*1.5);//divide by 3N/2
   
   }
   
@@ -212,13 +213,13 @@ again for clean output.
     
      createFilter(90);
      double winHz = 0;
-     int windowSize = this.getFFTWindow();
+     int windowSize = fftWindowSize;
     
     //clear our buffer first thing, it only does this once
      if(buffer.size() == 0)
      {
         double d= 0;
-        for(int i = 0; i < this.getFFTWindow(); i++)
+        for(int i = 0; i < fftWindowSize; i++)
           buffer.add(d);
      }
      

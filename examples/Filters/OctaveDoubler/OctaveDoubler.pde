@@ -17,7 +17,8 @@ import com.pdplusplus.*;
    music = new MyMusic();
    pd = Pd.getInstance(music);
    music.setSigmund();
-   music.openSoundFile("C:\\Users\\&&&\\Desktop\\voice.wav");
+   String path = dataPath("voice.wav");
+   music.openSoundFile(path);
    //start the Pd engine thread
    pd.start();
    

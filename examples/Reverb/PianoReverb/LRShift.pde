@@ -4,19 +4,19 @@ class LRShift extends PdMaster {
    double[] tmp;
    
    LRShift() {
-     tmp = new double[this.getFFTWindow()];  
+     tmp = new double[fftWindowSize];  
    }
   
    double[] perform(double[] block, int value) {
      
      //evaluate shift is not greater than window size (+/-)
-     if(value > this.getFFTWindow())
+     if(value > fftWindowSize)
      {
-        value = this.getFFTWindow();
+        value = fftWindowSize;
      }
-     if(value < this.getFFTWindow()*-1)
+     if(value < fftWindowSize*-1)
      {
-       value = this.getFFTWindow()*-1;
+       value = fftWindowSize*-1;
      }
      
      if(value > 0)
