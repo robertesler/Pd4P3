@@ -22,9 +22,7 @@ sound.
    //make sure to set the FFT window size in Pd4P3
    pd.setFFTWindow(fftWindowSize);
    //You can use Processing's data path which is ./data/filename.wav or whatever.  Or see FileNameHelper example
-   String path = this.dataPath("");
-   //format this for your OS, / for Unix, \\ for Win
-   path = path + "\\voice.wav";
+   String path = this.dataPath("voice.wav");
    music.setSoundFile(path);
    //start the Pd engine thread
    pd.start();
