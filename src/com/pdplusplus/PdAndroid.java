@@ -13,11 +13,6 @@ import android.media.AudioTrack;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
-import java.security.Permission;
-
 
 public class PdAndroid extends PdMaster implements Runnable {
 
@@ -44,10 +39,6 @@ public class PdAndroid extends PdMaster implements Runnable {
 
     AudioTrack audioTrack;
     AudioRecord audioRecord;
-
-    static {
-        System.loadLibrary("pdplusplusandroid");
-    }
 
     /*You need to pass PdAlgorithm to this method*/
     public PdAndroid(PdAlgorithm pda){

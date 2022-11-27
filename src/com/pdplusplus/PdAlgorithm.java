@@ -15,8 +15,8 @@ public class PdAlgorithm extends PdMaster {
 		/*
 		 * This is the pd++ lib
 		 * */
-		System.loadLibrary("pdplusplusTest");
-		System.out.println("Loading pdplusplus.dll");
+		System.loadLibrary("pdplusplus");
+		System.out.println("Loading pd++ library");
 	}
 	
 	//This is our output, you could create more channels if you like, see the writeData method and constructor in Pd.java

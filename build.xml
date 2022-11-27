@@ -14,9 +14,21 @@
 		<delete dir="bin" />	
 	</target>
 
+	<target name="checkandroid">
+		<available file="library/android.jar" property="hasandroid" />
+	</target>
+
+	<target name="android-deps" depends="checkandroid" unless="hasandroid" description="Download an android.jar">
+		<!-- The Android SDK 26 is required to build the library.  If you don't want to ever use Android then
+		 remove the file PdAndroid.java from the distribution and delete this section.  In the 'src' attribute
+		 put your location to the android.jar  -->
+
+		<get src="https://github.com/marianadangelo/android-platforms/raw/master/android-26/android.jar" dest="library/" usetimestamp="true" />
+	</target>
 
 	<target name="compile" description="Compile sources">
 		<mkdir dir="bin" />
+		<antcall target="android-deps" />
 		<javac source="1.8" target="1.8" srcdir="src" destdir="bin" encoding="UTF-8" includeAntRuntime="false" nowarn="true">
 			<classpath refid="classpath" />
 		</javac>
@@ -43,7 +55,7 @@
 				<exclude name="_config.yml" />
 				<exclude name="build.xml" />
 				<exclude name="bin/**" />
-				
+				<exclude name="library/android.jar" />
 				
 			</zipfileset>
 		</zip>
