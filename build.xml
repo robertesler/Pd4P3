@@ -10,7 +10,8 @@
 	</path>
 
 	<target name="clean" description="Clean the build directories">
-		<delete file="library/Pd4P3.jar" />		
+		<delete file="library/Pd4P3.jar" />
+		<delete file="library/android.jar" />
 		<delete dir="bin" />	
 	</target>
 

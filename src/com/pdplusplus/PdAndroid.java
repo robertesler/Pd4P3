@@ -158,7 +158,7 @@ public class PdAndroid extends PdMaster implements Runnable {
         }
         catch (Exception e)
         {
-            Log.d("PD OBOE: %s", e.toString());
+            Log.d("PD ANDROID: ", e.toString());
         }
     }
 
