@@ -80,6 +80,26 @@ void setup() {
     {
       println("Permission DENIED!");
       requestRecordPermission();
+      String path = "";
+      File audioFile = null;
+      println("permission is granted!");
+      try {
+              Context context = getContext();  
+              AssetManager assets = context.getAssets();
+              InputStream in = assets.open("Bach.wav");
+              audioFile = extractAsset(in, "Bach.wav", context.getCacheDir());
+              if(!audioFile.exists())
+              {
+                  throw new FileNotFoundException(audioFile.getPath());
+              }
+          } catch (IOException e) {
+              e.printStackTrace();
+              exit();
+          }
+      
+      path = audioFile.getAbsolutePath();
+      println(path);
+      music.readFile(path);
       pd.setInputPermissions(isRecordPermissionGranted());
       pd.start();
       new Thread(pd).start();
