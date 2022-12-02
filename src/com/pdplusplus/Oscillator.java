@@ -65,6 +65,7 @@ public class Oscillator extends PdMaster {
 		System.out.printf("Total time was: %, d ns%n", time);
 		Oscillator.free(osc);
 		Oscillator.free(osc2);
+		Oscillator.free(osc3);
 	}
 	
 	
