@@ -28,7 +28,7 @@ MIDI Template
    music = new MyMusic();
    pd = new PdAndroid(music);
    midi = new MIDI();
-   midi.startMIDI(this.getContext(), midi);
+   midi.start(this.getContext(), midi);
 
    
   //You must ask for microphone permissions before starting
