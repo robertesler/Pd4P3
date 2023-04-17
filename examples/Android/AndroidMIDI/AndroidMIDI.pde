@@ -14,8 +14,6 @@ MIDI Template
 //declare Pd Android to run in Android mode
  PdAndroid pd;
  MyMusic music;
- int note = 60;
- int velocity = 100;
  MIDI midi;
  
  void setup() {
@@ -57,9 +55,11 @@ MIDI Template
  void draw() {
   
     background(255);
-    String s = "Note: " + String.valueOf(note) + " | " + String.valueOf(velocity);
+    String s1 = midi.midiString;
+    String s2 = midi.midiCCString;
     textSize(128);
-    text(s, 40, 120);
+    text(s1, 40, 120);
+    text(s2, 40, 240);
  }
  
   

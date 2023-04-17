@@ -5,6 +5,9 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
     
 class MIDI extends MidiReceiver {
    
@@ -21,19 +24,22 @@ class MIDI extends MidiReceiver {
    private int mProgram;
    private int mMidiByteCount;
    
-    private float[] mBuffer = null;
+   private float[] mBuffer = null;
    
-    int max = 8;
-    int [] notes = new int[max];
-    int [] vels = new int[max];
-    int [] voices = new int[max];
+   int max = 8;
+   int [] notes = new int[max];    
+   int [] vels = new int[max];
+   int [] voices = new int[max];
     
-    int controlChange = 0;
+   int controlChange = 0;
    
-    double numOfVoices = 0;
+   double numOfVoices = 0;
    
-    Poly poly = new Poly(max);
+   Poly poly = new Poly(max);
    PolyBundle [] pb = new PolyBundle[max];
+   
+   public String midiString = "N/A";
+   public String midiCCString = "N/A";
    
    public MIDI() {
        receiver = new MyReceiver();
@@ -48,6 +54,7 @@ class MIDI extends MidiReceiver {
         }
         
     }
+
    
    /* This will be called when MIDI data arrives. */
     
@@ -107,14 +114,36 @@ class MIDI extends MidiReceiver {
  public void start(Context context, MidiReceiver midi) {
         
         stop();
-        mEventScheduler = new MidiEventScheduler();
         
+        
+        //Check if this device has MIDI first
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            mEventScheduler = new MidiEventScheduler();
             MidiManager m = (MidiManager) context.getSystemService(Context.MIDI_SERVICE);
-            MidiDeviceInfo[] infos = m.getDevices();
             int myDevice = 0;
-
-            for (int i = 0; i < infos.length; i++) {
+            MidiDeviceInfo[] infos = m.getDevices();
+            /*
+            Register callbacks for when a MIDI device is added or removed.
+            This way of handling callbacks in deprecated, it still works
+            but there are no good examples of how to get the new way of
+            handling device callbacks from Android yet.  Ugh!
+            */     
+           
+            m.registerDeviceCallback( new MidiManager.DeviceCallback() {
+               public void onDeviceAdded( MidiDeviceInfo info ) {
+                         println("new device added: " + info.toString());
+                         openNewMidiDevice(m, info, midi);
+               }
+               public void onDeviceRemoved( MidiDeviceInfo info ) {
+                         println("device removed: " + info.toString());
+               }
+             }, new Handler(Looper.getMainLooper()));
+             
+            //If there are no MIDI devices then move on. 
+            if(infos.length > 0)
+            {
+              mEventScheduler = new MidiEventScheduler();
+               for (int i = 0; i < infos.length; i++) {
                 MidiDeviceInfo info = infos[i];
 
                 Bundle properties = info.getProperties();
@@ -148,11 +177,67 @@ class MIDI extends MidiReceiver {
 
                     }
                 }
-            }, new Handler(Looper.getMainLooper()) );
+              }, new Handler(Looper.getMainLooper()) );
+            }
+            else
+            {
+               println("No MIDI Devices were found!"); 
+            }
         }
 
     }//end startMIDI
  
+ 
+ private void openNewMidiDevice(MidiManager m, MidiDeviceInfo info, MidiReceiver midi) {
+         
+           MidiDeviceInfo[] infos = m.getDevices();
+           int myDevice = 0;
+           
+           //Get our new device info first
+           Bundle newProperties = info.getProperties();
+           String newManufacturer = newProperties
+                        .getString(MidiDeviceInfo.PROPERTY_MANUFACTURER);
+           String newProduct = newProperties
+                        .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
+           String newName = newProperties
+                        .getString(MidiDeviceInfo.PROPERTY_NAME);
+                        
+           if(infos.length > 0)
+           {
+             for (int i = 0; i < infos.length; i++) {
+                Bundle properties = infos[i].getProperties();
+                String manufacturer = properties
+                        .getString(MidiDeviceInfo.PROPERTY_MANUFACTURER);
+                String product = properties
+                        .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
+                String name = properties
+                        .getString(MidiDeviceInfo.PROPERTY_NAME);
+                //Check if this device matches our new device, get the number       
+                if(manufacturer.equals(newManufacturer) && product.equals(newProduct) && name.equals(newName))
+                {
+                    myDevice = i;
+                    println("MIDI", "ID: " + i + " | " + " Output Ports: " + infos[i].getOutputPortCount() + " Manufacturer: " + manufacturer
+                        + " Product: " + product + " Name: " + name);
+
+                }
+             }
+             
+            int finalDevice = myDevice;
+            m.openDevice(info, new MidiManager.OnDeviceOpenedListener() {
+                @Override
+                public void onDeviceOpened(MidiDevice device) {
+                    if (device == null) {
+                        println("MIDI", "could not open device: " + device);
+                    } else {
+                        println("MIDI", "Opening: " + device.toString());
+                        MidiOutputPort outputPort = device.openOutputPort(finalDevice);
+                        outputPort.connect(midi);
+                    }
+                }
+              }, new Handler(Looper.getMainLooper()) );  
+       }
+   
+ }
  
     public void processMidiEvents() throws IOException {
         long now = System.nanoTime(); // TODO use audio presentation time
@@ -167,9 +252,8 @@ class MIDI extends MidiReceiver {
     
  
 
-    /*
-       Call this when your sketch is stopped or closed.
-     */
+    
+    //Call this when your sketch is stopped or closed.
     public void stop() {
       mEventScheduler = null;      
     }
@@ -183,7 +267,9 @@ class MIDI extends MidiReceiver {
     }
     
     public void noteOn(int channel, int noteIndex, int vel) {
-       println("MIDI", channel + " | " + noteIndex + " | " + vel);
+              
+                midiString = "MIDI " + channel + " | " + noteIndex + " | " + vel;  
+                println(midiString);
        
                 note = noteIndex;
                 velocity = vel;
@@ -206,7 +292,8 @@ class MIDI extends MidiReceiver {
     }
     
     public void controlChange(int channel, int cc, int value) {
-       println("MIDI", channel + " | " + cc + " | " + value);
+       midiCCString = "MIDI " + channel + " | " + cc + " | " + value;
+       println(midiCCString);
       if(cc == 1)
         controlChange = value;
     }
