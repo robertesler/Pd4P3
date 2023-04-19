@@ -57,9 +57,11 @@ MIDI Template
     background(255);
     String s1 = midi.midiString;
     String s2 = midi.midiCCString;
+    String s3 = midi.midiPitchBendString;
     textSize(128);
     text(s1, 40, 120);
     text(s2, 40, 240);
+    text(s3, 40, 360);
  }
  
   
