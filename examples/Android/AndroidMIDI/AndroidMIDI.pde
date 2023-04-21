@@ -58,10 +58,16 @@ MIDI Template
     String s1 = midi.midiString;
     String s2 = midi.midiCCString;
     String s3 = midi.midiPitchBendString;
+    String [] d = midi.myDevices;
     textSize(128);
     text(s1, 40, 120);
     text(s2, 40, 240);
     text(s3, 40, 360);
+    textSize(64);
+    for(int i = 0; i < d.length; i++)
+    {
+       text(d[i], 40, height - (i+1)*120); 
+    }
  }
  
   

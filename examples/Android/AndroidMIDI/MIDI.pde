@@ -41,6 +41,7 @@ class MIDI extends MidiReceiver {
    public String midiString = "N/A";
    public String midiCCString = "N/A";
    public String midiPitchBendString = "N/A";
+   public String [] myDevices;
    
    public MIDI() {
        receiver = new MyReceiver();
@@ -140,6 +141,7 @@ class MIDI extends MidiReceiver {
                }
              }, new Handler(Looper.getMainLooper()));
              
+             myDevices = new String[infos.length];
             //If there are no MIDI devices then move on. 
             if(infos.length > 0)
             {
@@ -154,7 +156,7 @@ class MIDI extends MidiReceiver {
                         .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
                 String name = properties
                         .getString(MidiDeviceInfo.PROPERTY_NAME);
-
+                 myDevices[i] = i + ": " + name;
                 println("MIDI", "ID: " + i + " | " + " Output Ports: " + info.getOutputPortCount() + " Manufacturer: " + manufacturer
                         + " Product: " + product + " Name: " + name);
 
@@ -202,7 +204,7 @@ class MIDI extends MidiReceiver {
                         .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
            String newName = newProperties
                         .getString(MidiDeviceInfo.PROPERTY_NAME);
-                        
+           myDevices = new String[infos.length];             
            if(infos.length > 0)
            {
              for (int i = 0; i < infos.length; i++) {
@@ -213,6 +215,7 @@ class MIDI extends MidiReceiver {
                         .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
                 String name = properties
                         .getString(MidiDeviceInfo.PROPERTY_NAME);
+                 myDevices[i] = i + ": " +name;
                 //Check if this device matches our new device, get the number       
                 if(manufacturer.equals(newManufacturer) && product.equals(newProduct) && name.equals(newName))
                 {
