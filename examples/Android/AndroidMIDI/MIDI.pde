@@ -263,7 +263,7 @@ class MIDI extends MidiReceiver {
     }
     
    public void noteOff(int channel, int noteIndex, int velocity) {
-       
+       noteOn(channel, noteIndex, velocity);
     }
 
     public void allNotesOff() {
