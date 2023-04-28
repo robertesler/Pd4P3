@@ -1,3 +1,7 @@
+/*
+MIDI Template, connects to an external MIDI device 
+and generates a sawtooth synth.
+*/
 import com.pdplusplus.*;
 import android.content.pm.PackageManager;
 import android.content.Context;
@@ -7,9 +11,6 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
-/*
-MIDI Template
-*/
 
 //declare Pd Android to run in Android mode
  PdAndroid pd;
@@ -27,10 +28,11 @@ MIDI Template
   //We allocate MyMusic first because PdAndroid requires an instance of PdAlgorithm
    music = new MyMusic();
    pd = new PdAndroid(music);
+   //Our MIDI class
    midi = new MIDI();
-   midi.list(this.getContext());
-   midi.start(this.getContext(), midi);
-   //midi.start(this.getContext(), midi, 0, 0);
+   midi.list(this.getContext()); // list our MIDI devices
+   midi.start(this.getContext(), midi); // start a device
+   //midi.start(this.getContext(), midi, 0, 0); // start a specific MIDI device and open port 0
   
   //You must ask for microphone permissions before starting
    if(isRecordPermissionGranted())
@@ -156,7 +158,6 @@ class MyMusic extends PdAlgorithm {
       
    }
     
-    
    //All DSP code goes here, the in1, in2 variables are from the microphone input.
    void runAlgorithm(double in1, double in2) {
      
@@ -220,8 +221,3 @@ class MyMusic extends PdAlgorithm {
    }
    
  }
- 
- 
- /*
-  
- */

@@ -1,3 +1,17 @@
+/*
+This handles our MIDI data stream. 
+Some of this code including EventScheduler, MidiConstants, MidiEventSchedule and MidiFramer
+are taken from Phil Burk's android-midi repository under the same license.
+
+This class will act as a receiver of the MIDI data stream.
+Use one of the start() methods to open your device.
+Use list() to see what devices or services are active on your system.
+
+See noteOn() for how to use the Poly class.  
+See pitchBend(), controlChange, aftertouch() for how the MIDI data gets parsed.
+
+*/
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.midi.*;
@@ -7,7 +21,6 @@ import android.os.Handler;
 import android.os.Looper;
 import java.util.Set;
 import java.util.concurrent.Executor;
-
     
 class MIDI extends MidiReceiver {
    
@@ -48,16 +61,12 @@ class MIDI extends MidiReceiver {
         for(int i = 0; i < max; i++)
         {
            pb[i] = new PolyBundle();
-           notes[i] = 0;
-           vels[i] = 0;
-           voices[i] = 0;
         }
         
     }
 
    
    /* This will be called when MIDI data arrives. */
-    
     @Override
     public void onSend(byte[] data, int offset, int count, long timestamp)
             throws IOException {
@@ -73,7 +82,9 @@ class MIDI extends MidiReceiver {
         mMidiByteCount += count;
     }
     
-   
+   /*
+     This will read our MIDI messages and send them to the appropriate method.
+   */
    class MyReceiver extends MidiReceiver {
      
        public MyReceiver() {
@@ -261,8 +272,6 @@ class MIDI extends MidiReceiver {
                         println("MIDI", "Opening: " + device.toString());
                         MidiOutputPort outputPort = device.openOutputPort(portNumber);
                         outputPort.connect(midi);
-                        
-
                     }
                 }
               }, new Handler(Looper.getMainLooper()) );
