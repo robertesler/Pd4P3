@@ -15,6 +15,8 @@ MIDI Template
  PdAndroid pd;
  MyMusic music;
  MIDI midi;
+ boolean touchIsOn = false;
+ int midiPort = -1;
  
  void setup() {
   fullScreen();
@@ -26,9 +28,10 @@ MIDI Template
    music = new MyMusic();
    pd = new PdAndroid(music);
    midi = new MIDI();
+   midi.list(this.getContext());
    midi.start(this.getContext(), midi);
-
-   
+   //midi.start(this.getContext(), midi, 0, 0);
+  
   //You must ask for microphone permissions before starting
    if(isRecordPermissionGranted())
     {
@@ -58,18 +61,52 @@ MIDI Template
     String s1 = midi.midiString;
     String s2 = midi.midiCCString;
     String s3 = midi.midiPitchBendString;
+    String s4 = midi.midiAftertouchString;
     String [] d = midi.myDevices;
-    textSize(128);
+    textSize(100);
     text(s1, 40, 120);
     text(s2, 40, 240);
     text(s3, 40, 360);
+    text(s4, 40, 480);
     textSize(64);
     for(int i = 0; i < d.length; i++)
     {
        text(d[i], 40, height - (i+1)*120); 
     }
+    
+    /*
+    //testing this for future use
+    if(touchIsOn)
+    {
+      for(int i = 0; i < touches.length; i++)
+      {
+        if(touches[i].x < width/2 && touches[i].y < height && touches[i].y > height - 120)
+        {
+          midiPort = 0;
+          println("Touch me! " + 0);
+        }
+        if(touches[i].x < width/2 && touches[i].y < height-120 && touches[i].y > height - 250)
+        {
+          midiPort = 1;
+          println("Touch me! " + 1);
+        }
+      }
+    }
+    */
+    
  }
  
+ void touchStarted() {
+   touchIsOn = true;
+ }
+ 
+ void touchEnded() {
+   touchIsOn = false;
+   if(midiPort != -1)
+   {
+     //midi.start(this.getContext(), midi, midiPort, 0);
+   }
+ }
   
  //We have to deallocate memory in the Pd4P3 native lib before we leave. 
  public void onDestroy() {
@@ -87,10 +124,7 @@ MIDI Template
 
  private void requestRecordPermission(){
         requestPermission("android.permission.RECORD_AUDIO"); 
-    }
- 
- 
-    
+    } 
 
   /*
   Everything else in Android mode is exactly the same as in Java mode.
@@ -108,6 +142,13 @@ class MyMusic extends PdAlgorithm {
    double out = 0;
    int frameCounter = 0;
    
+   int [] notes = new int[max];    
+   int [] vels = new int[max];
+   int [] voices = new int[max];
+    
+   int controlChange = 0;
+   double numOfVoices = 0;
+   
     MyMusic() {
      
      for(int i = 0; i < max; i++)
@@ -120,22 +161,26 @@ class MyMusic extends PdAlgorithm {
    void runAlgorithm(double in1, double in2) {
      
      double out = 0;
-     double v = midi.numOfVoices;
+     double v = midi.getNumOfVoices();
      double mix = .3;
-     double cf = (double)midi.controlChange/127.0f;
+     double cf = (double)midi.getControlChange()/127.0f;
      cf *= 20;
+     double at = (double)midi.getAftertouch()/127.0f; //TODO: use this for something.  
+    
      double vibrato;
+     notes = midi.getNotes();
+     vels = midi.getVelocities();
+     voices = midi.getVoices();
      
      //Add simple vibrato using the modulation wheel
      if(cf > 0)
        vibrato = (osc.perform(cf) * .6) + .6;
      else
        vibrato = 1;
-     
-     //cheap and dirty way to mix our signals
-     if(v > max-3)
+    
+     //A cheap and dirty way to mix our signals
+     if(v > max-2)
          mix = .2;
-     
      
      //This will check for new MIDI events every 64 samples. You could also use pd.getBlockSize()
      if(frameCounter > 64)
@@ -155,13 +200,13 @@ class MyMusic extends PdAlgorithm {
      //Sum our synths 
      for(int i = 0; i < max; i++)
      {
-        double f = pd.mtof(midi.notes[i]);
-        double amp = (double)midi.vels[i]/127.0f;
+        double f = pd.mtof(notes[i]);
+        double amp = (double)vels[i]/127.0f;
         f *= midi.getPitchBend();
-        out += synths[i].perform(f, amp*mix, midi.voices[i] == -1?false:true);
+        out += synths[i].perform(f, amp*mix, voices[i] == -1?false:true);
      }
-   
-     outputL = outputR = out * vibrato;
+    
+     outputL = outputR =  out * vibrato ;
     
    }
  
