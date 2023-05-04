@@ -24,8 +24,10 @@ MyMusic music = new MyMusic();
 PdAndroid pd = new PdAndroid(music);
 MIDI midi = new MIDI();
 
+
 void setup() {
   //size(640, 360);
+  midi.start( this.getContext() );
   fullScreen();
   orientation(LANDSCAPE);
   //noStroke();
@@ -172,6 +174,7 @@ void touchEnded() {
             whiteKeys[i].touched = false;
             whiteKeys[i].col = 255; 
             whiteKeys[i].id = -1;
+            sendNote(whiteKeys[i].note, 0);
         }
      }
      
@@ -182,6 +185,7 @@ void touchEnded() {
             blackKeys[i].touched = false;
             blackKeys[i].col = 0; 
             blackKeys[i].id = -1;
+            sendNote(blackKeys[i].note, 0);
         }
      }
    }
