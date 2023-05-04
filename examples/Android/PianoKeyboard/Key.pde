@@ -5,6 +5,7 @@ class Key {
   float X;
   float Y;
   String name;
+  int note;
   int col;
   int id;
   boolean touched = false;
