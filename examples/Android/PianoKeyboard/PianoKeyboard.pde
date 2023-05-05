@@ -15,8 +15,8 @@ float keyWidth;
 float keyHeight;
 float blackKeyHeight;
 float blackKeyWidth;
-int pbTouch = 200;
-int vTouch = 245;
+color pbTouch = color(150, 188, 222);
+color vTouch = color(84, 144, 196);
 Key [] whiteKeys = new Key[numOfWhiteKeys];
 Key [] blackKeys = new Key[numOfBlackKeys];
 
@@ -201,20 +201,20 @@ void touchEnded() {
 }
 
 void draw() {
-  background(100);
-  fill(255);
+  background(179, 214, 245);
+  //fill(255);
   
   //draw our pitch bend rectangle
   fill(pbTouch);
-  rect(20, 10, width*.95, (height/4)*.85, 10);
-  textSize(128);
+  rect(20, 10, width-20, (height/4)*.85, 10);
+  textSize(90);
   fill(0);
   String s = "Pitch Bend";
   text(s, width/3, height/7.5);
   
   //draw our vibrato rectangle
   fill(vTouch);
-  rect(20, height/4, width*.95, (height/4)*.85, 10);
+  rect(20, height/4, width-20, (height/4)*.85, 10);
   fill(0);
   String s1 = "Vibrato";
   text(s1, width/3, height/2.5);
@@ -223,26 +223,35 @@ void draw() {
    for(int t = 0; t < touches.length; t++)
    {
         //pitch bend
-        if(touches[t].y > 0 && touches[t].y < height/7.5)
+        if(touches[t].y > 0 && touches[t].y < height/4)
         {
-          float pitchBend = map(touches[t].x, 0, width, 0, 2);
+          float pitchBend = map(touches[t].x, 10, width*.95, 0.8, 1.2);
           midi.setPitchBend(pitchBend);
-          pbTouch = 180;
+          pbTouch = color(58, 147, 224);
+          float d = (100 + 100 * touches[t].area) * displayDensity;
+          fill(0, 255 * touches[t].pressure);
+          ellipse(touches[t].x, touches[t].y, d, d);
         }
         else
         {
-          pbTouch = 200;
+          midi.setPitchBend(1);
+          pbTouch = color(150, 188, 222);
         }
         
-        if(touches[t].y > height/7.5 && touches[t].y < height/2.5)
+        if(touches[t].y > height/4 && touches[t].y < height/2)
         {
-          float vibrato = map(touches[t].x, 0, width, 0, 127);
+          float vibrato = map(touches[t].x, 10, width, 0, 127);
           midi.setVibrato((int)vibrato);
-          vTouch = 255;
+          vTouch = color(23, 113, 191);
+          float d = (100 + 100 * touches[t].area) * displayDensity;
+          fill(0, 255 * touches[t].pressure);
+          ellipse(touches[t].x, touches[t].y, d, d);
         }
         else
-          vTouch = 245;
-        
+        {
+          //midi.setVibrato(0);
+          vTouch = color(84, 144, 196);
+        }
         
         if(touches[t].y > height/2)
          {
