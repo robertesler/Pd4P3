@@ -24,17 +24,17 @@ MyMusic music = new MyMusic();
 PdAndroid pd = new PdAndroid(music);
 MIDI midi = new MIDI();
 
-
 void setup() {
   //size(640, 360);
-  midi.start( this.getContext() );
+  midi.start( this.getContext(), 0 );
   fullScreen();
   orientation(LANDSCAPE);
   //noStroke();
   fill(0); 
+
+  pd.start();
+  new Thread(pd).start();
   
-   pd.start();
-   new Thread(pd).start();
   
   keyWidth = width/numOfWhiteKeys;
   keyHeight = height/2;
@@ -134,8 +134,8 @@ void setup() {
 
 void sendNote(int note, int vel) {
  
-  midi.sendNote(note, vel);
-      
+   midi.sendNote(note, vel);
+   
 }
 
 void touchStarted() {
@@ -162,6 +162,10 @@ void touchEnded() {
         blackKeys[i].id = -1;
         sendNote(blackKeys[i].note, 0);
     }
+    midi.setPitchBend(1);
+    pbTouch = color(150, 188, 222);
+    vTouch = color(84, 144, 196);
+    
   }
   
   //If we lost a touch, then find it and reset it
@@ -206,7 +210,7 @@ void draw() {
   
   //draw our pitch bend rectangle
   fill(pbTouch);
-  rect(20, 10, width-20, (height/4)*.85, 10);
+  rect(20, 10, width-40, (height/4)*.85, 10);
   textSize(90);
   fill(0);
   String s = "Pitch Bend";
@@ -214,7 +218,7 @@ void draw() {
   
   //draw our vibrato rectangle
   fill(vTouch);
-  rect(20, height/4, width-20, (height/4)*.85, 10);
+  rect(20, height/4, width-40, (height/4)*.85, 10);
   fill(0);
   String s1 = "Vibrato";
   text(s1, width/3, height/2.5);
