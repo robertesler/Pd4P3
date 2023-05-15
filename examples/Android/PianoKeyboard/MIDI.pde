@@ -21,8 +21,14 @@ class MIDI {
    
    private MidiManager m;
    private MidiInputPort inputPort;
+   private byte[] byteBuffer = new byte[3];
    
-   public boolean useAsMidiDevice = false;
+   public boolean useAsMidiDevice = true;
+   
+   //These are our midi constanst, see AndroidMIDI example for more information
+   final byte STATUS_NOTE_ON = (byte) 0x90;
+   final byte STATUS_CONTROL_CHANGE = (byte) 0xB0;
+   final byte STATUS_PITCH_BEND = (byte) 0xE0;
    
    public void sendNote(int noteIndex, int vel) {
                 note = noteIndex;
@@ -40,23 +46,8 @@ class MIDI {
                 
                 if(getUseAsMidiDevice())
                 {
-                   byte[] buffer = new byte[32];
-                   int numBytes = 0;
                    int channel = 3; // MIDI channels 1-16 are encoded as 0-15.
-                   buffer[numBytes++] = (byte)(0x90 + (channel - 1)); // note on
-                   buffer[numBytes++] = (byte)note; // pitch is middle C
-                   buffer[numBytes++] = (byte)velocity; // max velocity
-                   int offset = 0;
-   
-                   // post is non-blocking
-                   try
-                   {
-                     inputPort.send(buffer, offset, numBytes);
-                   }
-                   catch(IOException e)
-                   {
-                     println(e);
-                   }
+                   midiCommand(STATUS_NOTE_ON + channel, note, velocity);
                 }
                
     }
@@ -125,6 +116,18 @@ class MIDI {
          }
    }
    
+  public void stop() {
+     if(inputPort != null)
+     {
+       try { 
+        inputPort.close(); 
+       } 
+       catch(IOException e) {
+          println(e); 
+       }
+     }
+  }
+   
    /*
    This will be called when a new device is plugged in.
    It will open the new device automatically.
@@ -145,30 +148,59 @@ class MIDI {
               }, new Handler(Looper.getMainLooper()) );  
    
  }
+ 
+ private void midiSend(byte[] buffer, int count, long timestamp) {
+        if (inputPort != null) {
+            try {
+                // send event immediately
+                MidiReceiver receiver = inputPort;
+                if (receiver != null) {
+                    receiver.send(buffer, 0, count, timestamp);
+                }
+            } catch (IOException e) {
+                println(e);
+            }
+        }
+    }
   
+  private void midiCommand(int status, int data1, int data2) {
+        byteBuffer[0] = (byte) status;
+        byteBuffer[1] = (byte) data1;
+        byteBuffer[2] = (byte) data2;
+        long now = System.nanoTime();
+        midiSend(byteBuffer, 3, now);
+    }
+   
+   private void midiCommand(int status, int data1) {
+        byteBuffer[0] = (byte) status;
+        byteBuffer[1] = (byte) data1;
+        long now = System.nanoTime();
+        midiSend(byteBuffer, 2, now);
+    }
+    
    public void setPitchBend(float p) {
        mFrequencyScaler = p;
+       //reverse engineer the pitchbend
+       if(getUseAsMidiDevice())
+       {
+         double s = (Math.log(mFrequencyScaler)/Math.log(2))*12;
+         int bend = (int) (((s*0x2000)/2) + 0x2000);
+         int a = bend;
+         int b = a >> 7;
+         byte d1 = (byte)a;
+         byte d2 = (byte)b;
+         midiCommand(STATUS_PITCH_BEND, d1, d2);
+       }
+       
    }
 
    public void setVibrato(int v) {
      controlChange = v;
-     //byte[] buffer = new byte[32];
-     //int numBytes = 0;
-     //int channel = 3; // MIDI channels 1-16 are encoded as 0-15.
-     //buffer[numBytes++] = (byte)(0xB0 + (channel - 1)); // CC
-     //buffer[numBytes++] = (byte)1; //Mod Wheel
-     //buffer[numBytes++] = (byte)controlChange; //Value
-     //int offset = 0;
-   
-     //// post is non-blocking
-     //try
-     //{
-     //  inputPort.send(buffer, offset, numBytes);
-     //}
-     //catch(IOException e)
-     //{
-     //  println(e);
-     //}
+     if(getUseAsMidiDevice())
+     {
+       midiCommand(STATUS_CONTROL_CHANGE, 1, controlChange);
+     }
+     
    }
    
    public MidiInputPort getMidiInputPort() {

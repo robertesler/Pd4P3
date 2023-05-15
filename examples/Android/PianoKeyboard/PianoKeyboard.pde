@@ -1,5 +1,27 @@
 import com.pdplusplus.*;
 
+/*
+This is an example of how to send MIDI to another
+device. Right now there is no way to manually
+select the device to open, so the best to use
+this is to open the app first, then plug it 
+into a computer.  This should open the computer
+as your input device (e.g. the device for MIDI to
+be inputted to.)
+Then in your software select the phone as your MIDI
+controller.  This should send Note On data, CC and Pitch Bend.
+
+This sketch will also draw a keyboard synth.  The synth sound is 
+the same as the AndroidMIDI sketch.  
+
+TODO: Create a toggle to turn on/off the MIDI send
+option and turn off the synth when using as a MIDI
+controller. The MIDI class has a variable boolean useAsMidiDevice;
+Set to true if you want to use the app as a MIDI controller, false
+if not.
+
+*/
+
 int numOfOctaves = 2;
 int oct = 4;//middle C
 int C = 60;
@@ -133,9 +155,7 @@ void setup() {
 }
 
 void sendNote(int note, int vel) {
- 
-   midi.sendNote(note, vel);
-   
+   midi.sendNote(note, vel);  
 }
 
 void touchStarted() {
@@ -198,6 +218,7 @@ void touchEnded() {
 //We have to deallocate memory in the Pd4P3 native lib before we leave. 
  public void onDestroy() {
    super.onDestroy();
+   midi.stop();
    if(pd.isPlaying() == true)
      pd.stop();
    pd.free();
@@ -229,7 +250,7 @@ void draw() {
         //pitch bend
         if(touches[t].y > 0 && touches[t].y < height/4)
         {
-          float pitchBend = map(touches[t].x, 10, width*.95, 0.8, 1.2);
+          float pitchBend = map(touches[t].x, 10, width*.95, 0.89, 1.12);
           midi.setPitchBend(pitchBend);
           pbTouch = color(58, 147, 224);
           float d = (100 + 100 * touches[t].area) * displayDensity;
