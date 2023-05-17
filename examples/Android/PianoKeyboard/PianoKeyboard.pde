@@ -3,22 +3,16 @@ import com.pdplusplus.*;
 /*
 This is an example of how to send MIDI to another
 device. Right now there is no way to manually
-select the device to open, so the best to use
+select the device to open, so the best way to use
 this is to open the app first, then plug it 
 into a computer.  This should open the computer
 as your input device (e.g. the device for MIDI to
-be inputted to.)
+be inputted to. You will have to set the device for "MIDI INPUT")
 Then in your software select the phone as your MIDI
 controller.  This should send Note On data, CC and Pitch Bend.
 
 This sketch will also draw a keyboard synth.  The synth sound is 
 the same as the AndroidMIDI sketch.  
-
-TODO: Create a toggle to turn on/off the MIDI send
-option and turn off the synth when using as a MIDI
-controller. The MIDI class has a variable boolean useAsMidiDevice;
-Set to true if you want to use the app as a MIDI controller, false
-if not.
 
 */
 
