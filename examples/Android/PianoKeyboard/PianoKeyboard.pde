@@ -41,6 +41,11 @@ color pbTouch = color(150, 188, 222);
 color vTouch = color(84, 144, 196);
 Key [] whiteKeys = new Key[numOfWhiteKeys];
 Key [] blackKeys = new Key[numOfBlackKeys];
+int midiToggle = 0;
+int midiCounter = 0;
+boolean midiSwitch = false;
+int debounceTime = 0;
+boolean debounce = false;
 
 MyMusic music = new MyMusic();
 PdAndroid pd = new PdAndroid(music);
@@ -215,6 +220,23 @@ void touchEnded() {
    }
 }
 
+boolean debounce(int delay) {
+    
+  int t = millis();
+  int time = t - debounceTime;
+  debounceTime = t;
+  if(time > delay)
+  {
+    midiToggle = midiCounter++ % 2;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+  
+}
+
 //We have to deallocate memory in the Pd4P3 native lib before we leave. 
  public void onDestroy() {
    super.onDestroy();
@@ -228,7 +250,7 @@ void touchEnded() {
 void draw() {
   background(179, 214, 245);
   //fill(255);
-  
+  strokeWeight(4);
   //draw our pitch bend rectangle
   fill(pbTouch);
   rect(20, 10, width-40, (height/4)*.85, 10);
@@ -239,10 +261,24 @@ void draw() {
   
   //draw our vibrato rectangle
   fill(vTouch);
-  rect(20, height/4, width-40, (height/4)*.85, 10);
+  rect(20, height/4, width*.75, (height/4)*.85, 10);
   fill(0);
   String s1 = "Vibrato";
   text(s1, width/3, height/2.5);
+  
+  //draw our MIDI on/off switch
+  fill(255);
+  rect(width*.77, height/4, width*.18, (height/4)*.85, 10);
+  fill(0);
+  String s2 = "MIDI ";
+  text(s2, width*.82,height/2.5);
+  
+  if(midiSwitch)
+  {
+   line(width*.77, height/4,  width*.95, height/2.16);
+   line(width*.77, height/2.16, width*.95, height/4);
+  }
+
   
   //We evaluate each touch's location and if it is a white or black key change the color and log it.
    for(int t = 0; t < touches.length; t++)
@@ -250,7 +286,7 @@ void draw() {
         //pitch bend
         if(touches[t].y > 0 && touches[t].y < height/4)
         {
-          float pitchBend = map(touches[t].x, 10, width*.95, 0.89, 1.12);
+          float pitchBend = map(touches[t].x, 10, width-40, 0.89, 1.12);
           midi.setPitchBend(pitchBend);
           pbTouch = color(58, 147, 224);
           float d = (100 + 100 * touches[t].area) * displayDensity;
@@ -259,13 +295,13 @@ void draw() {
         }
         else
         {
-          midi.setPitchBend(1);
+         // midi.setPitchBend(1);
           pbTouch = color(150, 188, 222);
         }
-        
-        if(touches[t].y > height/4 && touches[t].y < height/2)
+        //vibrato
+        if(touches[t].y > height/4 && touches[t].y < height/2 && touches[t].x < width*.75)
         {
-          float vibrato = map(touches[t].x, 10, width, 0, 127);
+          float vibrato = map(touches[t].x, 10, width*.75, 0, 127);
           midi.setVibrato((int)vibrato);
           vTouch = color(23, 113, 191);
           float d = (100 + 100 * touches[t].area) * displayDensity;
@@ -274,8 +310,24 @@ void draw() {
         }
         else
         {
-          //midi.setVibrato(0);
           vTouch = color(84, 144, 196);
+        }
+        
+        //Our MIDI on/off switch
+        if(touches[t].y > height/4 && touches[t].y < height/2 && touches[t].x > width*.77)
+        {
+          debounce = debounce(250);
+          if(midiToggle == 1 && debounce)
+          {
+            midiSwitch = true;
+            midi.setUseAsMidiDevice(true);//send MIDI to inputPort
+          }
+          if(midiToggle == 0 && debounce)
+          {
+            midiSwitch = false;
+            midi.setUseAsMidiDevice(false);//don't send MIDI
+          }
+         
         }
         
         if(touches[t].y > height/2)

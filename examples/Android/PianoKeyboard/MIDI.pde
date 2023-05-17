@@ -23,7 +23,7 @@ class MIDI {
    private MidiInputPort inputPort;
    private byte[] byteBuffer = new byte[3];
    
-   public boolean useAsMidiDevice = true;
+   public boolean useAsMidiDevice = false;
    
    //These are our midi constanst, see AndroidMIDI example for more information
    final byte STATUS_NOTE_ON = (byte) 0x90;
@@ -171,7 +171,7 @@ class MIDI {
         midiSend(byteBuffer, 3, now);
     }
    
-   private void midiCommand(int status, int data1) {
+  private void midiCommand(int status, int data1) {
         byteBuffer[0] = (byte) status;
         byteBuffer[1] = (byte) data1;
         long now = System.nanoTime();
