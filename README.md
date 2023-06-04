@@ -45,13 +45,12 @@ Noise      | [noise~]
 Oscillator | [osc~]
 Phasor     | [phasor~]
 ReadSoundFile | [readsf~]*
-Included in RawFilter:
-  RealPole | [rpole~]
-  RealZero | [rzero~]
-  RealZeroReverse | [rzero_rev~]
-  ComplexPole | [cpole~]
-  ComplexZero | [czero~]
-  ComplexZeroReverse | [czero_rev~]
+RealPole | [rpole~]
+RealZero | [rzero~]
+RealZeroReverse | [rzero_rev~]
+ComplexPole | [cpole~]
+ComplexZero | [czero~]
+ComplexZeroReverse | [czero_rev~]
 SampleHold | [samphold~]
 Sigmund    | [sigmund~]
 SlewLowPass | [slop~]
@@ -81,6 +80,8 @@ Otherwise everything else in Pd can be easily implemented using standard Java me
 
 # Android
 As of version 0.0.6, Android support is now available.  It is full duplex audio with low latency performance.  It is not meant for high performance development, but is good for Processing 4's Android Mode or Android Studio development.
+
+As of version 0.0.7 there is MIDI support for Android.  See the Android examples for more details.
 
 The library includes the pre-built Pd++ library for Android devices.  These may conflict with Linux versions so see the Build for Raspberry Pi on how to build for a specific Linux architecture.
 
