@@ -45,17 +45,11 @@ class WindGen {
  private double [] branches2 = new double[2];
  private double [] leaves = new double[2];
 
- 
- private int block = 512;
- private int counter = 0;
- private double [] windOutput = new double[block];
+ private double windFreq = .1;
  
  public double [] perform() {
    
-   double ws = windspeed.perform(.1);//generate our windspeed
-   //This is for graphing the windspeed to our main graphics window
-   windOutput[counter++] = ws;  
-   if(counter == block) counter = 0;
+   double ws = windspeed.perform(getWindFreq());//generate our windspeed
     
    //generate our delays
    vdLeaves.delayWrite(ws);
@@ -83,15 +77,14 @@ class WindGen {
    leaves = leaves(wsLeaves, n);
    
    //add them all together and scale
-   out[0] = (doorways[0] + doorways2[0] +  buildings[0] + branches[0] + branches2[0] + leaves[0]) * .45;
-   out[1] = (doorways[1] + doorways2[1] +  buildings[1] + branches[1] + branches2[1] + leaves[1]) * .45;
+   out[0] = (doorways[0] + doorways2[0] +  buildings[0] + branches[0] + branches2[0]
+   + leaves[0]);
+   out[1] = (doorways[1] + doorways2[1] +  buildings[1] + branches[1] + branches2[1]
+   + leaves[1]);
    
    return out;
  }
  
- public double [] getWindOutput() {
-    return windOutput; 
- }
  
  private double [] buildings(double ws, double n) {
    
@@ -105,32 +98,33 @@ class WindGen {
    return out;
  }
  
+  /*
+   Doorway #1
+   */
  private double [] doorways(double ws, double n) {
    
    double [] out = new double[2];
    
-   /*
-   Doorway #1
-   */
-   bpDoor.setCenterFrequency(400);
+   bpDoor.setCenterFrequency(200);
    bpDoor.setQ(40);
    lopDoor1.setCutoff(.5);
    double a = lopDoor1.perform( cos.perform( ((clip(ws, .35, .6) - .35) * 2) - .25));
    double b = (bpDoor.perform(n) * a) * 2;
    double c = osc.perform( (a * 200) + 30 );
    double d = b * c;
+   // println(d);
    out = fcpan(d, .91);
    return out;
  }
  
+ /*
+   Doorway #2
+   */
  private double [] doorways2(double ws, double n) {
    
    double [] out = new double[2];
    
-   /*
-   Doorway #2
-   */
-   bpDoor2.setCenterFrequency(200);
+   bpDoor2.setCenterFrequency(100);
    bpDoor2.setQ(40);
    lopDoor2.setCutoff(.1);
    double e = lopDoor2.perform( cos.perform( ((clip(ws, .25, .5) - .25) * 2) - .25));
@@ -142,14 +136,14 @@ class WindGen {
    return out;
  }
  
+ /*
+   Branches/Wires #1
+ */
   private double [] branches(double ws, double n) {
   
    double [] out = new double[2];
    double [] vcfOut = new double[2];
 
-   /*
-   Branches/Wires #1
-   */
    vcfBranches.setQ(60);
    double vd = ws;
    double cf = ((vd * 400) + 600);
@@ -162,14 +156,14 @@ class WindGen {
    
   }
  
+ /*
+   Branches/Wires #2
+ */
  private double [] branches2(double ws, double n) {
   
    double [] out = new double[2]; 
    double [] vcfOut2 = new double[2];
  
-   /*
-   Branches/Wires #2
-   */
    vcfBranches2.setQ(60);
    double vd2 = ws;
    double cf2 = ((vd2 * 1000) + 1000);
@@ -196,12 +190,12 @@ class WindGen {
    return out;
  }
  
+ //This pans our signal left or right based on the val
  private double [] fcpan(double in, double val) {
    double left = 0;
    double right = 0;
    double [] out = new double[2];
-   
-   //This pans our signal left or right based on the val
+ 
    left = in * cos.perform ( ((val * .25) - .25) - .25 );
    right = in * cos.perform ( ((val * .25) - .25) );
    out[0] = left;
@@ -211,7 +205,8 @@ class WindGen {
  
  //emulate [clip~], a = input, b = low range, c = high range
  private double clip(double a, double b, double c) {
-   if(a < b)
+      
+      if(a < b)
        return b;
       else if(a > c)
        return c;
@@ -233,6 +228,13 @@ class WindGen {
    return max;
  }
 
+ public void setWindFreq(double f) {
+     windFreq = f;
+ }
+
+ public double getWindFreq() {
+    return windFreq; 
+ }
  
  public void free() {
   Noise.free(noise); 

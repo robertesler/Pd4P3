@@ -1,4 +1,7 @@
 /*
+Generates our windspeed using random numbers
+(aka noise) to simulate gusts and squalls.
+
 In the original patch, Andy uses a chain of low pass
 filters with a high pass set at 0 for the gust and 
 squall. 

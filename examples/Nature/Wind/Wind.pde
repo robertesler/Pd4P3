@@ -26,14 +26,16 @@ import com.pdplusplus.*;
   strokeWeight(2);
   noFill();
   
-   output = music.getOutput();
+  double f = map(mouseX, 0, width, .01, .3);
+  music.setWind(f);
+  output = music.getOutput();
  
  //Draw the shape based on the output block, once per frame
   beginShape();
   for(int i = 0; i < output.length; i++){
     vertex(
-      map(i, 0, output.length/2, width, 0),
-      map((float)output[i], -1, 1, 0, height)
+      map(i, 0, output.length, width, 0),
+      map((float)output[i], -.1, .1, 0, height)
     );
   }
   endShape(); 
@@ -55,21 +57,28 @@ import com.pdplusplus.*;
    double [] out = new double[2];
    WindGen wind = new WindGen();
    
+   private int block = 512;
+   private int counter = 0;
+   double [] myOutput = new double[block];
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
      
      out = wind.perform();
      outputL = out[0];
      outputR = out[1];
+     
+      //This is for graphing the windspeed to our main graphics window
+     myOutput[counter++] = (outputL + outputR) * .5;  
+     if(counter == block) counter = 0;
    }
   
   //We use synchronized to communicate with the audio thread
-   synchronized void setFloat(float f1) {
-     dummy = f1;
+   synchronized void setWind(double f1) {
+     wind.setWindFreq(f1);
    }
    
    synchronized double [] getOutput() {
-     return wind.getWindOutput();
+     return myOutput;
    }
    
    //Free all objects created from Pd4P3 lib
