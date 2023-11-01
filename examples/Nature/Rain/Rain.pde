@@ -14,6 +14,9 @@ Set the rain and rain volume for different intensities.
  
  float rain = .1;
  float rainVol = 3;
+ float bpCf = 1400;
+ float bpQ = 2;
+ float bpRainVol = 2.8;
 
  void setup() {
    size(640, 360);
@@ -30,8 +33,11 @@ Set the rain and rain volume for different intensities.
  
  void draw() {
   rain = map(mouseX, 0, width, .001, .1);
+  bpCf = map(mouseX, 0, width, 1400, 900);
+  bpQ = map(mouseX, 0, width, 2, 3);
   rainVol = map(mouseY, height, 0, 2, 4);
-  music.setRain(rain, rainVol);
+  bpRainVol = map(mouseY, height, 0, 1, 3);
+  music.setRain(rain, rainVol, bpCf, bpQ, bpRainVol);
  }
  
  public void dispose() {
@@ -42,7 +48,7 @@ Set the rain and rain volume for different intensities.
 }
  
  /*
-   This is where you should put all of your music/audio behavior and DSP
+   Our Rain Generator
  */
  class MyMusic extends PdAlgorithm {
    
@@ -60,7 +66,7 @@ Set the rain and rain volume for different intensities.
    double rainVol = 3;
    double bpCf = 1400;
    double bpQ = 2;
-   double bpRainVol = .028;
+   double bpRainVol = 2.8;
    
    public MyMusic() {
     del.setDelayTime(300); 
@@ -75,7 +81,7 @@ Set the rain and rain volume for different intensities.
      outputL = outputR = 0; 
      double dropInput = (del.perform(delread) * 24) + 6;
      double n = noise.perform();
-     double farFieldRain = bp.perform(n) * bpRainVol;
+     double farFieldRain = bp.perform(n) * (bpRainVol * .01);
      double x = drop.perform(n, dropInput, rain, rainVol);
      double win = hip.perform(x) * 20; 
      delread = window.perform(win);
@@ -86,9 +92,12 @@ Set the rain and rain volume for different intensities.
    }
   
   //We use synchronized to communicate with the audio thread
-   synchronized void setRain(float r, float rv) {
+   synchronized void setRain(float r, float rv, float bpf, float q, float ffrv) {
      rain = r;
      rainVol = rv;
+     bpCf = bpf;
+     bpQ = q;
+     bpRainVol = ffrv;
    }
    
    //Free all objects created from Pd4P3 lib

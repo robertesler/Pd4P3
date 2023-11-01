@@ -1,4 +1,6 @@
-
+/*
+This class models the resonance of a glass window
+*/
 class GlassWindow {
   
   Delay del1 = new Delay();

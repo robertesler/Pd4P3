@@ -1,4 +1,6 @@
-
+/*
+This class models drops of rain
+*/
 class Drop {
   
   VoltageControlFilter vcf = new VoltageControlFilter();
