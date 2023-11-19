@@ -1,7 +1,6 @@
 class FireGen {
   
   Noise noise = new Noise();
-  Noise rand = new Noise();
   LowPass lop = new LowPass();
   LowPass lop2 = new LowPass();
   HighPass hip = new HighPass();
@@ -12,8 +11,6 @@ class FireGen {
   BandPass bp2 = new BandPass();
   Line line = new Line();
   private double crackleVol = 0;
-  private int block = 64;
-  private int blockCounter = 0;
   double bpCf = 0;
   
   public FireGen() {
@@ -36,7 +33,7 @@ class FireGen {
     double hiss = hissing(n);
     double lap = lapping(n);
     
-    output = (crack * .2) + (hiss * .3) + (lap * .4);
+    output = (crack * .2) + (hiss * .3) + (lap * .6);
     return output;
   }
   
@@ -47,25 +44,16 @@ class FireGen {
     boolean bang = false;
     float rand;
     int time = 0;
-   
-     /*
-      This is a case where a block delay makes a difference
-      */
-      if(blockCounter++ == block)
-      {
-        
-        if(moses >= 50 && moses <= 51)
-        {    
-     
-          rand = random(0,30);
-          bang = true;   
-          bpCf = (rand * 500) + 1500;
-          time = (int)rand;
-         
-        }
-        blockCounter = 0;
-      }
-    
+  
+    if(moses >= 50.5 && moses <= 51)
+    {    
+ 
+      rand = random(0,20);
+      bang = true;   
+      bpCf = (rand * 500) + 1500;
+      time = (int)rand;
+    }
+ 
     if(bang)
     {
       crackleVol = 1;
@@ -113,10 +101,8 @@ class FireGen {
         return a;
  }
   
-  
   public void free() {
    Noise.free(noise); 
-   Noise.free(rand);
    LowPass.free(lop);
    LowPass.free(lop2);
    HighPass.free(hip);

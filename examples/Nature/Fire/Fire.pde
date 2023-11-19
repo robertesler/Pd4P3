@@ -45,7 +45,6 @@ import com.pdplusplus.*;
    BandPass bp3 = new BandPass();
    HighPass hip = new HighPass();
 
-   
    public MyMusic() {
      bp1.setCenterFrequency(400);
      bp1.setQ(0.2);
@@ -61,11 +60,12 @@ import com.pdplusplus.*;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-    
-     double fire = bp1.perform(fire1.perform()) + bp2.perform(fire2.perform()) +
-     bp3.perform(fire3.perform()) + hip.perform(fire4.perform());
-     //double test = bp1.perform(fire1.perform()) * .2;
-     outputL = outputR = fire * .2; 
+  
+     
+     double fire = bp1.perform(fire1.perform())  * .2 + bp2.perform(fire2.perform()) * .2 +
+     bp3.perform(fire3.perform()) * .2 + hip.perform(fire4.perform()) * .2;
+
+     outputL = outputR = fire; 
      
    }
   
