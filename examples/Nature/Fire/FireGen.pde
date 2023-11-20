@@ -11,7 +11,10 @@ class FireGen {
   BandPass bp2 = new BandPass();
   Line line = new Line();
   private double crackleVol = 0;
-  double bpCf = 0;
+  private double bpCf = 0;
+  private float time = 0;
+  private double vol = 0;
+  private float rand = 0;
   
   public FireGen() {
     line.setSampleRate(44100);
@@ -42,27 +45,31 @@ class FireGen {
     double low = lop.perform(input);
     double moses = env.perform(low);
     boolean bang = false;
-    float rand;
-    int time = 0;
-  
+   
+    /*
+      We change our range a little bit.  This is
+      because in Pure Data there are two clocks
+      signal or dsp clock, and our block calculations,
+      where non-audio things like math, etc. are performed.
+      So if we leave our range 50-51 our fire gets a bit 
+      too active.  
+    */
     if(moses >= 50.5 && moses <= 51)
-    {    
- 
-      rand = random(0,20);
-      bang = true;   
-      bpCf = (rand * 500) + 1500;
-      time = (int)rand;
-    }
- 
+    {   
+        rand = random(0,30);
+        bang = true;   
+        bpCf = (rand * 500) + 1500;
+        time = rand;
+     }
+     
     if(bang)
     {
-      crackleVol = 1;
       line.perform(1, 1);
     }
-    else
-      crackleVol = line.perform(0, time);
-
-    double vol = crackleVol * crackleVol; // square the volume
+    
+    crackleVol = line.perform(0, time);
+    
+    vol = crackleVol * crackleVol; // square the volume
     bp.setCenterFrequency(bpCf);
     output = bp.perform(input) * vol;
     return output;
@@ -71,20 +78,14 @@ class FireGen {
   
   private double hissing(double input) {
     double output = 0;
-    lop2.setCutoff(1);
     double tempV = lop2.perform(input) * 10;
     double vol = ((tempV * tempV) * (tempV * tempV)) * 600; 
-    hip.setCutoff(1000);
     output = hip.perform(input) * vol;
     return output;
   }
   
   private double lapping(double input) {
     double output = 0; 
-    hip2.setCutoff(20);
-    hip3.setCutoff(20);
-    bp2.setQ(5);
-    bp2.setCenterFrequency(25);
     double clippedVal = hip2.perform( (bp2.perform(input) * 100) );
     double clipped = clip(clippedVal, -.9, .9);
     output = hip3.perform(clipped) * .6;
