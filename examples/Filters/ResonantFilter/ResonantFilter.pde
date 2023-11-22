@@ -46,7 +46,7 @@ import com.pdplusplus.*;
    Noise noise = new Noise();
    double freq = 100;
    double q = 1;
-   int scale = 2;
+   int scale = 1;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
@@ -72,9 +72,10 @@ import com.pdplusplus.*;
    synchronized private double [] getFreq() {
      double [] output = {0,0};
      float twoPiT = (float)freq * ( (atan(1) * 8)/noise.getSampleRate() );
-     double sin = 2*sin(twoPiT);
+     double sin = sin(twoPiT);
      double cos = cos(twoPiT);
      output[0] = cos * getQ();
+     output[1] = sin * getQ();
      return output;
    }
    
