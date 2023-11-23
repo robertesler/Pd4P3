@@ -1,6 +1,12 @@
 import com.pdplusplus.*;
 
-//declare Pd and create new class that inherits PdAlgorithm
+/*
+This is a basic resonant filter as created by
+the RjDj.  It uses two poles and two zeros.
+Be careful with the scale variable, see my note below. 
+X = Frequency
+Y = Q factor
+*/
  Pd pd;
  MyMusic music;
  
@@ -34,9 +40,6 @@ import com.pdplusplus.*;
     super.dispose();
 }
  
- /*
-   This is where you should put all of your music/audio behavior and DSP
- */
  class MyMusic extends PdAlgorithm {
    
    RealZero rzero1 = new RealZero();
@@ -46,9 +49,9 @@ import com.pdplusplus.*;
    Noise noise = new Noise();
    double freq = 100;
    double q = 1;
-   int scale = 1;
+   int scale = 2;
    
-   //All DSP code goes here
+   //4 stage 2-pole, 2-zero resonant filter
    void runAlgorithm(double in1, double in2) {
      double output = 0;
      double n = noise.perform();
@@ -58,8 +61,7 @@ import com.pdplusplus.*;
      double [] stage3 = cpole1.perform(stage2, 0, f[0], f[1]);
      double [] stage4 = cpole2.perform(stage3[0], stage3[1], f[0], f[1]*-1);
      output = stage4[0] * getScale();
-     //println(output);
-     outputL = outputR = output; 
+     outputL = outputR = output*(1/(float)scale); 
      
    }
   
@@ -83,6 +85,7 @@ import com.pdplusplus.*;
      q = _q;
    }
    
+   //PI * B * T
    synchronized private double getQ() {
      double  output = 0;
      if(q <= 0) q = .001;
@@ -97,6 +100,14 @@ import com.pdplusplus.*;
      scale = s;
    }
    
+   /*
+   When creating raw filters you need a gain scale.
+   The following cases are possible gain components.
+   Case 0 is no gain scale, WHICH IS VERY LOUD!!!
+   So you would need your own custom gain algorithm.
+   Case 1 and 2 are (1-r^2)/2 or sqrt((1-r^2)/2) respectively.
+   Be carefule with these numbers.
+   */
    synchronized double getScale() {
      switch(scale)
      {
@@ -115,7 +126,10 @@ import com.pdplusplus.*;
          return sqrt((float)i);
         }
         default:
-          return 1;
+        {
+          double i = (1 - (getQ() * getQ())) * .5;
+          return i;
+        }
      }
    
    }

@@ -66,7 +66,7 @@ Y = phaser rate
    }
    
    /*
-   Here we use a 4 stage allpass and add back into our chord.
+   Here we use a 4 stage allpass and add the signal back into our chord.
    The filtered copy will cancel out frequencies from our sum
    and we get a classic phaser effect.
    */
