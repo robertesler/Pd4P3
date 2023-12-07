@@ -7,7 +7,7 @@ class Foot {
   Line line = new Line();
   Textures textures1 = new Textures();
   Textures textures2 = new Textures();
-  private double previousSpeed = 0;
+  private double previousActive= 0;
   private double active = 0;
   private double heel = 0;
   private double roll = .173;
@@ -20,7 +20,6 @@ class Foot {
    double [] steps = splitphase(speed);
    double foot1 = foot(steps[0]);
    double foot2 = foot(steps[1]);
-   
    //we'll put our textures here
    switch(texture)
    {
@@ -28,7 +27,6 @@ class Foot {
       {
         output = textures1.snow(foot1) +  textures2.snow(foot2);
       }
-        
    }
    return output;
   }
@@ -38,7 +36,6 @@ class Foot {
    double a = clip(x, 0, .3333) * 3;
    double b = (clip(x, .125, .875) - .125) * 1.333;
    double c = (clip(x, .667, 1) - .667) * 3;
-   
    double f1 = polycurve(a, getHeel()*3);
    double f2 = polycurve(b, getRoll()*3);
    double f3 = polycurve(c, getBall()*3);
@@ -47,7 +44,7 @@ class Foot {
   }
   
   private double polycurve(double input, double foot) {
-    double x = input * input * input * input;
+    double x = input * input * input;
     double y = input * foot;
     double z = 1 - input;
     double s = ( (x * foot) - y ) * z;
@@ -61,7 +58,7 @@ class Foot {
     if(speed > 0)
     {
       active = 1;
-       if(speed != previousSpeed)
+       if(active != previousActive)
        {
          phasor.setPhase(0); 
        }
@@ -70,11 +67,12 @@ class Foot {
     {
       active = 0;
     }
-   
+    previousActive = active;
+    
     //left foot
     lop.setCutoff(1);
     double a = lop.perform(speed);
-    double b = phasor.perform( (a + .3) * 3 );
+    double b = phasor.perform( (a + .2) * 3 );
     double c = 1 - (a + .02);
     double m = min(b, c);
     double w = wrap(m * (1/c) + 1e-05);
@@ -87,7 +85,7 @@ class Foot {
     double y = wrap(x + 1e-05);
     output[1] = y * mult;
     
-    previousSpeed = speed;
+    
     return output;
   }
   
