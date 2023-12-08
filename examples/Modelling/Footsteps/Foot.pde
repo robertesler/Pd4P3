@@ -10,7 +10,7 @@ class Foot {
   private double previousActive= 0;
   private double active = 0;
   private double heel = 0;
-  private double roll = .173;
+  private double roll = .073;
   private double ball = 0;
   private double speed = 0;
   
@@ -23,9 +23,24 @@ class Foot {
    //we'll put our textures here
    switch(texture)
    {
+     //snow
       case 0:
       {
         output = textures1.snow(foot1) +  textures2.snow(foot2);
+      }
+      //grass
+      case 1:
+      {
+        output = textures1.grass(foot1) +  textures2.grass(foot2);
+      }
+      //dirt
+      case 2:
+      {
+        output = textures1.dirt(foot1) +  textures2.dirt(foot2);
+      }
+      case 3:
+      {
+        output = textures1.gravel(foot1) +  textures2.gravel(foot2);
       }
    }
    return output;
