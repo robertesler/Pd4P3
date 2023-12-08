@@ -1,6 +1,10 @@
 import com.pdplusplus.*;
 
-//declare Pd and create new class that inherits PdAlgorithm
+/*
+  This is a footstep generator.  It is inspired and based on 
+  Andy Farnell's example from his book "Designing Sound."
+  X = speed.
+*/
  Pd pd;
  MyMusic music;
  
@@ -20,7 +24,7 @@ import com.pdplusplus.*;
  }
  
  void draw() {
-  speed = map(mouseX, 0, width, 0, 1);
+  speed = map(mouseX, 0, width, 0, .4);
   music.setSpeed(speed);
  }
  
@@ -41,7 +45,7 @@ import com.pdplusplus.*;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     outputL = outputR = foot.perform(getSpeed(), 3); 
+     outputL = outputR = foot.perform(getSpeed(), 4); 
      
    }
   

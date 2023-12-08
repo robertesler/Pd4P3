@@ -20,6 +20,7 @@ class Foot {
    double [] steps = splitphase(speed);
    double foot1 = foot(steps[0]);
    double foot2 = foot(steps[1]);
+   
    //we'll put our textures here
    switch(texture)
    {
@@ -38,14 +39,24 @@ class Foot {
       {
         output = textures1.dirt(foot1) +  textures2.dirt(foot2);
       }
+      //gravel
       case 3:
       {
         output = textures1.gravel(foot1) +  textures2.gravel(foot2);
+      }
+      //wood
+      case 4:
+      {
+        output = textures1.wood(foot1) +  textures2.wood(foot2);
       }
    }
    return output;
   }
   
+  /*
+  This simulates the envelope of a three
+  parts of a footstep envelope.
+  */
   private double foot(double f) {
    double x = clip(f, 0, .75) * 1.3333;
    double a = clip(x, 0, .3333) * 3;
@@ -58,6 +69,7 @@ class Foot {
    return f1 + f2 + f3;
   }
   
+  //used above to get the three parts of the curve
   private double polycurve(double input, double foot) {
     double x = input * input * input;
     double y = input * foot;
@@ -66,7 +78,7 @@ class Foot {
     return s * -1.5;
   }
   
-  //our march generator
+  //our march generator, it splits a phasor into two parts
   private double [] splitphase(double speed) {
     double [] output = {0.0f, 0.0f};
     
@@ -114,7 +126,7 @@ class Foot {
         return a;
  }
  
-  //emulate [max~] a = input, b = input2, always return the higher value
+  //emulate [min~] a = input, b = input2, always return the higher value
  private double min(double a, double b) {
    double min = 0;
    if(a < b)
@@ -138,6 +150,7 @@ class Foot {
     textures2.free();
   }
   
+  //returns only the mantissa of a double (e.g the decimal part)
   private double wrap(double input) {
     double frac = input % 1;
    return frac;
@@ -155,16 +168,19 @@ class Foot {
      return speed; 
   }
   
+  //changes based on speed
   private double getBall() {
    lop.setCutoff(.5);
    double h = getSpeed() - lop.perform(getSpeed());
    return (h * 1.7) + .5; 
   }
   
+  //this right now is static
   private double getRoll() {
    return roll * 3; 
   }
   
+  //changes based on the ball
   private double getHeel() {
    return 1 - getBall(); 
   }

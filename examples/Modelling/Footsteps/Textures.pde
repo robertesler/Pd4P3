@@ -43,6 +43,18 @@ class Textures {
   HighPass gravel_hip2 = new HighPass();
   VoltageControlFilter gravel_vcf = new VoltageControlFilter();
   
+  //wood
+  Noise wood_noise1 = new Noise();
+  Noise wood_noise2 = new Noise();
+  BandPass wood_bp1 = new BandPass();
+  BandPass wood_bp2 = new BandPass();
+  BandPass wood_bp3 = new BandPass();
+  BandPass wood_bp4 = new BandPass();
+  BandPass wood_bp5 = new BandPass();
+  BandPass wood_bp6 = new BandPass();
+  BandPass wood_bp7 = new BandPass();
+  BandPass wood_bp8 = new BandPass();
+  
   //you know nothing, john snow
   public double snow(double input) {
     double output = 0;
@@ -70,7 +82,7 @@ class Textures {
     return output;
   }
   
-  //grassy
+  //sassy and grassy
   public double grass(double input) {
     double output = 0;
     if(env2.perform(input) > .5)
@@ -138,8 +150,45 @@ class Textures {
     return output;
   }
   
+  //Norwegian wood
   public double wood(double input) {
-    return 0;
+    double output = 0;
+    if(env5.perform(input) > .5)
+    {
+      wood_bp1.setCenterFrequency(95);
+      wood_bp1.setQ(90);
+      wood_bp2.setCenterFrequency(134);
+      wood_bp2.setQ(90);
+      wood_bp3.setCenterFrequency(139);
+      wood_bp3.setQ(90);
+      wood_bp4.setCenterFrequency(154);
+      wood_bp4.setQ(90);
+    
+      double n1 = wood_noise1.perform();
+      double x = (wood_bp1.perform(n1) + wood_bp2.perform(n1)
+      + wood_bp3.perform(n1) + wood_bp4.perform(n1)) * 6;
+    
+      wood_bp5.setCenterFrequency(201);
+      wood_bp5.setQ(90);
+      wood_bp6.setCenterFrequency(123);
+      wood_bp6.setQ(90);
+      wood_bp7.setCenterFrequency(156);
+      wood_bp7.setQ(90);
+      wood_bp8.setCenterFrequency(189);
+      wood_bp8.setQ(90);
+      
+      double n2 = wood_noise2.perform();
+      double y = (wood_bp5.perform(n2) + wood_bp6.perform(n2)
+      + wood_bp7.perform(n2) + wood_bp8.perform(n2)) * 8; 
+      
+      double a = (sqrt((float)input) * x) * .5;
+      double b = ( ( (input*input) * 2 ) * y ) * .6;
+      
+      output = a + b;
+    }
+    
+    
+    return output;
   }
   
  //emulate [clip~], a = input, b = low range, c = high range
@@ -195,6 +244,18 @@ class Textures {
     HighPass.free(gravel_hip1);
     HighPass.free(gravel_hip2);
     VoltageControlFilter.free(gravel_vcf);
+    
+    //free wood
+    Noise.free(wood_noise1);
+    Noise.free(wood_noise2);
+    BandPass.free(wood_bp1);
+    BandPass.free(wood_bp2);
+    BandPass.free(wood_bp3);
+    BandPass.free(wood_bp4);
+    BandPass.free(wood_bp5);
+    BandPass.free(wood_bp6);
+    BandPass.free(wood_bp7);
+    BandPass.free(wood_bp8);
     
   }
 }
