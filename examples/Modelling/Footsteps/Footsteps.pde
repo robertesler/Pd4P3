@@ -45,7 +45,7 @@ import com.pdplusplus.*;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     outputL = outputR = foot.perform(getSpeed(), 4); 
+     outputL = outputR = foot.perform(getSpeed(), 0); 
      
    }
   

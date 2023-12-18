@@ -28,26 +28,31 @@ class Foot {
       case 0:
       {
         output = textures1.snow(foot1) +  textures2.snow(foot2);
+        break;
       }
       //grass
       case 1:
       {
         output = textures1.grass(foot1) +  textures2.grass(foot2);
+        break;
       }
       //dirt
       case 2:
       {
         output = textures1.dirt(foot1) +  textures2.dirt(foot2);
+        break;
       }
       //gravel
       case 3:
       {
         output = textures1.gravel(foot1) +  textures2.gravel(foot2);
+        break;
       }
       //wood
       case 4:
       {
         output = textures1.wood(foot1) +  textures2.wood(foot2);
+        break;
       }
    }
    return output;
