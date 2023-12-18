@@ -2,7 +2,7 @@
 A real-time audio synthesis library for Processing 3. Pd4P3 implements Pure Data's signal processing objects via Pd++ native code.  Pd4P3 stands for "Pd++ for Processing 3".
 
 # Copyright
-This software is copyrighted by Robert Esler, 2021.  
+This software is copyrighted by Robert Esler, 2023.  
 
 # Author(s)
 Pd4P3 is written by Robert Esler with much help from Lisa Tolentino.  Pd++ is written by Robert Esler.  Pure Data is written by Miller Puckette and others:  see https://github.com/pure-data/pure-data
