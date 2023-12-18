@@ -1,5 +1,5 @@
 # Pd4P3
-A real-time audio synthesis library for Processing 3. Pd4P3 implements Pure Data's signal processing objects via Pd++ native code.  Pd4P3 stands for "Pd++ for Processing 3".
+A real-time audio synthesis library for Processing 3 and 4. Pd4P3 implements Pure Data's signal processing objects via Pd++ native code.  Pd4P3 stands for "Pd++ for Processing 3".
 
 # Copyright
 This software is copyrighted by Robert Esler, 2023.  
