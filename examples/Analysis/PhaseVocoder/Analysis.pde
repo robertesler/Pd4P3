@@ -32,11 +32,11 @@ class Analysis extends PdMaster {
    double[] neighbor2;
    double[] phaseVocoder;
    double[] ifft;
+   double [] out;
    double[] sample; //our sample table
    double index1 = 0;
    double index2 = 0;
    int hannIndex = 0;
-   ArrayList<Double> buffer;
    double location = 0;
    double speed = 0;
    boolean rewind = true;
@@ -44,10 +44,11 @@ class Analysis extends PdMaster {
    double transpo = 0;
    int lock = 0;
    int currentWindowSize = fftWindowSize;
+   int sampleCounter = -1;
   
   
    Analysis()  {
-      
+      this.setFFTWindow(fftWindowSize);
       rfft = new rFFT(fftWindowSize);
       rifft = new rIFFT(fftWindowSize);
       rfft2  = new rFFT(fftWindowSize);
@@ -64,8 +65,7 @@ class Analysis extends PdMaster {
       neighbor2 = new double[fftWindowSize];
       phaseVocoder = new double[fftWindowSize];
       ifft = new double[fftWindowSize];
-      tab1.setTable(sample);
-      tab2.setTable(sample);
+      out = new double[fftWindowSize];
       createHann(fftWindowSize);
       
       for(int i = 0; i < 4; i++)
@@ -75,12 +75,24 @@ class Analysis extends PdMaster {
      
    }
    
-   double perform() {
-    
-     return 0;
+   void setSpeed(double s) {
+      speed = s;
    }
    
-   double[] doFFT() {
+   double perform() {
+     
+     if(sampleCounter == fftWindowSize-1)
+     {
+         out = doFFT();
+         sampleCounter = -1;
+     }
+     
+     sampleCounter++;
+     return out[sampleCounter];
+   }
+   
+   private double[] doFFT() {
+     
      double magReal = 0;
      double magImag = 0;
      double magReal2 = 0;
@@ -130,7 +142,7 @@ class Analysis extends PdMaster {
     double[] shiftC = lrshift[2].perform(neighbor2, 1);
     double[] shiftD = lrshift[3].perform(neighbor2, -1);
      
-    //
+    //take the previous fft of the forward window
     for(int i = 0; i < fftWindowSize; i++)
     {
         double x = ((shiftA[i] + shiftB[i])*lock) + neighbor1[i] + 1e-15;
@@ -166,7 +178,7 @@ class Analysis extends PdMaster {
    }
    
    //read two windows out the recording, on 1/4 phase ahead of the other.
-    double[] readWindows() {
+   private double[] readWindows() {
       double[] output = {0,0};
       int windowSize = currentWindowSize;
       double window = ((windowSize/this.getSampleRate())*1000)/4;
@@ -203,6 +215,8 @@ class Analysis extends PdMaster {
     void inSample(String fileName) {
       soundfiler.read(fileName);
       sample = soundfiler.getArray();
+      tab1.setTable(sample);
+      tab2.setTable(sample);
     }
    
     /*
@@ -212,15 +226,6 @@ class Analysis extends PdMaster {
      
      double winHz = 0;
      int windowSize = ws;
-   //clear our buffer first thing, it only does this once
-   if(buffer.size() == 0)
-    {
-      double d= 0;
-       for(int i = 0; i < fftWindowSize; i++)
-       {
-         buffer.add(d);
-       }
-    }
      
      if(windowSize != 0) {
         winHz = this.getSampleRate()/windowSize;
@@ -238,15 +243,15 @@ class Analysis extends PdMaster {
        
  }
  
-//reciprocal sqrt
-public double rsqrt(double x) {
+  //reciprocal sqrt
+  private double rsqrt(double x) {
     double xhalf = 0.5f * x;
     long i = Double.doubleToLongBits(x);
     i = 0x5f3759df - (i >> 1);
     x = Double.longBitsToDouble(i);
     x *= (1.5f - xhalf * x * x);
     return x;
-}
+  }
   
   void free() {
     rFFT.free(rfft);
@@ -256,5 +261,6 @@ public double rsqrt(double x) {
     TabRead4.free(tab2);
     Oscillator.free(osc);
     Line.free(line);
+    SoundFiler.free(soundfiler);
   }
 }
