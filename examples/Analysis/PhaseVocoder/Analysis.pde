@@ -32,6 +32,10 @@ class Analysis extends PdMaster {
    double[] neighbor1;
    double[] neighbor2;
    double[] phaseVocoder;
+   ArrayList<Double> buffer1;
+   ArrayList<Double> buffer2;
+   double[] in1;
+   double[] in2;
    double[] ifft;
    double[] ifftWas;
    double[] sum;
@@ -47,7 +51,9 @@ class Analysis extends PdMaster {
    double transpo = 0;
    int lock = 1;
    int currentWindowSize = fftWindowSize;
-   int sampleCounter = -1;
+   int sampleCounter = 0;
+   int tableCounter1 = 0;
+   int tableCounter2 = 0;
   
   
    Analysis()  {
@@ -67,6 +73,10 @@ class Analysis extends PdMaster {
       neighbor1 =new double[fftWindowSize];
       neighbor2 = new double[fftWindowSize];
       phaseVocoder = new double[fftWindowSize];
+      buffer1 = new ArrayList<Double>(fftWindowSize);
+      buffer2 = new ArrayList<Double>(fftWindowSize);
+      in1 = new double[fftWindowSize/overlap];
+      in2 = new double[fftWindowSize/overlap];
       ifft = new double[fftWindowSize];
       ifftWas = new double[fftWindowSize];
       sum = new double[fftWindowSize];
@@ -91,8 +101,8 @@ class Analysis extends PdMaster {
    double perform() {
      
 
-     double out = doFFT();
-     return out;
+     double[] out = readWindows();
+     return (out[0] + out[1])*.5;
    }
    
    private double doFFT() {
@@ -102,9 +112,20 @@ class Analysis extends PdMaster {
      double magReal2 = 0;
      double magImag2 = 0;
      int hop = fftWindowSize/overlap;
+     double [] readWin = readWindows();
+     in1[sampleCounter] = readWin[0];
+     in2[sampleCounter] = readWin[1];
      
     if(sampleCounter == hop-1)
     {
+      for(int i = 0; i < hop; i++)
+      {
+         buffer1.add(in1[i]);
+         buffer1.remove(0); 
+         buffer2.add(in2[i]);
+         buffer2.remove(0); 
+      }
+      
          //recall previous output amplitude, real/imag
      for(int i = 0; i < prevReal.length; i++)
      {
@@ -118,9 +139,8 @@ class Analysis extends PdMaster {
     //do our fft on our two windows
     for(int i = 0; i < fftWindowSize; i++)
     {
-       double [] readWin = readWindows();
-       fft1 = rfft.perform(readWin[0]);
-       fft2 = rfft2.perform(readWin[1]);
+       fft1 = rfft.perform(buffer1.get(i)*hann[i]);
+       fft2 = rfft2.perform(buffer2.get(i)*hann[i]);
     }
     
     //get real and imaginary parts
@@ -202,32 +222,35 @@ class Analysis extends PdMaster {
       int windowSize = currentWindowSize;
       double window = (((float)windowSize/this.getSampleRate())*1000)/overlap;
       double stretchedWindowSize = windowSize * this.mtof((transpo * .01)+69)/440;
-      seeLoc = location + (window *speed * .01);
-      //location =  seeLoc;
-      double readLocation = (seeLoc * (this.getSampleRate()/1000)) - (stretchedWindowSize/2);
-      if(sampleCounter % 64 == 0)
+      double readLocation = 0;
+      
+      if(tableCounter1 % fftWindowSize ==0)
+      {
+        seeLoc = location + (window * speed * .01);
+        readLocation = (seeLoc * (this.getSampleRate()/1000)) - (stretchedWindowSize/2);
         location = seeLoc;
+        println(readLocation);
+        line.set(0,0);
+      }
+        
+      tableCounter1++;
       tab1.setOnset(readLocation);
       tab2.setOnset(readLocation);
-      println(readLocation);
+      
       if(rewind)
       {
-       location = ((stretchedWindowSize/this.getSampleRate())*1000)*-.5;
-       rewind = false;
+        location = ((stretchedWindowSize/this.getSampleRate())*1000)*-.5;
+        rewind = false;
       }
       
-      if(index1 == stretchedWindowSize) 
-      {
-        index1 = 0;
-        index2 = 0;
-      }
+
       double x = line.perform(stretchedWindowSize, window);
       index1 = x - (stretchedWindowSize/4);
       index2 = x;
-      if(hannIndex == hann.length) hannIndex = 0;
-      output[0] = tab1.perform(index1) * hann[hannIndex];
-      output[1] = tab2.perform(index2) * hann[hannIndex];
-      hannIndex++;
+      //if(hannIndex == hann.length) hannIndex = 0;
+      output[0] = tab1.perform(index1);
+      output[1] = tab2.perform(index2);// * hann[hannIndex]
+      //hannIndex++;
       return output;
     }
    
@@ -248,6 +271,17 @@ class Analysis extends PdMaster {
      
      double winHz = 0;
      int windowSize = ws;
+     
+     //clear our buffer first thing, it only does this once
+      if(buffer1.size() == 0)
+      {
+         double d= 0;
+         for(int i = 0; i < fftWindowSize; i++)
+         {
+           buffer1.add(d);
+           buffer2.add(d);
+         }
+      }
      
      if(windowSize != 0) {
         winHz = this.getSampleRate()/windowSize;
