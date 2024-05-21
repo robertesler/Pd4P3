@@ -26,8 +26,8 @@ import com.pdplusplus.*;
  void draw() {
    background(255);
    fill(0);
-   float s = map(mouseX, 0, width, 0, 20);
-   music.setSpeed(s);
+   float t = map(mouseX, 0, width, 0, 20);
+   music.setTranspo(t);
  }
  
  public void dispose() {
@@ -53,6 +53,10 @@ import com.pdplusplus.*;
   //We use synchronized to communicate with the audio thread
    synchronized void setSpeed(float s) {
      pvoc.setSpeed(s);
+   }
+   
+   synchronized void setTranspo(double t) {
+     pvoc.setTranspo(t); 
    }
 
    //do this first please

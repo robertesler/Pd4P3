@@ -19,6 +19,7 @@ class Analysis extends PdMaster {
    TabRead4 tab1 =  new TabRead4();
    TabRead4 tab2 =  new TabRead4();
    SoundFiler soundfiler = new SoundFiler();
+   int overlap = 4;
    double[] hann;
    double[] prevReal;
    double[] prevImag;
@@ -32,17 +33,19 @@ class Analysis extends PdMaster {
    double[] neighbor2;
    double[] phaseVocoder;
    double[] ifft;
-   double [] out;
+   double[] ifftWas;
+   double[] sum;
    double[] sample; //our sample table
    double index1 = 0;
    double index2 = 0;
    int hannIndex = 0;
    double location = 0;
-   double speed = 0;
+   double seeLoc = 0;
+   double speed = 100;
    boolean rewind = true;
    int auto = 100;
    double transpo = 0;
-   int lock = 0;
+   int lock = 1;
    int currentWindowSize = fftWindowSize;
    int sampleCounter = -1;
   
@@ -65,7 +68,8 @@ class Analysis extends PdMaster {
       neighbor2 = new double[fftWindowSize];
       phaseVocoder = new double[fftWindowSize];
       ifft = new double[fftWindowSize];
-      out = new double[fftWindowSize];
+      ifftWas = new double[fftWindowSize];
+      sum = new double[fftWindowSize];
       createHann(fftWindowSize);
       
       for(int i = 0; i < 4; i++)
@@ -79,26 +83,29 @@ class Analysis extends PdMaster {
       speed = s;
    }
    
-   double perform() {
-     
-     if(sampleCounter == fftWindowSize-1)
-     {
-         out = doFFT();
-         sampleCounter = -1;
-     }
-     
-     sampleCounter++;
-     return out[sampleCounter];
+   void setTranspo(double t) {
+     transpo = t;  
    }
    
-   private double[] doFFT() {
+   int i = 0;
+   double perform() {
+     
+
+     double out = doFFT();
+     return out;
+   }
+   
+   private double doFFT() {
      
      double magReal = 0;
      double magImag = 0;
      double magReal2 = 0;
      double magImag2 = 0;
+     int hop = fftWindowSize/overlap;
      
-     //recall previous output amplitude, real/imag
+    if(sampleCounter == hop-1)
+    {
+         //recall previous output amplitude, real/imag
      for(int i = 0; i < prevReal.length; i++)
      {
         double r = prevReal[i];
@@ -174,20 +181,35 @@ class Analysis extends PdMaster {
         ifft[i] = (rifft.perform(phaseVocoder)* hann[i]) * (2/(3*currentWindowSize));
     }
     
-    return ifft; 
+    // Now we overlap our windows, and add them together
+      for(int i = 0 ; i < fftWindowSize; i++)
+      {
+          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
+      }
+      
+      ifftWas = sum;
+     
+      sampleCounter = -1;
+   }
+   
+    sampleCounter++;
+    return sum[sampleCounter]; 
    }
    
    //read two windows out the recording, on 1/4 phase ahead of the other.
    private double[] readWindows() {
       double[] output = {0,0};
       int windowSize = currentWindowSize;
-      double window = ((windowSize/this.getSampleRate())*1000)/4;
+      double window = (((float)windowSize/this.getSampleRate())*1000)/overlap;
       double stretchedWindowSize = windowSize * this.mtof((transpo * .01)+69)/440;
-      double seeLoc = location + (window *speed * .01);
-      double readLocation = seeLoc * (this.getSampleRate()/1000) - (stretchedWindowSize/2);
+      seeLoc = location + (window *speed * .01);
+      //location =  seeLoc;
+      double readLocation = (seeLoc * (this.getSampleRate()/1000)) - (stretchedWindowSize/2);
+      if(sampleCounter % 64 == 0)
+        location = seeLoc;
       tab1.setOnset(readLocation);
       tab2.setOnset(readLocation);
-      
+      println(readLocation);
       if(rewind)
       {
        location = ((stretchedWindowSize/this.getSampleRate())*1000)*-.5;
