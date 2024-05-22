@@ -26,8 +26,12 @@ import com.pdplusplus.*;
  void draw() {
    background(255);
    fill(0);
-   float t = map(mouseX, 0, width, 0, 20);
+   float t = map(mouseX, 0, width, -150, 150);
    music.setTranspo(t);
+ }
+ 
+ void mousePressed() {
+    music.rewind();
  }
  
  public void dispose() {
@@ -57,6 +61,10 @@ import com.pdplusplus.*;
    
    synchronized void setTranspo(double t) {
      pvoc.setTranspo(t); 
+   }
+   
+   synchronized void rewind() {
+     pvoc.rewind();
    }
 
    //do this first please

@@ -52,6 +52,7 @@ class Analysis extends PdMaster {
    int lock = 1;
    int currentWindowSize = fftWindowSize;
    int sampleCounter = 0;
+   double readLocation = 0;
    int tableCounter1 = 0;
    int tableCounter2 = 0;
   
@@ -97,24 +98,24 @@ class Analysis extends PdMaster {
      transpo = t;  
    }
    
-   int i = 0;
-   double perform() {
-     
-
-     double[] out = readWindows();
-     return (out[0] + out[1])*.5;
+   void rewind() {
+     rewind = true;
    }
    
-   private double doFFT() {
+   double perform() {
+
+     double[] out = readWindows();
+     return doFFT(out[0], out[1]);
+   }
+   
+   private double doFFT(double sampA, double sampB) {
      
-     double magReal = 0;
-     double magImag = 0;
-     double magReal2 = 0;
-     double magImag2 = 0;
+     double[] magReal = new double[fftWindowSize];
+     double[] magImag = new double[fftWindowSize];
      int hop = fftWindowSize/overlap;
-     double [] readWin = readWindows();
-     in1[sampleCounter] = readWin[0];
-     in2[sampleCounter] = readWin[1];
+
+     in1[sampleCounter] = sampA;
+     in2[sampleCounter] = sampB;
      
     if(sampleCounter == hop-1)
     {
@@ -126,23 +127,28 @@ class Analysis extends PdMaster {
          buffer2.remove(0); 
       }
       
-         //recall previous output amplitude, real/imag
-     for(int i = 0; i < prevReal.length; i++)
+      for(int i = 0; i < fftWindowSize; i++)
+      {
+         fft1 = rfft.perform(buffer1.get(i)*hann[i]);
+      }
+      
+      for(int i = 0; i < fftWindowSize; i++)
+      {
+         fft2 = rfft2.perform(buffer2.get(i)*hann[i]);
+      }
+    
+    /********************* BEGINNING of Analysis *******************/
+    
+    //recall previous output amplitude, real/imag
+     for(int i = 0; i < fftWindowSize; i++)
      {
         double r = prevReal[i];
         double j = prevImag[i];
         double mag = rsqrt((r*r) + (j*j)+1e-20);
-        magReal = r * mag;
-        magImag = j * mag;
+        magReal[i] = r * mag;
+        magImag[i] = j * mag;
      }
      
-    //do our fft on our two windows
-    for(int i = 0; i < fftWindowSize; i++)
-    {
-       fft1 = rfft.perform(buffer1.get(i)*hann[i]);
-       fft2 = rfft2.perform(buffer2.get(i)*hann[i]);
-    }
-    
     //get real and imaginary parts
     for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
     {
@@ -155,10 +161,10 @@ class Analysis extends PdMaster {
     //calculate conjugates
     for(int i = 0 ; i < fftWindowSize; i++)
     {
-        double a = magReal * real1[i];
-        double b = magImag * imag1[i];
-        double c = magImag * real1[i];
-        double d = magReal * imag1[i];
+        double a = magReal[i] * real1[i];
+        double b = magImag[i] * imag1[i];
+        double c = magImag[i] * real1[i];
+        double d = magReal[i] * imag1[i];
         neighbor1[i] = a + b;
         neighbor2[i] = c - d;
     }
@@ -169,14 +175,14 @@ class Analysis extends PdMaster {
     double[] shiftC = lrshift[2].perform(neighbor2, 1);
     double[] shiftD = lrshift[3].perform(neighbor2, -1);
      
-    //take the previous fft of the forward window
+    //take the previous fft of the forward window, and store in our prevReal/prevImag arrays
     for(int i = 0; i < fftWindowSize; i++)
     {
         double x = ((shiftA[i] + shiftB[i])*lock) + neighbor1[i] + 1e-15;
         double y = ((shiftC[i] + shiftD[i])*lock) + neighbor2[i];
         double mag = rsqrt((x*x) + (y*y));
-        magReal2 = x * mag;
-        magImag2 = y * mag;
+        double magReal2 = x * mag;
+        double magImag2 = y * mag;
         double a = magReal2 * real2[i];
         double b = magImag2 * imag2[i];
         double c = magReal2 * imag2[i];
@@ -190,67 +196,66 @@ class Analysis extends PdMaster {
      //Let's put Humpty Dumpty back together again.
     for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
     {
-        //send the switched values to rifft
         phaseVocoder[i] = prevReal[i];
         phaseVocoder[j] = prevImag[i];
     }
-
+    
+      /********************* END of Analysis *******************/
+    
     //resynthesize our FFT block, multiply by our Hann window and normalizer
     for(int i = 0; i < fftWindowSize; i++)
     {
-        ifft[i] = (rifft.perform(phaseVocoder)* hann[i]) * (2/(3*currentWindowSize));
+        ifft[i] = (rifft.perform(phaseVocoder)* hann[i]) /(currentWindowSize*4);
     }
     
     // Now we overlap our windows, and add them together
-      for(int i = 0 ; i < fftWindowSize; i++)
-      {
-          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
-      }
+    for(int i = 0 ; i < fftWindowSize; i++)
+    {
+        sum[i] = ifft[i] + (i+hop < currentWindowSize ? ifftWas[i+hop] : 0);
+    }
       
-      ifftWas = sum;
-     
-      sampleCounter = -1;
+    ifftWas = sum;
+    sampleCounter = -1;
    }
    
     sampleCounter++;
     return sum[sampleCounter]; 
-   }
+  }
    
-   //read two windows out the recording, on 1/4 phase ahead of the other.
+   //read two windows out the recording, one 1/4 phase ahead of the other.
    private double[] readWindows() {
       double[] output = {0,0};
       int windowSize = currentWindowSize;
-      double window = (((float)windowSize/this.getSampleRate())*1000)/overlap;
+      double window = (((float)windowSize/this.getSampleRate())*1000);
       double stretchedWindowSize = windowSize * this.mtof((transpo * .01)+69)/440;
-      double readLocation = 0;
+      tableCounter1++;
       
-      if(tableCounter1 % fftWindowSize ==0)
+      //update the read location every fft block
+      if(tableCounter1 % windowSize == 0)
       {
         seeLoc = location + (window * speed * .01);
-        readLocation = (seeLoc * (this.getSampleRate()/1000)) - (stretchedWindowSize/2);
+        readLocation = (location * (this.getSampleRate()/1000)) - (stretchedWindowSize/2);
         location = seeLoc;
-        println(readLocation);
-        line.set(0,0);
+        tableCounter1 = 0;
       }
-        
-      tableCounter1++;
+
       tab1.setOnset(readLocation);
       tab2.setOnset(readLocation);
       
+      //if we rewind reset location.
       if(rewind)
       {
         location = ((stretchedWindowSize/this.getSampleRate())*1000)*-.5;
         rewind = false;
       }
       
-
-      double x = line.perform(stretchedWindowSize, window);
+      //read through one block of our sample, with tab1 being 1/4 cycle behind
+      double x = tableCounter1; 
       index1 = x - (stretchedWindowSize/4);
       index2 = x;
-      //if(hannIndex == hann.length) hannIndex = 0;
+     
       output[0] = tab1.perform(index1);
-      output[1] = tab2.perform(index2);// * hann[hannIndex]
-      //hannIndex++;
+      output[1] = tab2.perform(index2);
       return output;
     }
    
