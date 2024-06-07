@@ -1,5 +1,16 @@
 import com.pdplusplus.*;
 
+/*
+This is an example of phase vocoder. It is an implementation of Miller Puckette's
+from Pure Data, see example I07 in Pd. 
+It can both stretch the time w/o changing the pitch and
+the pitch w/o changing the length.  
+
+The X-axis is the pitch
+The Y-axis is the time
+Click the mouse to rewind the sample.
+*/
+
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
@@ -28,6 +39,8 @@ import com.pdplusplus.*;
    fill(0);
    float t = map(mouseX, 0, width, -150, 150);
    music.setTranspo(t);
+   float s = map(mouseY, height, 0, 20, 200);
+   music.setSpeed(s);
  }
  
  void mousePressed() {
@@ -47,34 +60,45 @@ import com.pdplusplus.*;
  class MyMusic extends PdAlgorithm {
    
    float speed = 0;
-   Analysis pvoc = new Analysis();
+   PhaseVocoder pvoc = new PhaseVocoder();
    
-   //All DSP code goes here
+   public MyMusic() {
+     //This phase locks our two windows.  See the code for more info.
+       pvoc.setLock(1);
+   }
+   
    void runAlgorithm(double in1, double in2) {
      outputL = outputR = pvoc.perform(); 
    }
   
-  //We use synchronized to communicate with the audio thread
+  //Speed is our time shift
    synchronized void setSpeed(float s) {
      pvoc.setSpeed(s);
    }
    
+   //Transpo, or transposition, is our pitch shift
    synchronized void setTranspo(double t) {
      pvoc.setTranspo(t); 
    }
    
+   //rewind to play the sample from the beginning
    synchronized void rewind() {
-     pvoc.rewind();
+     pvoc.setRewind();
    }
-
-   //do this first please
+  
+  //phase lock
+   synchronized void lock(int l) {
+      pvoc.setLock(l); 
+   }
+   
+   //do this first please, loads our audio file
    void loadSample(String f) {
       pvoc.inSample(f); 
    }
    
    //Free all objects created from Pd4P3 lib
    void free() {
-     pvoc.free(); 
+     PhaseVocoder.free(pvoc); 
    }
    
  }

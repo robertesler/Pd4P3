@@ -3,12 +3,15 @@ This is a sample-based phase vocoder.
 It is based on the Pd example: I07.phase.vocoder.pd
 by Miller Puckette.
 
-If you change the location, then reset speed to 0
-If you use auto, then set rewind to true update speed to auto's value.
+This class was far too slow my PC, it may work on yours.
+So it is also included as a C++ function with the
+dynamic library. 
+
+This is what the example is actually using to render the audio.
 
 */
 
-class Analysis extends PdMaster {
+class PhaseVocoder2 extends PdMaster {
   
       rFFT rfft;
       rFFT rfft2;
@@ -57,7 +60,7 @@ class Analysis extends PdMaster {
 
   
   
-   Analysis()  {
+   PhaseVocoder2()  {
       this.setFFTWindow(fftWindowSize);
       rfft = new rFFT(fftWindowSize);
       rifft = new rIFFT(fftWindowSize);
