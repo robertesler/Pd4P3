@@ -26,9 +26,9 @@ public class Pd extends PdMaster implements Runnable {
 
 	private static AudioFormat audioFormat;
 	protected static PdAlgorithm pd;
-	private int channels = 2;
-	private int bitDepth = 16;
-	boolean USE_BIG_ENDIAN = false;
+	static private int channels = 2;
+	static private int bitDepth = 16;
+	static boolean USE_BIG_ENDIAN = false;
 	double outputLatency = .04; 
 	double inputLatency = .1;
 	static private SourceDataLine output;
@@ -44,14 +44,28 @@ public class Pd extends PdMaster implements Runnable {
 	
 	
 	//This bit here is to make sure we only create one instance of this class
-	private static Pd singleton = new Pd();
+	private static Pd singleton;
 			
 	public static Pd getInstance(PdAlgorithm pda) {
+			singleton  = new Pd();
 			pd = pda;
 			scheduler = new Thread(singleton);
 			scheduler.setName("pd-scheduler");
 			return singleton;
 	}
+	
+	public static Pd getInstance(PdAlgorithm pda, long sr, int ch, int bd, boolean bigEndian) {
+		
+		pda.setSampleRate(sr);
+		bitDepth = bd;
+		channels = ch;
+		USE_BIG_ENDIAN = bigEndian;
+		singleton  = new Pd();
+		pd = pda;
+		scheduler = new Thread(singleton);
+		scheduler.setName("pd-scheduler");
+		return singleton;
+}
 			
 	private Pd () {
 	
