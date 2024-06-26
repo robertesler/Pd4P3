@@ -1,1 +1,1 @@
-moduleSearchIndex = [{"l":"pdPlusPlusJavaTest"}]
+moduleSearchIndex = [];updateSearchResults();

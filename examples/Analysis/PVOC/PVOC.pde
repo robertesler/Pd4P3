@@ -9,6 +9,9 @@ the pitch w/o changing the length.
 The X-axis is the pitch
 The Y-axis is the time
 Click the mouse to rewind the sample.
+
+This example is still experimental.  It seems to work fin on Windows, Linux.
+It is a little buggy on MacOS and it's not tested on Android yet.
 */
 
 //declare Pd and create new class that inherits PdAlgorithm
