@@ -7,34 +7,40 @@ import com.pdplusplus.*;
  void setup() {
    size(640, 360);
    background(255);
-   
-   
    music = new MyMusic();
    /*
    You can use Processing's data path which is relative to the sketch, ./data/filename.wav or whatever. 
    Or see FileNameHelper.pde example for more ideas.  
    */
    String path = this.dataPath("Bach.wav");
+   /*
+   You can manually set the session's 
+   sample rate: 22050, 44100, 48000, 88200, 96000
+   channels: max 2 channels, see PortAudioMultiChannel.pde for more than 2
+   bit-depth: Java Sound only accepts 16-bit
+   and endian:  use false unless you know why to use true
+   SoundFiler will up or down sample automatically.
+   */
+   pd = Pd.getInstance(music, 48000, 2, 16, false);
    music.readFile(path);
-   
-   pd = Pd.getInstance(music);
+   println(pd.getSampleRate());
    //start the Pd engine thread
    pd.start();
    
  }
  
  void draw() {
-   background(255);
+  background(255);
   String s = "Prelude in C-minor by J.S Bach";
-fill(50);
-text(s, 10, 10, 80, 80);  // Text wraps within text box
+  fill(50);
+  text(s, 10, 10, 80, 80);  // Text wraps within text box
  }
  
  public void dispose() {
    //stop Pd engine
    pd.stop();
-  println("Pd4P3 audio engine stopped.");
-    super.dispose();
+   println("Pd4P3 audio engine stopped.");
+   super.dispose();
 }
  
  /*
@@ -54,8 +60,8 @@ text(s, 10, 10, 80, 80);  // Text wraps within text box
    int counter = 0;
    
    void readFile(String file) {
-    fileSize = wav.read(file);
-    soundFile = wav.getArray(); 
+     fileSize = wav.read(file);
+     soundFile = wav.getArray(); 
      println("soundFile size = " + soundFile.length);
    }
    
@@ -66,9 +72,9 @@ text(s, 10, 10, 80, 80);  // Text wraps within text box
        and soundFile[1] is the right channel and so forth.  If your file is mono just use something like:
        outputL = outputR = soundFile[counter++];
        If you have multiple channel output greater than stereo you could use a loop but you would also have
-       to change the Pd.java to accept more than two outputs.  If you require that kind of functionality contact
-       the author of Pd4P3 for help.
+       to incorporate the PortAudioMultiChannel.pde to get more than 2 outputs.
      */
+     
       if(counter != fileSize)
       {
           outputL = soundFile[counter++];
