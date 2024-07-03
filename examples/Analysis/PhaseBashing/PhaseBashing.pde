@@ -3,7 +3,7 @@ import com.pdplusplus.*;
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
- int fftWindowSize = 2048;
+ int fftWindowSize = 1024;
  
  void setup() {
    size(640, 360);
@@ -11,7 +11,12 @@ import com.pdplusplus.*;
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
-   
+   String path = this.dataPath("voice.wav");
+   music.loadSample(path);
+   music.setPitch(46);
+   music.setSpecShift(0);
+   music.setLoco(400);
+   music.setTime(4000);
    //start the Pd engine thread
    pd.start();
    
@@ -24,8 +29,8 @@ import com.pdplusplus.*;
  public void dispose() {
    //stop Pd engine
    pd.stop();
-  println("Pd4P3 audio engine stopped.");
-    super.dispose();
+   println("Pd4P3 audio engine stopped.");
+   super.dispose();
 }
  
  /*
@@ -33,27 +38,36 @@ import com.pdplusplus.*;
  */
  class MyMusic extends PdAlgorithm {
    
-   float dummy = 0;
+   Playback playback = new Playback();
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     outputL = outputR = 0; 
-     
+     outputL = outputR = playback.perform(); 
    }
   
+  public void loadSample(String f) {
+      playback.inSample(f); 
+  }
+  
+  synchronized void setLoco(double l) {
+    playback.setLoco(l);
+  }
   //We use synchronized to communicate with the audio thread
-   synchronized void setFloat(float f1) {
-     dummy = f1;
+   synchronized void setPitch(double p) {
+     playback.setPitch(p);
    }
    
-   synchronized float getFloat() {
-     return dummy;
+   synchronized void setTime(double t) {
+      playback.setTime(t); 
+   }
+   
+   synchronized void setSpecShift(double shift) {
+      playback.setSpecShift(shift);
    }
    
    //Free all objects created from Pd4P3 lib
    void free() {
-     
-     
+     playback.free();
    }
    
  }

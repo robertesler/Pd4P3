@@ -15,10 +15,10 @@ class Analysis extends PdMaster {
    double[] ifftWas = new double[fftWindowSize];
    double[] filter = new double[fftWindowSize/2];
    double[] bins = new double[fftWindowSize];
+   double[] phaseCtrl = new double[fftWindowSize];
    double[] sample;
    double[] nophase;
    long sampleCounter = 0;
-   double phaseCtrl = 0;
    int phaseCounter = 0;
    int tableCounter = 0;
    boolean bang = false;
@@ -26,6 +26,7 @@ class Analysis extends PdMaster {
    
    public Analysis() {
      createHann();
+     osc2.setPhase(0);
    }
      
   double doFFT(double input) {
@@ -64,13 +65,13 @@ class Analysis extends PdMaster {
           double imag = fft[j];
           //sqrt( real^2 + imag^2) = freq bin magnitude
           double magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
-          phaseCtrl = magnitude * controlOsc();
+          phaseCtrl[i] = (magnitude * controlOsc())/windowSize;
           
       }
       
       //resynthesize our FFT block, multiply by our Hann window again
        for(int i = 0; i < fftWindowSize; i++)
-        ifft[i] = rifft.perform(fft)* hann[i];
+        ifft[i] = rifft.perform(phaseCtrl)* hann[i];
  
       //our overlapping
       for(int i = 0 ; i < fftWindowSize; i++)
@@ -82,7 +83,7 @@ class Analysis extends PdMaster {
     }
     
     sampleCounter++;
-   return  sum[(int)sampleCounter]/windowSize;//divide by 3N/2
+   return  sum[(int)sampleCounter];//divide by 3N/2
   
   }
   
@@ -113,6 +114,7 @@ class Analysis extends PdMaster {
       if(i >= del)
         nophase[i] = d;
     }
+
   }
    
    double [] getTable() {
@@ -151,7 +153,6 @@ class Analysis extends PdMaster {
      }
      
  }
-   
    
    //Free all objects created from Pd4P3 lib
    void free() {
