@@ -12,7 +12,6 @@ class Wrap {
        out = f-k;
      else
        out = f - (k-1);
-       
      return out;
   }
   

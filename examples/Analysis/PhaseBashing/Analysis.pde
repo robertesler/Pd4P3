@@ -64,26 +64,34 @@ class Analysis extends PdMaster {
           double real = fft[i];
           double imag = fft[j];
           //sqrt( real^2 + imag^2) = freq bin magnitude
-          double magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
-          phaseCtrl[i] = (magnitude * controlOsc())/windowSize;
+          float magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
           
+          phaseCtrl[i] = (magnitude * controlOsc())/windowSize;
       }
       
       //resynthesize our FFT block, multiply by our Hann window again
        for(int i = 0; i < fftWindowSize; i++)
-        ifft[i] = rifft.perform(phaseCtrl)* hann[i];
- 
+       {
+         double rit = rifft.perform(phaseCtrl) * hann[i];
+         if(Double.isNaN(rit))
+         {
+           rit = 0;
+           println("FUCK!");
+         }
+         ifft[i] = rit;
+       }
+       
       //our overlapping
       for(int i = 0 ; i < fftWindowSize; i++)
-          sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
-      
+        sum[i] = ifft[i] + (i+hop < fftWindowSize ? ifftWas[i+hop] : 0);
+        
       ifftWas = sum;
-      
+       
       sampleCounter = -1;
     }
     
     sampleCounter++;
-   return  sum[(int)sampleCounter];//divide by 3N/2
+   return  sum[(int)sampleCounter];
   
   }
   
@@ -112,7 +120,9 @@ class Analysis extends PdMaster {
     {
       double d = doFFT(sample[i]);
       if(i >= del)
+      {
         nophase[i] = d;
+      }
     }
 
   }

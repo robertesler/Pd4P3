@@ -4,6 +4,10 @@ import com.pdplusplus.*;
  Pd pd;
  MyMusic music;
  int fftWindowSize = 1024;
+ double loco = 400;
+ double time = 4000;
+ double specshift = 12;
+ double pitch = 48;
  
  void setup() {
    size(640, 360);
@@ -11,19 +15,30 @@ import com.pdplusplus.*;
    
    music = new MyMusic();
    pd = Pd.getInstance(music);
+   pd.setFFTWindow(fftWindowSize);
+   pd.setSampleRate(44100);
    String path = this.dataPath("voice.wav");
    music.loadSample(path);
-   music.setPitch(46);
-   music.setSpecShift(0);
-   music.setLoco(400);
-   music.setTime(4000);
+   music.setPitch(pitch);
+   music.setSpecShift(specshift);
+   music.setLoco(loco);
+   music.setTime(time);
    //start the Pd engine thread
    pd.start();
    
  }
  
  void draw() {
+    specshift = map(mouseX, 0, width, -18, 18);
+    pitch = map(mouseY, height, 0, 26, 56);
+    music.setSpecShift(specshift);
+    music.setPitch(pitch);
+ }
+ 
+ void mousePressed() {
   
+   music.setLoco(loco);
+   music.setTime(time);
  }
  
  public void dispose() {
@@ -42,12 +57,14 @@ import com.pdplusplus.*;
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     outputL = outputR = playback.perform(); 
+     double out = playback.perform();
+     outputL = outputR = out; 
    }
   
   public void loadSample(String f) {
       playback.inSample(f); 
   }
+  
   
   synchronized void setLoco(double l) {
     playback.setLoco(l);

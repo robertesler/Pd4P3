@@ -15,6 +15,7 @@ class Playback extends PdMaster {
   double invblk = 0;
   double blksize = 0;
   
+  
   public Playback() {
     samphold = new SampleHold[6];
     tabread4 = new TabRead4[4];
@@ -56,7 +57,7 @@ class Playback extends PdMaster {
       double c = samphold[2].perform(((ln-w)+.5)*blksize, ph);
       double d = samphold[3].perform(sampPeriod*grainSize, w2);
       double e = samphold[4].perform(w, w2);
-      double f = samphold[5].perform((ln-w)+.5*blksize, w2);
+      double f = samphold[5].perform(((ln-w)+.5)*blksize, w2);
       
       double offset = a * (ph - .5);
       double cl = clip(a * invblk, 1, 1000) * (ph  - .5);
@@ -71,6 +72,7 @@ class Playback extends PdMaster {
       double sum2 = tabread4[2].perform(w2timesd + f + blksize) - t2; 
       double copyB = ((e * sum2) + t2) * winShape2;
       out = copyB + nextBlock;
+
       return out;
   }
   
@@ -82,7 +84,7 @@ class Playback extends PdMaster {
         tabread4[i].setTable(nophase); 
      }
   }
-  
+
   void setLoco(double l) {
     loco = ((l/100) * this.getSampleRate())/blksize; 
     line.perform(0,0);
