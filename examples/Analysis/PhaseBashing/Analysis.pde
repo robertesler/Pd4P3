@@ -64,21 +64,16 @@ class Analysis extends PdMaster {
           double real = fft[i];
           double imag = fft[j];
           //sqrt( real^2 + imag^2) = freq bin magnitude
-          float magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
-          
+         float magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
+         
           phaseCtrl[i] = (magnitude * controlOsc())/windowSize;
+          
       }
       
       //resynthesize our FFT block, multiply by our Hann window again
        for(int i = 0; i < fftWindowSize; i++)
        {
-         double rit = rifft.perform(phaseCtrl) * hann[i];
-         if(Double.isNaN(rit))
-         {
-           rit = 0;
-           println("FUCK!");
-         }
-         ifft[i] = rit;
+         ifft[i] = rifft.perform(phaseCtrl) * hann[i];
        }
        
       //our overlapping
@@ -111,7 +106,7 @@ class Analysis extends PdMaster {
     soundfiler.read(file);
     sample = soundfiler.getArray();
     nophase = new double[sample.length];
-    /*
+     /*
     Set a delay of one frame (windowSize/overlap) minus 1.
     This synchronize our nophase table with our analysis window.
     */
@@ -122,9 +117,11 @@ class Analysis extends PdMaster {
       if(i >= del)
       {
         nophase[i] = d;
+        //if(d > .9)
+         // println(d);
       }
+      
     }
-
   }
    
    double [] getTable() {
