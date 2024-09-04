@@ -1,5 +1,19 @@
 import com.pdplusplus.*;
 
+
+/*
+This is based on example I10.phase.bash.pd
+The sketch will analyze an audio file and apply 
+a linear filter across the center of all FFT frequency bins
+thus "bashing" all the spectral components to zero.
+Then the analysed audio is played back four timess,
+each slightly out-of-phase with the other thus creating
+a unique type of phase modulation. 
+
+You can control the pitch, spectral shift in this example
+but also this provides access to the time and location "loco".
+*/
+
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;

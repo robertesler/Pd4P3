@@ -66,6 +66,7 @@ class Analysis extends PdMaster {
           //sqrt( real^2 + imag^2) = freq bin magnitude
          float magnitude = sqrt( (float)(real * real) + (float)(imag * imag) );
          
+         //To we divide by the window size here to normalize before resynthesis
           phaseCtrl[i] = (magnitude * controlOsc())/windowSize;
           
       }
@@ -117,8 +118,6 @@ class Analysis extends PdMaster {
       if(i >= del)
       {
         nophase[i] = d;
-        //if(d > .9)
-         // println(d);
       }
       
     }

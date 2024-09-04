@@ -68,24 +68,11 @@ class Playback extends PdMaster {
       double w2timesd = (w2 - .5) * d;
       double cl2 = clip(d*invblk, 1, 1000) * (w2 - .5);
       double winShape2 = cos[1].perform(clip(cl2, -.5, .5)) + 1;
-      double t2 = tabread4[3].perform(w2timesd + f); //t2 is NaN
-      double sum2 = tabread4[2].perform(w2timesd + f + blksize) - t2; //sum2 is NaN
+      double t2 = tabread4[3].perform(w2timesd + f); 
+      double sum2 = tabread4[2].perform(w2timesd + f + blksize) - t2;
       double copyB = ((e * sum2) + t2) * winShape2;
       out = copyB + nextBlock;
       
-      /*
-        There is a small issue with clipping in the audio.
-        So far I've only experienced this with Mac (Intel)
-        But haven't tried M1+ chips yet.  
-        Windows seems fine.
-      */
-      
-      if(Double.isNaN(out))
-      {
-        //println("NaN Found!");
-        //println("w2timesd: " + w2timesd + " f: " + f);
-      }
-     
       return out;
   }
   
