@@ -100,7 +100,7 @@ This library will work on legacy systems or other custom OS configs.  For exampl
 4. In the Makefile you will see the line: `INC_JNI := /usr/lib/jvm/java-1.11.0-openjdk-amd64/include/`, change the `java-1.11.0-openjdk-amd64` to whatever version of java that is installed for your OS, on mine I had to change it to `java-11-openjdk-armhf`.
 5. Also change the line: `INC_JNI_MD := /usr/lib/jvm/java-1.11.0-openjdk-amd64/include/linux/` or `INC_JNI_MD := /Library/Java/JavaVirtualMachines/jdk-16.0.1.jdk/Contents/Home/include/darwin` to match your version on your system.  
 6. Type `make`  
-7. This will create a libpdplusplusTest.so or .dylib in the /build folder.  Copy it to your Pd4P3/library folder in your /home/pi/sketchbook/libraries/, or wherever your Processing libraries are installed.
+7. This will create a libpdplusplus.so or .dylib in the /build folder.  Copy it to your Pd4P3/library folder in your /home/pi/sketchbook/libraries/, or wherever your Processing libraries are installed.
 8. Type `make clean`
 9. Open Processing and open a Pd4P3 example to test the build was successful.  
 
