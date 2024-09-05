@@ -58,6 +58,7 @@ class Analysis extends PdMaster {
       the back half is imaginary.
       In this example we are just applying a very broad linear band filter.
       */
+      
       for(int i = 0, j = fftWindowSize-1; i < fftWindowSize/2; i++, j--)
       {
            

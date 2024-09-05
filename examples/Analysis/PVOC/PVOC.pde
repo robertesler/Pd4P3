@@ -10,8 +10,8 @@ The X-axis is the pitch
 The Y-axis is the time
 Click the mouse to rewind the sample.
 
-This example is still experimental.  It seems to work fin on Windows, Linux.
-It is a little buggy on MacOS and it's not tested on Android yet.
+This example is still experimental.  It seems to work fin on Windows, Linux and Android.
+It is a little buggy on MacOS.
 */
 
 //declare Pd and create new class that inherits PdAlgorithm
@@ -57,17 +57,23 @@ It is a little buggy on MacOS and it's not tested on Android yet.
    super.dispose();
 }
  
- /*
-   This is where you should put all of your music/audio behavior and DSP
- */
+/*
+The code for this is part of the Pd++ library
+for more information see either the pure data example, I07
+or here: 
+https://bitbucket.org/resler/pd/src/master/Pd%2B%2B/MyClasses/PhaseVocoder.cpp
+
+*/
  class MyMusic extends PdAlgorithm {
    
    float speed = 0;
    PhaseVocoder pvoc = new PhaseVocoder();
    
    public MyMusic() {
-     //This phase locks our two windows.  See the code for more info.
+     //This phase locks our two windows.
        pvoc.setLock(1);
+       pvoc.setSpeed(100);
+       pvoc.setTranspo(0);
    }
    
    void runAlgorithm(double in1, double in2) {
