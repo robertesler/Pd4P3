@@ -33,18 +33,18 @@ Use the mouse the change the linear volume (0-1) via the x-axis.
    background(255);
    dB = music.getDecibels(); 
    String v = str(vol);
-  String d = str((int)dB);
-  String s = "Volume: " + v + " | dB: " + d;
-fill(50);
-text(s, 10, 10, 250, 100); 
-vol = map(mouseX, 0, width, 0, 1);
-music.setVolume(vol);
+   String d = str((int)dB);
+   String s = "Volume: " + v + " | dB: " + d;
+   fill(50);
+   text(s, 10, 10, 250, 100); 
+   vol = map(mouseX, 0, width, 0, 1);
+   music.setVolume(vol);
  }
  
  public void dispose() {
    //stop Pd engine
    pd.stop();
-  println("Pd4P3 audio engine stopped.");
-    super.dispose();
+   println("Pd4P3 audio engine stopped.");
+   super.dispose();
 }
  

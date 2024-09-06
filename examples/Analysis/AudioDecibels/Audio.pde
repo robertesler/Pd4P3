@@ -4,7 +4,7 @@
  class MyMusic extends PdAlgorithm {
    
    SoundFiler wav = new SoundFiler();
-   Envelope env = new Envelope();
+   Envelope env = new Envelope(8192, 4096);
    
    double[] soundFile;
    double fileSize;
@@ -13,9 +13,9 @@
    double decibels = 0;
    
    void readFile(String file) {
-    fileSize = wav.read(file);
-    soundFile = wav.getArray(); 
-     println("soundFile size = " + soundFile.length);
+   fileSize = wav.read(file);
+   soundFile = wav.getArray(); 
+   println("soundFile size = " + soundFile.length);
 
    }
    
