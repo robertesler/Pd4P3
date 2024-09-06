@@ -16,6 +16,7 @@
     fileSize = wav.read(file);
     soundFile = wav.getArray(); 
      println("soundFile size = " + soundFile.length);
+
    }
    
    
@@ -26,6 +27,7 @@
      /* loop a stereo audio file, if using a mono file 
      use outputL = outputR = soundFile[counter++] * getVolume();
      */
+
       if(counter != fileSize)
       {
           outputL = soundFile[counter++] * getVolume();

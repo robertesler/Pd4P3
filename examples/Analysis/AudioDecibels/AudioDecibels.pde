@@ -2,7 +2,7 @@ import com.pdplusplus.*;
 
 
 /*
-This example reads an audio file and calculates the linear output (-1 to 1) to decibels
+This example reads an audio file and calculates the linear output (0 to 1) to decibels
 using the Pd4P3 class Envelope.  
 Use the mouse the change the linear volume (0-1) via the x-axis.
 */
@@ -14,15 +14,12 @@ Use the mouse the change the linear volume (0-1) via the x-axis.
  
  float vol = 1;
  double dB = 0;
- //change path to your file location, use \\ for Windows, use / for MacOS or Linux
- String file = "C:\\Users\\***\\Documents\\Processing\\libraries\\Pd4P3\\examples\\SoundFiles\\SoundFile\\Bach.wav";
  
 
  void setup() {
    size(640, 360);
    background(255);
-   
-   
+   String file = this.dataPath("Bach.wav");
    music = new MyMusic();
    music.readFile(file);
    pd = Pd.getInstance(music);
@@ -36,7 +33,7 @@ Use the mouse the change the linear volume (0-1) via the x-axis.
    background(255);
    dB = music.getDecibels(); 
    String v = str(vol);
-  String d = str((float)dB);
+  String d = str((int)dB);
   String s = "Volume: " + v + " | dB: " + d;
 fill(50);
 text(s, 10, 10, 250, 100); 
