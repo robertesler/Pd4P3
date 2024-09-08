@@ -121,6 +121,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Envelope</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,int)" class="member-name-link">Envelope</a><wbr>(int&nbsp;windowSize,
+ int&nbsp;period)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -138,24 +141,16 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Envelope.html" title="class in com.pdplusplus">Envelope</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#allocate()" class="member-name-link">allocate</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#free(com.pdplusplus.Envelope)" class="member-name-link">free</a><wbr>(<a href="Envelope.html" title="class in com.pdplusplus">Envelope</a>&nbsp;env)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Envelope.html" title="class in com.pdplusplus">Envelope</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#allocate(int,int)" class="member-name-link">allocate</a><wbr>(int&nbsp;ws,
+ int&nbsp;p)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPeriod()" class="member-name-link">getPeriod</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWindowSize()" class="member-name-link">getWindowSize</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#free(com.pdplusplus.Envelope)" class="member-name-link">free</a><wbr>(<a href="Envelope.html" title="class in com.pdplusplus">Envelope</a>&nbsp;env)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#perform(double)" class="member-name-link">perform</a><wbr>(double&nbsp;input)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#perform(double)" class="member-name-link">perform</a><wbr>(double&nbsp;input)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPeriod(int)" class="member-name-link">setPeriod</a><wbr>(int&nbsp;p)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setWindowSize(int)" class="member-name-link">setWindowSize</a><wbr>(int&nbsp;ws)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -196,6 +191,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Envelope</span>()</div>
 </section>
 </li>
+<li>
+<section class="detail" id="&lt;init&gt;(int,int)">
+<h3>Envelope</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Envelope</span><wbr><span class="parameters">(int&nbsp;windowSize,
+ int&nbsp;period)</span></div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -211,6 +213,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="allocate(int,int)">
+<h3>allocate</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Envelope.html" title="class in com.pdplusplus">Envelope</a></span>&nbsp;<span class="element-name">allocate</span><wbr><span class="parameters">(int&nbsp;ws,
+ int&nbsp;p)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="free(com.pdplusplus.Envelope)">
 <h3>free</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">free</span><wbr><span class="parameters">(<a href="Envelope.html" title="class in com.pdplusplus">Envelope</a>&nbsp;env)</span></div>
@@ -220,30 +229,6 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="perform(double)">
 <h3>perform</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">perform</span><wbr><span class="parameters">(double&nbsp;input)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="setWindowSize(int)">
-<h3>setWindowSize</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setWindowSize</span><wbr><span class="parameters">(int&nbsp;ws)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="setPeriod(int)">
-<h3>setPeriod</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPeriod</span><wbr><span class="parameters">(int&nbsp;p)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="getWindowSize()">
-<h3>getWindowSize</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getWindowSize</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getPeriod()">
-<h3>getPeriod</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getPeriod</span>()</div>
 </section>
 </li>
 </ul>

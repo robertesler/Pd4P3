@@ -2,9 +2,7 @@ import com.pdplusplus.*;
 
 /*
 This is an example of timbre stamp convolution.  
-I borrowed the voice.wav and bell.aiff samples
-from Pure Data in the ../doc/sound/ folder
-as per the Timbre Stamp help patch.  You can use
+I recreated the same timbre stamp example from Pure Data   You can use
 any uncompressed audio files you like.
 
 The x-axis adjusts the squelch.  See below for more.
