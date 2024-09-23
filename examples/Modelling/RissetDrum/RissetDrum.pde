@@ -24,11 +24,15 @@ import com.pdplusplus.*;
   // music.setBW(f);
  }
  
+ void mousePressed() {
+   music.setBang(true); 
+ }
+ 
  public void dispose() {
    //stop Pd engine
    pd.stop();
-  println("Pd4P3 audio engine stopped.");
-    super.dispose();
+   println("Pd4P3 audio engine stopped.");
+   super.dispose();
 }
  
  /*
@@ -36,58 +40,60 @@ import com.pdplusplus.*;
  */
  class MyMusic extends PdAlgorithm {
    
-   double freq = 100; //50-2000
-   double decay = .1; //2-60
-   double cf = 500; //100-5000
-   double bw = 400; //10-1000
-   double noiseMix = 25; //0-100
-   double gain = .8; //0-1
+   double freq = 100; //50-2000 Hz
+   double decay = 2; //2-60 secs
+   double cf = 500; //100-5000 Hz
+   double bw = 400; //10-1000 Hz
+   double noiseMix = 25; //0-100 %
+   double gain = .8; //0-1 linear
    boolean bang = false;
    
    Noise noise = new Noise();
    Oscillator [] osc = new Oscillator[4];
    Oscillator oscNoiseBand = new Oscillator();
    Oscillator oscTone = new Oscillator();
-   Line lineDecay = new Line();
-   Line lineDecay2 = new Line();
-   Line lineExp = new Line();
+   PercussionEnvelope percEnv1 = new PercussionEnvelope();
+   PercussionEnvelope percEnv2 = new PercussionEnvelope();
+   PercussionEnvelope percEnv3 = new PercussionEnvelope();
    Butterworth butterworth = new Butterworth();
    
    public MyMusic() {
      
      for(int i = 0; i < 4; i++)
        osc[i] = new Oscillator();
-     
+            
    }
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
      
-     if(getBang())
+     
+      if(getBang())
      {
-      //reset our envelopes
-      lineDecay.perform(0,0);
-      lineDecay2.perform(0,0);
-      lineExp.perform(0,0);
+       osc[0].setPhase(-.25);
+       osc[1].setPhase(-.25);
+       osc[2].setPhase(-.25);
+       osc[3].setPhase(-.25);
+       oscTone.setPhase(-.25);
+       oscNoiseBand.setPhase(0);
      }
      
      double toneGain = 1-(noiseMix/100);
-     double noiseBand = (butterworth.perform(noise.perform(), getBW(), 5000, 0, false) * noiseMix/100) * oscNoiseBand.perform(getCF()); 
-     double rdrum = ( (osc[0].perform(getFreq())*.167) + (osc[1].perform(getFreq()*1.6)*.25) + (osc[2].perform(getFreq()*2.2)*.333) +
-                    (osc[3].perform(getFreq()*2.6)*.25) ) * toneGain;
-     double stage1 = (noiseBand + rdrum) * percussionEnv(getDecay() * .5);
-     double output = stage1 + (oscTone.perform(getFreq()) * toneGain);//need to implement percussionEnv as class
-     outputL = outputR = output * getGain();
+     double noiseBand = (butterworth.perform(noise.perform(), getBW(), 5000, 0, false) * noiseMix/100) * 
+                         oscNoiseBand.perform(getCF()); 
+     double rdrum = ( (osc[0].perform(getFreq())*.167) + (osc[1].perform(getFreq()*1.6)*.25) + 
+                      (osc[2].perform(getFreq()*2.2)*.333) +  (osc[3].perform(getFreq()*2.6)*.25) ) * toneGain;
+     double stage1 = (noiseBand + rdrum) * percEnv1.perform(getDecay() * .5, getBang());
+     double tone = oscTone.perform(getFreq());
+     double output = (stage1 + (tone * toneGain)) * percEnv2.perform(getDecay(), getBang());
      
+    
+     setBang(false);
+     outputL = outputR = output * getGain();
+     // outputL = outputR = 0;
    }
    
-   private double percussionEnv(double dur) {
-        double halflife = (log(2)/10) * -1;
-        double l = lineExp.perform(100, dur*1000) * halflife;
-        double output = exp((float)l);
-        return output;
-    }
-  
+
   public void setDecay(double d) {
    decay = d; 
   }
@@ -135,6 +141,7 @@ import com.pdplusplus.*;
   public boolean getBang() {
    return bang; 
   }
+  
    //Free all objects created from Pd4P3 lib
    void free() {
      Noise.free(noise);
@@ -143,9 +150,9 @@ import com.pdplusplus.*;
       
       Oscillator.free(oscNoiseBand);
       Oscillator.free(oscTone);
-      Line.free(lineDecay);
-      Line.free(lineDecay2);
-      Line.free(lineExp);
+      percEnv1.free();
+      percEnv2.free();
+      percEnv3.free();
       butterworth.free();
    }
    
