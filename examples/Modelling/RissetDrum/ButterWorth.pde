@@ -3,6 +3,16 @@ This class is based on the Butterworth3~ pure data
 abstraction.  It is an implementation of a 3-pole, 3-zero
 butterworth lp/hp shelving filter.
 This should provide an 18dB per octave shelf.
+
+This algorithm is based on Miller Puckette's
+https://msp.ucsd.edu/techniques/latest/book-html/node145.html
+
+Use this class either as a low-pass shelving filter or a high-pass
+shelving filter.  Not both at the same time.  Use the norm argument,
+either 1=hp or 0=lp to change the configuration.
+
+If you need to swap the filter type during the DSP loop make sure to
+flag the argument clear=true
 */
 
 class Butterworth extends PdMaster {
@@ -41,6 +51,7 @@ class Butterworth extends PdMaster {
     return output; 
   }
   
+  //derived from Pd's buttercoef abstraction
   double [] buttercoef(double freq, int norm) {
     double [] butterPack = new double[6];
     
