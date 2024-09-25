@@ -44,13 +44,37 @@ Y = frequency
    stroke(255);
    strokeWeight(2);
    noFill();
-  
-   //You can change these to anything you want to try (freq, decay, cf, bw, noiseMix, gain)
-   decay = map(mouseX, 0, width, .1, 5);
-   freq = map(mouseY, height, 0, 60, 1000);
+   textSize(18);
+   text("Press 'q' to change cf and bw. Press 'w' to change noise and gain", 20, 20);
+   text("Press 'e' for freq and decay", 20, 50);
    
+   if(keyPressed)
+   {
+    if(key == 'q')
+     {
+       cf = map(mouseX, 0, width, 100, 5000);
+       bw = map(mouseY, height, 0, 10, 1000);
+       text("cf: " + (float)cf + " | bw: " + (float)bw, width/3, height/4);
+     }
+     else if (key == 'w')
+     {
+       noiseMix = map(mouseX, 0, width, 0, 100);
+       gain = map(mouseY, height, 0, .1, .98);
+       text("Noise: " + (float)noiseMix + " | Gain: " + (float)gain, width/3, height/4);
+     }
+     else
+     {
+       decay = map(mouseX, 0, width, .1, 5);
+       freq = map(mouseY, height, 0, 60, 1000);
+       text("Freq: " + (float)freq + " | Decay: " + (float)decay, width/3, height/4);
+     } 
+   }
+   
+   textSize(14);
+   text("Freq: " + (float)freq + " Decay: " + (float)decay + " cf: " + (float)cf + " bw: " + (float)bw +
+        " Noise: " + (float)noiseMix + " Gain: " + (float)gain, 20, height/1.1);
    output = music.getOutput();
- 
+   
  //Draw the shape based on the output block, once per frame
  //TODO perhaps look at syncing framerate to output.length??
    beginShape();
@@ -63,11 +87,16 @@ Y = frequency
   endShape(); 
  }
  
+ 
  void mousePressed() {
    //make sure to only update the new parameters here
    music.setBang(true); 
    music.setDecay(decay);
    music.setFreq(freq);
+   music.setCF(cf);
+   music.setBW(bw);
+   music.setNoise(noiseMix);
+   music.setGain(gain);
  }
  
  public void dispose() {
@@ -138,9 +167,7 @@ Y = frequency
     
      setBang(false);
      outputL = outputR = output * getGain() * oneTimeGain;
-     
-     if(outputL >= 1.0)
-       println(outputL);
+       
      //our ring buffer
      writeOutput[counter++] = (float)outputL;
      
@@ -151,7 +178,7 @@ Y = frequency
      }
    }
    
- private void setOutput(float [] o) {
+ synchronized private void setOutput(float [] o) {
    writeOutput = o;
  }
 
@@ -159,51 +186,59 @@ Y = frequency
     return writeOutput; 
  }
 
-  public void setDecay(double d) {
+  synchronized public void setDecay(double d) {
    decay = d; 
   }
   
-  public double getDecay() {
+  synchronized public double getDecay() {
    return decay; 
   }
   
-  public void setBW(double f) {
+  synchronized public void setBW(double f) {
      bw = f;
   }
   
-  public double getBW() {
+  synchronized public double getBW() {
    return bw; 
   }
   
-  public void setCF(double c) {
+  synchronized public void setCF(double c) {
     cf = c; 
   }
   
-  public double getCF() {
+  synchronized public double getCF() {
    return cf; 
   }
   
-  public void setFreq(double f) {
+  synchronized public void setFreq(double f) {
     freq = f; 
   }
   
-  public double getFreq() {
+  synchronized public double getFreq() {
     return freq;  
   }
   
-  public void setGain(double g) {
+  synchronized public void setGain(double g) {
    gain = g; 
   }
   
-  public double getGain() {
+  synchronized public double getGain() {
    return gain; 
   }
   
-  public void setBang(boolean b) {
+  synchronized public void setNoise(double n) {
+    noiseMix = n;  
+  }
+  
+  synchronized public double getNoise() {
+   return noiseMix; 
+  }
+  
+  synchronized public void setBang(boolean b) {
    bang = b; 
   }
 
-  public boolean getBang() {
+  synchronized public boolean getBang() {
    return bang; 
   }
   
