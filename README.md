@@ -8,7 +8,7 @@ This software is copyrighted by Robert Esler, 2024.
 Pd4P3 is written by Robert Esler with much help from Lisa Tolentino and part of the non-profit, urbanSTEW.  Pd++ is written by Robert Esler.  Pure Data is written by Miller Puckette and others:  see https://github.com/pure-data/pure-data
 
 # P3 library
-You can download the Processing  library via the Contribution Manager or here: https://www.robertesler.com/software/Pd4P3.zip
+You can download the Processing  library via the Contribution Manager.
 This is a 20-minute tutorial if you need it: https://youtu.be/zxsB6UWKb6g
 
 # Tutorials
