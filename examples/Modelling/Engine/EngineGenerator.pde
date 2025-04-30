@@ -1,33 +1,36 @@
 class EngineGenerator {
   
+  
+  //These are all the default values from the original patch engine003.pd
   private double speed = 0;
-  private double mixParabola = 0; 
-  private double mixCylinders = 0;
-  private double transmissionDelay1 = 0;
-  private double transmissionDelay2 = 0;
-  private double transmissionDelay3 = 0;
-  private double parabolaDelay = 0;
-  private double warpDelay = 0;
-  private double waveguideWarp = 0;
-  private double waveguideFeedback = 0;
-  private double wguideLength1 = 0;
-  private double wguideLength2 = 0;
-  private double wguideWidth1 = 0;
-  private double wguideWidth2 = 0;
-  private double overtonePhase1 = 0;
-  private double overtoneFreq1 = 0;
-  private double overtoneAmp1 = 0;
-  private double overtonePhase2 = 0;
-  private double overtoneFreq2 = 0;
-  private double overtoneAmp2 = 0;
-  private double overtonePhase3 = 0;
-  private double overtoneFreq3 = 0;
-  private double overtoneAmp3 = 0;
+  private double mixParabola = 0.929; 
+  private double mixCylinders = 0.842;
+  private double transmissionDelay1 = 0.125;
+  private double transmissionDelay2 = 0.196;
+  private double transmissionDelay3 = 0.385;
+  private double parabolaDelay = 0.141;
+  private double warpDelay = 0.338;
+  private double waveguideWarp = 0.629;
+  private double waveguideFeedback = 0.322;
+  private double wguideLength1 = 0.299;
+  private double wguideLength2 = 0.622;
+  private double wguideWidth1 = 0.377;
+  private double wguideWidth2 = 0.275;
+  private double overtonePhase1 = .645;
+  private double overtoneFreq1 = 0.275;
+  private double overtoneAmp1 = 0.031;
+  private double overtonePhase2 = 0.267;
+  private double overtoneFreq2 = 0.409;
+  private double overtoneAmp2 = 0.110;
+  private double overtonePhase3 = 0.732;
+  private double overtoneFreq3 = 0.370;
+  private double overtoneAmp3 = 0.094;
   
-  /*
-   This is for our main algorithm, perform()
-  */
+  //for spacewarping
+  double ewgfb1 = 0;
+  double ewgfb2 = 0;
   
+  // This is for our main algorithm, perform()
   VariableDelay vd1 = new VariableDelay();
   VariableDelay vd2 = new VariableDelay();
   VariableDelay vd3 = new VariableDelay();
@@ -37,19 +40,20 @@ class EngineGenerator {
   Line line = new Line();
   Phasor phasor = new Phasor();
   LowPass lop = new LowPass();
+  LowPass lop2 = new LowPass();
   HighPass hip = new HighPass();
   Wrap wrap1 = new Wrap();
   Wrap wrap2 = new Wrap();
   Wrap wrap3 = new Wrap();
   
-  /*
-   This is for overtone
-  */
+  Overtone overtone1 = new Overtone();
+  Overtone overtone2 = new Overtone();
+  Overtone overtone3 = new Overtone();
+  
+  // This is for overtone (ot)
   Wrap otWrap = new Wrap();
   
-  /*
-   Pd4P3 classes for fourstroke engine
-  */
+  // Pd4P3 classes for fourstroke engine (fs)
   VariableDelay fsVd1 = new VariableDelay();
   VariableDelay fsVd2 = new VariableDelay();
   VariableDelay fsVd3 = new VariableDelay(); 
@@ -70,10 +74,7 @@ class EngineGenerator {
   LowPass fsLop2 = new LowPass();
   Line fsLine = new Line();
   
-  /*
-  This is for space warping
-  */
-  
+  //This is for space warping (spw)
   VariableDelay spwVd1 = new VariableDelay();
   VariableDelay spwVd2 = new VariableDelay();
   VariableDelay spwVd3 = new VariableDelay();
@@ -88,52 +89,56 @@ class EngineGenerator {
   }
   
   double perform() {
-    double out = 0;
-    double spw = 0;
+
     hip.setCutoff(2);
-    double speedSig = phasor.perform(line.perform(getSpeed() * 30, 250));
+    lop.setCutoff(.2);
+    lop2.setCutoff(200);
+    double speedSig = phasor.perform(line.perform(getSpeed() * 30, 100));
     vd1.delayWrite(speedSig);
     vd2.delayWrite(speedSig);
     vd3.delayWrite(speedSig);
     vd4.delayWrite(speedSig);
     vd5.delayWrite(speedSig);
     double fse = fourstroke(speedSig);
-    double a = parabola(vd1.perform(getParabolaDelay() * 100)) * getMixParabola();
-    double wp =  vd2.perform(getWarpDelay() * 100);
+    double a1 = parabola(vd1.perform(getParabolaDelay() * 100)) * getMixParabola();
+    double a = lop2.perform(a1);
+    double wp =  cos.perform( vd2.perform(getWarpDelay() * 100) );
     double wgw = lop.perform( getSpeed() *  getWaveguideWarp() );
-    double b = ((1 - (1-wp))* wgw) + .5;
+    double b = ((1 - wp) * wgw) + .5;
     double c = (wp * wgw) + .5;
     double d1 = wrap1.perform( (float)vd3.perform((getTransmissionDelay2() * 100)) * 16);
-    double d = overtone(d1, getOvertonePhase1(), getOvertoneFreq1(), getOvertoneAmp1());
+    double d = overtone1.perform(d1, getOvertonePhase1(), getOvertoneFreq1(), getOvertoneAmp1());
     double e1 = wrap2.perform( (float)vd4.perform((getTransmissionDelay3() * 100)) * 4 );
-    double e = overtone(e1, getOvertonePhase3(), getOvertoneFreq3(), getOvertoneAmp3());
+    double e = overtone2.perform(e1, getOvertonePhase3(), getOvertoneFreq3(), getOvertoneAmp3());
     double f1 = wrap3.perform( (float)vd5.perform((getTransmissionDelay1() * 100)) * 8 );
-    double f = overtone(f1, getOvertonePhase2(), getOvertoneFreq2(), getOvertoneAmp2());
-    spw = spacewarping(a, b, c, d, e, f);
-    out = hip.perform(fse * getMixCylinders());
-    return (out * spw) * .5;
+    double f = overtone3.perform(f1, getOvertonePhase2(), getOvertoneFreq2(), getOvertoneAmp2());
+    double spw = spacewarping(a, b, c, d, e, f);
+    double out = hip.perform(fse * getMixCylinders());
+    return (spw + out) * .5;
+    //return d ;
   }
   
   /*
   This is totally bonkers, but it's just a a series of delays
+  NOTE: in the sub-patch inlets labeled d and c are backwards, as far as I can tell.
   */
   private double spacewarping(double a, double fm1, double fm2, 
   double b, double d, double c) 
   {
     double out = 0;
-    double ewgfb1 = 0;
-    double ewgfb2 = 0;
     
     spwHip1.setCutoff(30);
     spwHip2.setCutoff(200);
     spwHip3.setCutoff(200);
-    spwVd1.delayWrite(spwHip1.perform(a) * ewgfb2 * getWaveguideFeedback());
-    spwVd2.delayWrite( (spwVd1.perform(getWguideWidth2() * 40) * fm2) + b );
+    spwVd1.delayWrite(spwHip1.perform(a) + (ewgfb2 * getWaveguideFeedback()) );//e1a
+    double x = (spwVd1.perform(getWguideWidth2() * 40) * fm2) + b;
+    spwVd2.delayWrite(x);//e2a
     ewgfb1 = spwVd2.perform( (getWguideLength1() * 40) * fm1 );
-    spwVd3.delayWrite(c + ewgfb1);
-    spwVd4.delayWrite( spwVd3.perform(fm1 + (getWguideWidth1()*40)) + d );
+    spwVd3.delayWrite(c + ewgfb1);//e1b
+    double y = spwVd3.perform(fm1 * (getWguideWidth1()*40)) + d ;
+    spwVd4.delayWrite(y);//e2b
     ewgfb2 = spwVd4.perform(fm2 * (getWguideLength2() * 40));
-    out = spwHip2.perform((ewgfb1 + ewgfb2));
+    out = spwHip2.perform(ewgfb1 + ewgfb2 + x + y);
     return spwHip3.perform(out);
   }
   
@@ -158,7 +163,7 @@ class EngineGenerator {
      double a = fsCos1.perform( (speedSig + (vd1 * .5) ) - .75);
      double b = fsCos2.perform( (speedSig + (vd2 * .5) ) - .5);
      double c = fsCos3.perform( (speedSig + (vd3 * .5) ) - .25);
-     double d = fsCos4.perform(speedSig + (vd4 * .5) );
+     double d = fsCos4.perform(  speedSig + (vd4 * .5) );
      
      double s = fsLine.perform(speedScaled, 250);
      
@@ -175,39 +180,13 @@ class EngineGenerator {
      return out[0] + out[1] + out[2] + out[3]; 
   }
   
-  private double overtone(double drive, double phase, double freq, double amp) {
-   double out = 0;
-   double a = max(drive, phase) - phase;
-   double b = 1 / (1 - phase);
-   double c = phase * (freq * 12);
-   double d = a * b * c;
-   
-   double x = otWrap.perform((float)d) - .5; 
-   double y = (1 - drive) * ( ( (x*x) - 4) + 1) * .5;
-   out = (amp * 12) * y; 
-   return out; 
-  }
-  
   double parabola(double input) {
-     double out = input - .5;
-     double a = out * out;
-     double b = (a - 4) + 1;
+     double a = input - .5;
+     double b = ((a*a) * -4) + 1;
      return b * 3; 
   }
   
   //emulate [max~] a = input, b = input2, always return the higher value
- private double max(double a, double b) {
-   double max = 0;
-   if(a < b)
-   {
-     max = b;
-   }
-   if(a > b)
-   {
-     max = a; 
-   }
-   return max;
- }
  
  void free() {
     
@@ -257,11 +236,10 @@ class EngineGenerator {
   }
   
   /*************
-  all of our variables to the generator are below
+  all of our getters/setters to the generator are below
   range is 0-1 for all
   *************/
   
-
     public void setSpeed(double s) {
       this.speed = s;
     }
@@ -294,7 +272,6 @@ class EngineGenerator {
        return mixCylinders; 
     }
   
- 
     public double getTransmissionDelay1() {
         return transmissionDelay1;
     }
