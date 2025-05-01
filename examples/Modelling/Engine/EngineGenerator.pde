@@ -11,7 +11,7 @@ class EngineGenerator {
   private double parabolaDelay = 0.141;
   private double warpDelay = 0.338;
   private double waveguideWarp = 0.629;
-  private double waveguideFeedback = 0.322;
+  private double waveguideFeedback = 0.448;
   private double wguideLength1 = 0.299;
   private double wguideLength2 = 0.622;
   private double wguideWidth1 = 0.377;
@@ -41,6 +41,7 @@ class EngineGenerator {
   Phasor phasor = new Phasor();
   LowPass lop = new LowPass();
   LowPass lop2 = new LowPass();
+  LowPass lop3 = new LowPass();
   HighPass hip = new HighPass();
   Wrap wrap1 = new Wrap();
   Wrap wrap2 = new Wrap();
@@ -93,6 +94,7 @@ class EngineGenerator {
     hip.setCutoff(2);
     lop.setCutoff(.2);
     lop2.setCutoff(200);
+    lop3.setCutoff(700);
     double speedSig = phasor.perform(line.perform(getSpeed() * 30, 100));
     vd1.delayWrite(speedSig);
     vd2.delayWrite(speedSig);
@@ -114,8 +116,8 @@ class EngineGenerator {
     double f = overtone3.perform(f1, getOvertonePhase2(), getOvertoneFreq2(), getOvertoneAmp2());
     double spw = spacewarping(a, b, c, d, e, f);
     double out = hip.perform(fse * getMixCylinders());
-    return (spw + out) * .5;
-    //return d ;
+    return (lop3.perform(spw) + out) * .5;
+    //return 0 ;
   }
   
   /*
@@ -130,15 +132,16 @@ class EngineGenerator {
     spwHip1.setCutoff(30);
     spwHip2.setCutoff(200);
     spwHip3.setCutoff(200);
-    spwVd1.delayWrite(spwHip1.perform(a) + (ewgfb2 * getWaveguideFeedback()) );//e1a
-    double x = (spwVd1.perform(getWguideWidth2() * 40) * fm2) + b;
-    spwVd2.delayWrite(x);//e2a
+    double e1a = spwHip1.perform(a) + (ewgfb2 * getWaveguideFeedback());
+    spwVd1.delayWrite(e1a);//e1a
+    double e2a = (spwVd1.perform(getWguideWidth2() * 40) * fm2) + b;
+    spwVd2.delayWrite(e2a);//e2a
     ewgfb1 = spwVd2.perform( (getWguideLength1() * 40) * fm1 );
     spwVd3.delayWrite(c + ewgfb1);//e1b
-    double y = spwVd3.perform(fm1 * (getWguideWidth1()*40)) + d ;
-    spwVd4.delayWrite(y);//e2b
+    double e2b = spwVd3.perform(fm1 * (getWguideWidth1()*40)) + d ;
+    spwVd4.delayWrite(e2b);//e2b
     ewgfb2 = spwVd4.perform(fm2 * (getWguideLength2() * 40));
-    out = spwHip2.perform(ewgfb1 + ewgfb2 + x + y);
+    out = spwHip2.perform(ewgfb1 + ewgfb2 + e2a + e2b);
     return spwHip3.perform(out);
   }
   
@@ -201,6 +204,8 @@ class EngineGenerator {
     Line.free(line);
     Phasor.free(phasor);
     LowPass.free(lop);
+    LowPass.free(lop2);
+    LowPass.free(lop3);
     HighPass.free(hip);
     
     //four stroke engine delete memory
