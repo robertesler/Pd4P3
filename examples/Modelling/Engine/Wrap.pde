@@ -2,10 +2,10 @@
 class Wrap {
 
   
-  float perform(float in) {
-     float out = 0;
+  double perform(double in) {
+     double out = 0;
      int k;
-     float f = in;
+     double f = in;
      f = ((f > Integer.MAX_VALUE || f < Integer.MIN_VALUE) ? 0. : f);
      k = (int)f;
      if( k <= f)

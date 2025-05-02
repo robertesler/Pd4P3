@@ -108,16 +108,17 @@ class EngineGenerator {
     double wgw = lop.perform( getSpeed() *  getWaveguideWarp() );
     double b = ((1 - wp) * wgw) + .5;
     double c = (wp * wgw) + .5;
-    double d1 = wrap1.perform( (float)vd3.perform((getTransmissionDelay2() * 100)) * 16);
+    double d1 = wrap1.perform( vd3.perform((getTransmissionDelay2() * 100)) * 16);
     double d = overtone1.perform(d1, getOvertonePhase1(), getOvertoneFreq1(), getOvertoneAmp1());
-    double e1 = wrap2.perform( (float)vd4.perform((getTransmissionDelay3() * 100)) * 4 );
+    double e1 = wrap2.perform( vd4.perform((getTransmissionDelay3() * 100)) * 4 );
     double e = overtone2.perform(e1, getOvertonePhase3(), getOvertoneFreq3(), getOvertoneAmp3());
-    double f1 = wrap3.perform( (float)vd5.perform((getTransmissionDelay1() * 100)) * 8 );
+    double f1 = wrap3.perform( vd5.perform((getTransmissionDelay1() * 100)) * 8 );
     double f = overtone3.perform(f1, getOvertonePhase2(), getOvertoneFreq2(), getOvertoneAmp2());
     double spw = spacewarping(a, b, c, d, e, f);
     double out = hip.perform(fse * getMixCylinders());
-    return (lop3.perform(spw) + out) * .5;
-    //return 0 ;
+   // return (lop3.perform(spw) + out) * .5;
+    println(e);
+    return 0;
   }
   
   /*

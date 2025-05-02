@@ -9,7 +9,7 @@ class Overtone {
      double c = phase * (freq * 12);
      double d = a * b * c;
    
-     double x = wrap.perform((float)d) - .5; 
+     double x = wrap.perform(d) - .5; 
      double y = (1 - drive) * ( ( ( (x*x) * -4) + 1) * .5);
      double out = amp * 12 * y; 
      return out; 

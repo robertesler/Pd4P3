@@ -1,5 +1,6 @@
 class MotorGenerator {
   
+  //all initial values are based on motor2.pd from Farnell's repository
   private double runtime = .507;
   private double statorLevel = .634;
   private double brushLevel = .333;

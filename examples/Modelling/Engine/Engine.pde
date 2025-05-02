@@ -30,6 +30,8 @@ float[] output;
  
  void draw() {
   float s = map(mouseX, 0, width, 0, 1);
+  float ph = map(mouseY, height, 0, 0, 1);
+  music.setPhase(ph);
   music.setSpeed(s);
   
   // Set background color, noFill and stroke style
@@ -101,6 +103,10 @@ float[] output;
    synchronized float[] getOutput() {
      
     return writeOutput; 
+   }
+   
+   synchronized void setPhase(double ph) {
+      engine.setOvertonePhase3(ph); 
    }
    //Free all objects created from Pd4P3 lib
    void free() {
