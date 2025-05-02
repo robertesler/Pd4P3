@@ -8,7 +8,7 @@ class MotorGenerator {
   private double tubeRes = .126;
   private double volume = .236;
   private double timeEnv = 1;
-  
+  private boolean go = false;
   //perform
   Phasor phasor = new Phasor();
   
@@ -52,12 +52,13 @@ class MotorGenerator {
     
   }
   
-  double perform(boolean go) {
+  double perform() {
     double out = 0;
-    if(go)
+  
+    if(getGo())
     {  
        timeEnv = vline.perform(1, getRuntime() * 20000);
-       if(timeEnv == 1) go = false;
+       if(timeEnv == 1) setGo(false);
        double motor = motorEnvelope(timeEnv);
        double a = phasor.perform( (motor * (getMaxSpeed() * -2000)) );
        double b = (rotor(a) + stator(a)) + (tube(a, motor) * getTubeRes());
@@ -66,6 +67,7 @@ class MotorGenerator {
     else
     {
        timeEnv = 0; 
+       vline.perform(0,0);
        out = 0;
     }
     
@@ -195,6 +197,14 @@ class MotorGenerator {
 
     public void setVolume(double volume) {
         this.volume = volume;
+    }
+    
+    public boolean getGo() {
+       return go; 
+    }
+    
+    public void setGo(boolean go) {
+       this.go = go; 
     }
   
 }

@@ -4,7 +4,6 @@ import com.pdplusplus.*;
  Pd pd;
  MyMusic music;
  
- float dummyFloat = 1;
 
  void setup() {
    size(640, 360);
@@ -20,7 +19,13 @@ import com.pdplusplus.*;
  }
  
  void draw() {
-  
+   double t = map(mouseX, 0, width, 0, 1);
+   music.setTime(t);
+ }
+ 
+ void mousePressed() {
+   music.setBang(true);
+   
  }
  
  public void dispose() {
@@ -35,27 +40,33 @@ import com.pdplusplus.*;
  */
  class MyMusic extends PdAlgorithm {
    
-   float dummy = 0;
+   double time = .5;
+   MotorGenerator motor = new MotorGenerator();
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     outputL = outputR = 0; 
+     outputL = outputR = motor.perform(); 
      
    }
   
   //We use synchronized to communicate with the audio thread
-   synchronized void setFloat(float f1) {
-     dummy = f1;
+   synchronized void setTime(double t) {
+      motor.setRuntime(t);
    }
    
-   synchronized float getFloat() {
-     return dummy;
+   synchronized double getTime() {
+     return motor.getRuntime();
    }
    
+    synchronized void setBang(boolean b) {
+
+        motor.setGo(b);
+    }
+     
    //Free all objects created from Pd4P3 lib
    void free() {
      
-     
+     motor.free();
    }
    
  }
