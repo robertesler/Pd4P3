@@ -2,10 +2,10 @@ import com.pdplusplus.*;
 
 /*
 This example is based on Andy Farnell's engine examples from his book and patch
-repository "Designing Sound".  
+repository "Designing Sound", specifically patch engine003.pd
 
 It uses waveguide synthesis to simulate the various elements of the acoustics of
-a car engine.  It has three overtone excitors tuned in octaves, a four cylinder engine simulator,
+an engine.  It has three overtone excitors tuned in octaves, a four cylinder engine simulator,
 and a complex fm step that creates decent synthetic engine sounds.
 */
 
@@ -30,8 +30,6 @@ float[] output;
  
  void draw() {
   float s = map(mouseX, 0, width, 0, 1);
-  float ph = map(mouseY, height, 0, 0, 1);
-  music.setPhase(ph);
   music.setSpeed(s);
   
   // Set background color, noFill and stroke style
@@ -69,6 +67,7 @@ float[] output;
    
    float speed = 0;
    EngineGenerator engine = new EngineGenerator();
+   
    int block = 1024; //change this to bigger or small to get better graphing
    float[] writeOutput = new float[block];
    int counter = 0;
@@ -76,7 +75,8 @@ float[] output;
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
      outputL = outputR = engine.perform(); 
-     //our ring buffer
+     
+     //our ring buffer for the graphing
      writeOutput[counter++] = (float)outputL;
      
      if(counter == block)
@@ -105,9 +105,6 @@ float[] output;
     return writeOutput; 
    }
    
-   synchronized void setPhase(double ph) {
-      engine.setOvertonePhase3(ph); 
-   }
    //Free all objects created from Pd4P3 lib
    void free() {
     

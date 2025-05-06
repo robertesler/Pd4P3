@@ -18,11 +18,11 @@ class Overtone {
    //emulate [max~] a = input, b = input2, always return the higher value
  private double max(double a, double b) {
    double max = 0;
-   if(a <= b)
+   if(a < b)
    {
      max = b;
    }
-   if(a >= b)
+   if(a > b)
    {
      max = a; 
    }

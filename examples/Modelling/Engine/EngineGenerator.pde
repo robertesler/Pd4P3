@@ -26,6 +26,8 @@ class EngineGenerator {
   private double overtoneFreq3 = 0.370;
   private double overtoneAmp3 = 0.094;
   
+  private long counter = 0;
+  
   //for spacewarping
   double ewgfb1 = 0;
   double ewgfb2 = 0;
@@ -40,8 +42,6 @@ class EngineGenerator {
   Line line = new Line();
   Phasor phasor = new Phasor();
   LowPass lop = new LowPass();
-  LowPass lop2 = new LowPass();
-  LowPass lop3 = new LowPass();
   HighPass hip = new HighPass();
   Wrap wrap1 = new Wrap();
   Wrap wrap2 = new Wrap();
@@ -50,9 +50,6 @@ class EngineGenerator {
   Overtone overtone1 = new Overtone();
   Overtone overtone2 = new Overtone();
   Overtone overtone3 = new Overtone();
-  
-  // This is for overtone (ot)
-  Wrap otWrap = new Wrap();
   
   // Pd4P3 classes for fourstroke engine (fs)
   VariableDelay fsVd1 = new VariableDelay();
@@ -93,32 +90,29 @@ class EngineGenerator {
 
     hip.setCutoff(2);
     lop.setCutoff(.2);
-    lop2.setCutoff(200);
-    lop3.setCutoff(700);
-    double speedSig = phasor.perform(line.perform(getSpeed() * 30, 100));
+
+    double speedSig = phasor.perform(line.perform(getSpeed()*30, 100));
     vd1.delayWrite(speedSig);
     vd2.delayWrite(speedSig);
     vd3.delayWrite(speedSig);
     vd4.delayWrite(speedSig);
     vd5.delayWrite(speedSig);
     double fse = fourstroke(speedSig);
-    double a1 = parabola(vd1.perform(getParabolaDelay() * 100)) * getMixParabola();
-    double a = lop2.perform(a1);
-    double wp =  cos.perform( vd2.perform(getWarpDelay() * 100) );
+    double a = parabola(vd1.delayRead(getParabolaDelay() * 100)) * getMixParabola();
+    double wp =  cos.perform( vd2.delayRead(getWarpDelay() * 100) );
     double wgw = lop.perform( getSpeed() *  getWaveguideWarp() );
     double b = ((1 - wp) * wgw) + .5;
     double c = (wp * wgw) + .5;
-    double d1 = wrap1.perform( vd3.perform((getTransmissionDelay2() * 100)) * 16);
+    double d1 = wrap1.perform( vd3.delayRead((getTransmissionDelay2() * 100)) * 16);
     double d = overtone1.perform(d1, getOvertonePhase1(), getOvertoneFreq1(), getOvertoneAmp1());
-    double e1 = wrap2.perform( vd4.perform((getTransmissionDelay3() * 100)) * 4 );
+    double ee = vd4.delayRead(getTransmissionDelay3() * 100) * 4;
+    double e1 = wrap2.perform(ee);
     double e = overtone2.perform(e1, getOvertonePhase3(), getOvertoneFreq3(), getOvertoneAmp3());
-    double f1 = wrap3.perform( vd5.perform((getTransmissionDelay1() * 100)) * 8 );
+    double f1 = wrap3.perform( vd5.delayRead((getTransmissionDelay1() * 100)) * 8 );
     double f = overtone3.perform(f1, getOvertonePhase2(), getOvertoneFreq2(), getOvertoneAmp2());
     double spw = spacewarping(a, b, c, d, e, f);
     double out = hip.perform(fse * getMixCylinders());
-   // return (lop3.perform(spw) + out) * .5;
-    println(e);
-    return 0;
+    return (spw + out) * .5;
   }
   
   /*
@@ -205,8 +199,6 @@ class EngineGenerator {
     Line.free(line);
     Phasor.free(phasor);
     LowPass.free(lop);
-    LowPass.free(lop2);
-    LowPass.free(lop3);
     HighPass.free(hip);
     
     //four stroke engine delete memory
