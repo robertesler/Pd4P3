@@ -55,13 +55,15 @@ public class Pa extends PdMaster implements Runnable {
 			System.out.println( "  inputDeviceId   = " + inputDeviceId);
 			System.out.println( "  sampleRate  = " + sampleRate );
 			System.out.println( "  output device name = " + deviceInfo.name );
+			System.out.println( "  output device chs = " + deviceInfo.maxOutputChannels );
 			System.out.println( "  input device name = " + inputDeviceInfo.name );
-
-			streamParameters.channelCount = 2;
+			System.out.println( "  input device chs = " + inputDeviceInfo.maxInputChannels );
+			
+			streamParameters.channelCount = deviceInfo.maxOutputChannels;
 			streamParameters.device = deviceId;
 			streamParameters.suggestedLatency = deviceInfo.defaultLowOutputLatency;
 						
-			inputStreamParameters.channelCount = 2;
+			inputStreamParameters.channelCount = inputDeviceInfo.maxInputChannels;
 			inputStreamParameters.device = inputDeviceId;
 			inputStreamParameters.suggestedLatency = deviceInfo.defaultLowInputLatency;
 
