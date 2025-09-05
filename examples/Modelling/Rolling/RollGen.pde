@@ -3,7 +3,7 @@
 This is adapted from the "rolling" example Andy Farnell's book "Designing Sound"
 
 It has three parts, the oscillator that triggers the rolling
-and the ground, which feeds into a tin can simulator.
+and the ground, which feeds into a tin can (resonant chamber) simulator.
 
 In this example we use the amplitude of a LFO phasor to control
 our roll speed.
@@ -17,18 +17,18 @@ class RollGen {
   HighPass hip = new HighPass();
   Line line = new Line();
   
-  //regularRoll
+  //for regularRoll
   Wrap[] wrap = new Wrap[4];
-  HighPass rzero = new HighPass();
+  RealZero rzero = new RealZero();
   Phasor phasor_r = new Phasor();
   
-  //irregularGround
+  //for irregularGround
   Phasor phasor_g = new Phasor();
   SampleHold samphold = new SampleHold();
-  HighPass rzero_g = new HighPass();
+  RealZero rzero_g = new RealZero();
   Noise noise = new Noise();
   
-  //tinCan
+  //for tinCan
   BandPass[] bp = new BandPass[4];
   
   public RollGen() {
@@ -40,8 +40,6 @@ class RollGen {
     //set our filters here
     lop.setCutoff(.1);
     hip.setCutoff(200);
-    rzero.setCutoff(9000);
-    rzero_g.setCutoff(13000);
     bp[0].setCenterFrequency(359);
     bp[1].setCenterFrequency(426);
     bp[2].setCenterFrequency(1748);
@@ -52,47 +50,56 @@ class RollGen {
     bp[3].setQ(123);
   }
   
-  public double perform(double amp) {
+  public double perform(double amp, double freq) {
 
-    double a = ((phasor.perform(.5) * line.perform(amp, 50)) * .5) - .25;
+    double a = ((phasor.perform(freq) * line.perform(amp, 50)) * .5) - .25;
     double speed = lop.perform(cos.perform(a)) * 5;
     double b = regularRoll(speed) +  irregularGround(speed * .5);
-    double c = sqrt((float)speed * .1) * b;
+    double c = sqrt_p((float)speed * .1) * b;
     double out = tinCan(hip.perform(c));
     return out;
   }
   
-  //This behaves like a noisy, low passed oscillator
+  //This behaves like a noisy, high passed oscillator
   private double regularRoll(double speed) {
     double signal = phasor.perform(speed);
     double a = wrap[0].perform(signal * 2) * .1;
-    double b = wrap[1].perform(signal * 3) * .05;
-    double c = wrap[2].perform(signal * 4.2) * .02;
-    double d = wrap[3].perform(signal * 5.6) * .012;
-    double out = rzero.perform(a + b + c + d);
-    //println(out * out);
+    double b = wrap[1].perform(signal * 3) * .04;
+    double c = wrap[2].perform(signal * 4.2) * .01;
+    double d = wrap[3].perform(signal * 5.6) * .009;
+    double out = rzero.perform(a + b + c + d, .7);
     return out * out;
   }
   
-  //a noise generator but with some wiggle and lowpass
+  //a noise generator but with some wiggle and high pass
   private double irregularGround(double speed) {
     double n = noise.perform();
-    double a = max(n, 0);
+    double a = max(n, 0.1);
     double b = (n * .001) + phasor_g.perform(speed * 100);
     double c = samphold.perform(a, b);
-    double out = rzero.perform(c) * .05 * speed; 
+    double out = rzero.perform(c, .7) * .05 * speed; 
     return out;
   }
   
-  //This emulates a noisy, tuned cylinder
+  //This emulates a tuned cylinder
   private double tinCan(double in) {
      double a = bp[0].perform(in) * .2;
      double b = bp[1].perform(in) * .3;
      double c = bp[2].perform(in) * .3;
      double d = bp[3].perform(in) * .2;
      double out = a + b + c + d;
-     return clip(out * 1000, -.3, .3) * .4; 
+     return clip(out * 1000, -.6, .6) * .4; 
   }
+  
+  
+   public float sqrt_p(float x) {
+     float xhalf = 0.5f * x;
+     int i = Float.floatToIntBits(x);
+     i = 0x5f3759df - (i >> 1);
+     x = Float.intBitsToFloat(i);
+     x *= (1.5f - xhalf * x * x); 
+     return 1.0f / x;
+   }
   
      //emulate [clip~], a = input, b = low range, c = high range
    private double clip(double a, double b, double c) {
@@ -131,13 +138,13 @@ class RollGen {
     Line.free(line);
   
     //regularRoll
-    HighPass.free(rzero);
+    RealZero.free(rzero);
     Phasor.free(phasor_r);
   
     //irregularGround
     Phasor.free(phasor_g);
     SampleHold.free(samphold);
-    HighPass.free(rzero_g);
+    RealZero.free(rzero_g);
     Noise.free(noise);
   
   }
