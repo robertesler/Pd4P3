@@ -65,9 +65,9 @@ a name.  Perhaps it's the Esler Bing Synthesis Model.
    
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
-     double b = bing.perform(getPitch())*.8;
+     double b = bing.perform(getPitch());
      double r = rev.perform( b );
-     outputL = outputR = b + r; 
+     outputL = outputR = b * .5 + r * .3; 
      
    }
   
