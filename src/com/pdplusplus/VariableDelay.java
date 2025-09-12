@@ -14,6 +14,7 @@ public class VariableDelay extends PdMaster {
 	public long pointer;
 	
 	private static native long allocate0();
+	private static native long allocate1(double deltime);
 	private static native void free0(long ptr);
 	
 	/*write to the delay first*/
@@ -28,6 +29,10 @@ public class VariableDelay extends PdMaster {
 		this.pointer = allocate0();
 	}
 	
+	public VariableDelay(double deltime) {
+		this.pointer = allocate1(deltime);
+	}
+
 	public static VariableDelay allocate() {
 		return new VariableDelay();
 	}
