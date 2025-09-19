@@ -25,8 +25,11 @@ import javax.sound.sampled.DataLine;
 public class Pd extends PdMaster implements Runnable {
 
 	private static AudioFormat audioFormat;
+	private static AudioFormat inputAudioFormat;
 	protected static PdAlgorithm pd;
 	static private int channels = 2;
+	static private int inputChannels = 2;
+	static private int outputChannels = 2;
 	static private int bitDepth = 16;
 	static boolean USE_BIG_ENDIAN = false;
 	double outputLatency = .04; 
@@ -96,7 +99,8 @@ public class Pd extends PdMaster implements Runnable {
                  * */
                 if(deviceInfo.maxInputs < 2)
                 {
-                	this.setChannels(1);
+                	this.setInputChannels(1);
+					System.out.println("One input channel.");
                 }
                 
             }
@@ -121,7 +125,8 @@ public class Pd extends PdMaster implements Runnable {
                 
                 if(deviceInfo.maxOutputs < 2)
                 {
-                	this.setChannels(1);
+                	this.setOutputChannels(1);
+					System.out.println("One output channel.");
                 }
             }
 
@@ -130,7 +135,7 @@ public class Pd extends PdMaster implements Runnable {
         }
         
         
-       audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getChannels(), true, USE_BIG_ENDIAN);
+       audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getOutputChannels(), true, USE_BIG_ENDIAN);
        DataLine.Info infoOutput = new DataLine.Info(SourceDataLine.class, audioFormat);
         
        Mixer outputMixer = AudioSystem.getMixer(mixers[defaultOutputDeviceID]);
@@ -148,8 +153,8 @@ public class Pd extends PdMaster implements Runnable {
       //Get our input stream if using full duplex
       if(!halfDuplex)
       {
-    	  audioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getChannels(), true, USE_BIG_ENDIAN);
-          DataLine.Info infoInput = new DataLine.Info(TargetDataLine.class, audioFormat);
+    	  inputAudioFormat = new AudioFormat(this.getSampleRate(), this.getBitDepth(), this.getInputChannels(), true, USE_BIG_ENDIAN);
+          DataLine.Info infoInput = new DataLine.Info(TargetDataLine.class, inputAudioFormat);
           Mixer inputMixer = AudioSystem.getMixer(mixers[defaultInputDeviceID]);
           Line inputLine;
           
@@ -228,8 +233,8 @@ public class Pd extends PdMaster implements Runnable {
 			str = new AudioInputStream(input);
 		}
 		
-		byte[] inputByteBuffer = new byte[framesPerBuffer * channels * bitDepth/8];
-		float[] inputDoubleBuffer = new float[framesPerBuffer * channels];
+		byte[] inputByteBuffer = new byte[framesPerBuffer * inputChannels * bitDepth/8];
+		float[] inputDoubleBuffer = new float[framesPerBuffer * inputChannels];
 		
 		byte[] outputByteBuffer = new byte[framesPerBuffer * channels * bitDepth/8];
 		float[] outputDoubleBuffer = new float[framesPerBuffer * channels];
@@ -241,19 +246,20 @@ public class Pd extends PdMaster implements Runnable {
 		{
 			if(str != null)
 			{
+				int framesRead = 0;
 				//First Read from the input buffer
 		           try {  
-		        	   str.read(inputByteBuffer, 0, inputByteBuffer.length);
+		        	   framesRead = str.read(inputByteBuffer, 0, inputByteBuffer.length);
 		           }
 		           catch(Exception e) {
 		        	   System.out.println("Pd read exception: " + e);
 		           }
-		            // Convert BigEndian bytes to float samples, code adapted from JSyn, Phil Burk
+				   // Convert BigEndian bytes to float samples, code adapted from JSyn, Phil Burk
 		            int bi = 0;
 		            int j = 0;
 		            for (int i = 0; i < framesPerBuffer; i++) {
 		            	
-		            	if(channels == 1)
+		            	if(inputChannels == 1)
 		            	{
 		            		//Left Channel
 		            		int sample = inputByteBuffer[bi++] & 0x00FF; // little end
@@ -265,50 +271,53 @@ public class Pd extends PdMaster implements Runnable {
 		            	 * Right now this is hand wrapped for 2 channels, 16-bit
 		            	 */
 		            	
-		            	if(channels == 2)
+		            	if(inputChannels == 2)
 		            	{
 		            		//Left Channel
 		            		int sampleL = inputByteBuffer[bi++] & 0x00FF; // little end
 		            		sampleL = sampleL + (inputByteBuffer[bi++] << 8); // big end
 		            		inputDoubleBuffer[j++] = sampleL * (1.0f / 32767.0f);
-		               
-		            		//Right Channel
+
+							//Right Channel
 		            		int sampleR = inputByteBuffer[bi++] & 0x00FF; // little end
 		            		sampleR = sampleR + (inputByteBuffer[bi++] << 8); // big end
 		            		inputDoubleBuffer[j++] = sampleR * (1.0f / 32767.0f);
+			       		
 		            	}
 		               
 		            }
 			}
-			
-			
-			
+			      
 			//Let's get our audio block, in doubles, from pd.algorithm(), put in the outputDoubleBuffer[]
             int k = 0;
             for(int i = 0; i < framesPerBuffer; i++)
             {
             	
-            	if(channels == 1)
+            	if(outputChannels == 1)
             	{
             		int index = k++;
-            		
-            	
             		pd.runAlgorithm((double)inputDoubleBuffer[index], 0);
-            	
             		outputDoubleBuffer[index] = (float)(PdAlgorithm.outputL + PdAlgorithm.outputR) * .5f;
-            		
-            		
             	}
             	
-            	if(channels == 2)
+            	if(outputChannels == 2)
             	{
             		int indexL = k++;
             		int indexR = k++;
-            	
-            		pd.runAlgorithm((double)inputDoubleBuffer[indexL], (double)inputDoubleBuffer[indexR]);
-            	
-            		outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
-            		outputDoubleBuffer[indexR] =(float)PdAlgorithm.outputR;
+
+					if(inputChannels ==  1)
+					{
+						pd.runAlgorithm((double)inputDoubleBuffer[i], 0);
+            			outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
+            			outputDoubleBuffer[indexR] =(float)PdAlgorithm.outputR;
+					}
+					else
+					{
+						pd.runAlgorithm((double)inputDoubleBuffer[indexL], (double)inputDoubleBuffer[indexR]);
+            			outputDoubleBuffer[indexL] = (float)PdAlgorithm.outputL;
+            			outputDoubleBuffer[indexR] =(float)PdAlgorithm.outputR;
+					}
+            		
             	}
             }
 
@@ -382,12 +391,12 @@ public class Pd extends PdMaster implements Runnable {
 		try {
 			play = true;
 			int framesPerBuffer = pd.getBlockSize();
-			int outputBuffer = (int)((this.getSampleRate() * outputLatency) * this.getChannels() * (this.getBitDepth()/8));
-			int inputBuffer = (int)((this.getSampleRate() * inputLatency) * this.getChannels() * (this.getBitDepth()/8));
+			int outputBuffer = (int)((this.getSampleRate() * outputLatency) * this.getOutputChannels() * (this.getBitDepth()/8));
+			int inputBuffer = (int)((this.getSampleRate() * inputLatency) * this.getInputChannels() * (this.getBitDepth()/8));
 			//int framesPerBuffer = 8;
 			if(input != null)
 			{
-				input.open(audioFormat, inputBuffer);
+				input.open(inputAudioFormat, inputBuffer);
 				input.start();
 			}
 			if(output != null)
@@ -451,6 +460,22 @@ public class Pd extends PdMaster implements Runnable {
 	
 	private int getChannels() {
 		return channels;
+	}
+
+	private void setInputChannels(int ch) {
+		inputChannels = ch;
+	}
+	
+	private int getInputChannels() {
+		return inputChannels;
+	}
+
+	private void setOutputChannels(int ch) {
+		outputChannels = ch;
+	}
+	
+	private int getOutputChannels() {
+		return outputChannels;
 	}
 	
 	private void setBitDepth(int bd) {
