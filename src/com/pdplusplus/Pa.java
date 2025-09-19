@@ -91,8 +91,18 @@ public class Pa extends PdMaster implements Runnable {
 				 * */
 				for( int j = 0; j < framesPerBuffer; j++ )
 				{
-					float in1 = input[inputIndex++];
-					float in2 = input[inputIndex++];
+					float in1 = 0;
+					float in2 = 0;
+					if(inputStreamParameters.channelCount == 1)
+					{
+						in1 = input[inputIndex++];
+					}
+					else
+					{
+						in1 = input[inputIndex++];
+						in2 = input[inputIndex++];
+					}
+					
 					
 					pd.runAlgorithm((double)in1, (double)in2);
 					buffer[index++] = (float)PdAlgorithm.outputL;
