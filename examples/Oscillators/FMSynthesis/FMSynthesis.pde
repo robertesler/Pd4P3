@@ -37,7 +37,7 @@ import com.pdplusplus.*;
       noStroke();  // Don't draw a stroke around shapes
       circle(mouseX, mouseY, 55); 
       circleDraw = false;
-      music.setBang(circleDraw);
+      //music.setBang(circleDraw);
    }
  }
  

@@ -100,7 +100,6 @@ public class Pd extends PdMaster implements Runnable {
                 if(deviceInfo.maxInputs < 2)
                 {
                 	this.setInputChannels(1);
-					System.out.println("One input channel.");
                 }
                 
             }
@@ -126,7 +125,6 @@ public class Pd extends PdMaster implements Runnable {
                 if(deviceInfo.maxOutputs < 2)
                 {
                 	this.setOutputChannels(1);
-					System.out.println("One output channel.");
                 }
             }
 

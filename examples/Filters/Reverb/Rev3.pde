@@ -1,3 +1,14 @@
+/*
+This is an emulation of Pure Data's rev3~ object.
+It has 16 delay lines and 4 early reverberators
+Each delay line is mixed across a 5-layer matrix
+There are four variables:
+output level = 0-100
+liveness = 0-100
+crossover freq = 0-nyquist
+damping = 0-100%
+*/
+
 class Rev3 {
   
   private double outputLevel = 0;
@@ -33,6 +44,7 @@ class Rev3 {
     
   }
   
+  //returns four outputs, the last four delays in the matrix
   public double [] perform(double inputL, double inputR)  {
     double [] output = new double[4];
     double [] earlyReflections = new double[2];
@@ -58,6 +70,7 @@ class Rev3 {
     {
        delay[i].delayWrite(del[i]); 
     }
+    
     //layer 1, damping
     for(int i = 0; i < delay.length/4; i++)
     {
@@ -68,6 +81,7 @@ class Rev3 {
        
     }
     
+    //add our input to the signal chains
     del[0] = output[0] + inputL;
     del[1] = output[1] + inputR;
     del[2] = output[2];
@@ -81,8 +95,9 @@ class Rev3 {
     //layer 2, mixing every other del
     for(int i = 0; i < delay.length; i += 2)
     {
-      double a = del[i] * line2.perform(liveness/400, 35);
-      double b = del[i+1] * line2.perform(liveness/400, 35);
+      double fb = line2.perform(liveness/400, 35);
+      double a = del[i] * fb;
+      double b = del[i+1] * fb;
       del[i] = a + b;
       del[i+1] = a - b;      
     }
@@ -99,7 +114,7 @@ class Rev3 {
        del[i+3] = b - d;
     }
     
-    //layer 4, mixevery four, 1 -> 4, 2->5, 3->6, 4->7, 8->12, 9->13, 10->14, 11->15, 12->16
+    //layer 4, mix every four
     for(int i = 0; i < delay.length; i+=8)
     {
        double a = del[i];
@@ -121,7 +136,7 @@ class Rev3 {
     }
     
     //layer 5, mix first 8, with second 8
-      //1-8
+       //1-8
        double a = del[0];
        double b = del[1];
        double c = del[2];
@@ -174,22 +189,35 @@ class Rev3 {
     damping = d;
     for(int i = 0; i < lop.length; i++)
     {
-      lop[i].setCutoff(co);
+      lop[i].setCutoff(crossover);
     }
   }
   
   private double [] computeEarly(double inputL, double inputR) {
       double [] output = new double[2];
-      for(int i = 0; i < delEarly.length; i++)
-      {
-         delEarly[i].delayWrite(inputR);
-         early[i] = delEarly[i].perform(earlyDelTime[i]);
-         output[0] = early[i] - inputL;
-         output[1] = early[i] + inputR;
-      }
       
-      output[0] *= .3535;
-      output[1] *= .3535;
+      delEarly[0].delayWrite(inputR);
+      early[0] = delEarly[0].perform(earlyDelTime[0]);
+      double a = inputL - early[0];
+      double b = inputL + early[0] ;
+      
+      delEarly[1].delayWrite(a);
+      early[1] = delEarly[1].perform(earlyDelTime[1]);
+      double c = b - early[1];
+      double d = b + early[1];
+      
+      delEarly[2].delayWrite(c);
+      early[2] = delEarly[2].perform(earlyDelTime[2]);
+      double e = d - early[2];
+      double f = d + early[2];
+      
+      delEarly[3].delayWrite(e);
+      early[3] = delEarly[3].perform(earlyDelTime[3]);
+      double g = f - early[3];
+      double h = f + early[3];
+      
+      output[0] = g * .3535;
+      output[1] = h * .3535;
       
       return output;
   }
