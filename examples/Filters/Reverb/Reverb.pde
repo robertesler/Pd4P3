@@ -27,7 +27,7 @@ import com.pdplusplus.*;
    carrier = map(mouseX, 0, width, 200.0, 800.0);
    music.setFreq(carrier);
    
-   mix = map(mouseY, height, 0, .5, 2);
+   mix = map(mouseY, height, 0, .5, 1);
    music.setMix(mix);
 
    if(circleDraw)
@@ -67,7 +67,7 @@ import com.pdplusplus.*;
     float amplitude = .1;
     float mix = .7;
     boolean bang = false;
-    float attack = 500;
+    float attack = 1000;
     double env = 0;
     long counter = 0;
      
@@ -81,7 +81,7 @@ import com.pdplusplus.*;
      
      public MyMusic() 
      {
-        rev3.setAll(100, 90, 3000, 20); 
+        rev3.setAll(100, 92, 3000, 40); 
         hip.setCutoff(5);
      }
      
@@ -95,10 +95,8 @@ import com.pdplusplus.*;
      double sum = sig + sigSq + sigCube + sigQuad;
      double synth = hip.perform(sum * amplitude * env);
      double[] wet = rev3.perform(synth, synth);  
-    // outputL = (wet[0] + wet[2]) * getMix();//wet plus dry
-     //outputR = (wet[1] + wet[3]) * getMix();
-     outputL = wet[0];
-     outputR = wet[1];
+     outputL = synth * (1-getMix()) + (wet[0] + wet[2]) * getMix();//wet plus dry
+     outputR = synth * (1-getMix()) + (wet[1] + wet[3]) * getMix();
      
      /*
      This is another way to create an envelope

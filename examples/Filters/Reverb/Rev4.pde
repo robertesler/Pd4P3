@@ -1,3 +1,4 @@
+
 /*
 This is an emulation of Pure Data's rev3~ object.
 It has 16 delay lines and 4 early reverberators
@@ -53,6 +54,7 @@ class Rev3 {
     earlyReflections = computeEarly(inputL, inputR);
     output = doit(earlyReflections[0], earlyReflections[1]);
     double vol = line0.perform(line0.dbtorms(outputLevel), 30);
+    vol = vol > 100 ? 100 : vol;
     output[0] *= vol;
     output[1] *= vol;
     output[2] *= vol;
@@ -69,23 +71,33 @@ class Rev3 {
     for(int i = 0; i < delay.length; i++)
     {
        delay[i].delayWrite(del[i]); 
+       if(Double.isNaN(del[i]))
+       {
+         println("NaN top");
+       }
     }
     
     //layer 1, damping
+    double [] damp = new double[4];
     for(int i = 0; i < delay.length/4; i++)
     {
-       del[i] = delay[i].perform(delTime[i]);
-       output[i] = lop[i].perform(del[i]);
-       output[i] -= del[i];
-       output[i] *= line1.perform(damping/100, 50);
-       
+       double a = delay[i].perform(delTime[i]);
+       double b = lop[i].perform(a);
+       double c = b - a;
+       double kDamping = line1.perform(damping/100, 50);
+       kDamping = kDamping > 100 ? 100 : kDamping;
+       double d = c * kDamping;
+       damp[i] = a + d;
     }
     
     //add our input to the signal chains
-    del[0] = output[0] + inputL;
-    del[1] = output[1] + inputR;
-    del[2] = output[2];
-    del[3] = output[3];
+    double fb = line2.perform(liveness/400, 35);
+    fb = fb > 100 ? 100 : fb;
+    //double fb = .225;
+    del[0] = (damp[0] + inputL);
+    del[1] = (damp[1] + inputR);
+    del[2] = damp[2];
+    del[3] = damp[3];
     
     for(int i = 4; i < delay.length - 4; i++)
     {
@@ -95,7 +107,7 @@ class Rev3 {
     //layer 2, mixing every other del
     for(int i = 0; i < delay.length; i += 2)
     {
-      double fb = line2.perform(liveness/400, 35);
+      //double fb = line2.perform(liveness/400, 35);
       double a = del[i] * fb;
       double b = del[i+1] * fb;
       del[i] = a + b;
