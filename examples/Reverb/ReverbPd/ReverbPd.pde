@@ -64,10 +64,9 @@ import com.pdplusplus.*;
     Line line = new Line();
     Rev3 rev3 = new Rev3();
     float freq = 200;
-    float amplitude = .1;
-    float mix = .7;
+    float mix = 1;
     boolean bang = false;
-    float attack = 1000;
+    float attack = 500;
     double env = 0;
     long counter = 0;
      
@@ -79,11 +78,12 @@ import com.pdplusplus.*;
      4) Damping 0-100
      */
      
-     public MyMusic() 
-     {
-        rev3.setAll(100, 92, 3000, 40); 
-        hip.setCutoff(5);
-     }
+   public MyMusic() 
+   {
+      rev3.setAll(100, 90, 3000, 20); 
+      hip.setCutoff(5);
+      line.perform(-.25,0);
+   }
      
    //All DSP code goes here
    void runAlgorithm(double in1, double in2) {
@@ -93,10 +93,10 @@ import com.pdplusplus.*;
      double sigCube = sigSq * sig;
      double sigQuad = sigSq * sigSq;
      double sum = sig + sigSq + sigCube + sigQuad;
-     double synth = hip.perform(sum * amplitude * env);
+     double synth = hip.perform(sum * env);
      double[] wet = rev3.perform(synth, synth);  
-     outputL = synth * (1-getMix()) + (wet[0] + wet[2]) * getMix();//wet plus dry
-     outputR = synth * (1-getMix()) + (wet[1] + wet[3]) * getMix();
+     outputL = (synth * (1-getMix())) + ((wet[0] + wet[1]) * getMix());//wet plus dry
+     outputR = (synth * (1-getMix())) + ((wet[2] + wet[3]) * getMix());
      
      /*
      This is another way to create an envelope
@@ -104,22 +104,26 @@ import com.pdplusplus.*;
      */
      if(getBang())
      {
-       env = cos.perform( (line.perform(1, attack) * .5) - .25);  
+       env = cos.perform( line.perform(.25, attack)) * .1;  
        counter++;
      }
-   
+    
+     if(env == 0)
+     {
+       osc1.setPhase(-.25);
+     }
+     
      if(counter == (int)(line.getSampleRate() * (attack/1000)))
      {
        bang = false;
        counter = 0;
-       line.perform(0, 0); 
+       line.perform(-.25, 0); 
      }
      
    }
   
   //We use synchronized to communicate with the audio thread
- 
-    synchronized void setFreq(float f1) {
+   synchronized void setFreq(float f1) {
      freq = f1;
    }
    
@@ -132,7 +136,7 @@ import com.pdplusplus.*;
      bang = b;
    }
    
-  synchronized boolean getBang() { 
+   synchronized boolean getBang() { 
      return bang;
    }
    

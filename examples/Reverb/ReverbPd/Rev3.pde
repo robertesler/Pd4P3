@@ -28,6 +28,8 @@ class Rev3 {
   private double [] early = new double[4];
   private double [] del = new double[16];
   
+  private double kFactor = 1;
+  
   public Rev3() {
     
     for(int i = 0; i < delEarly.length; i++)
@@ -54,12 +56,11 @@ class Rev3 {
     earlyReflections = computeEarly(inputL, inputR);
     output = doit(earlyReflections[0], earlyReflections[1]);
     double vol = line0.perform(line0.dbtorms(outputLevel), 30);
-    vol = vol > 100 ? 100 : vol;
+    vol = vol > 1 ? 1 : vol;
     output[0] *= vol;
     output[1] *= vol;
     output[2] *= vol;
     output[3] *= vol;
-    
     return output;
   }
   
@@ -81,19 +82,18 @@ class Rev3 {
     double [] damp = new double[4];
     for(int i = 0; i < delay.length/4; i++)
     {
-       double a = delay[i].perform(delTime[i]);
+       double a = delay[i].perform(delTime[i] * kFactor);
        double b = lop[i].perform(a);
        double c = b - a;
        double kDamping = line1.perform(damping/100, 50);
-       kDamping = kDamping > 100 ? 100 : kDamping;
+       kDamping = kDamping > 1 ? 1 : kDamping;
        double d = c * kDamping;
        damp[i] = a + d;
     }
     
     //add our input to the signal chains
     double fb = line2.perform(liveness/400, 35);
-    fb = fb > 100 ? 100 : fb;
-    //double fb = .225;
+    fb = fb > .25 ? .25 : fb;
     del[0] = (damp[0] + inputL);
     del[1] = (damp[1] + inputR);
     del[2] = damp[2];
@@ -101,7 +101,7 @@ class Rev3 {
     
     for(int i = 4; i < delay.length - 4; i++)
     {
-      del[i] = delay[i].perform(delTime[i]);
+      del[i] = delay[i].perform(delTime[i] * kFactor);
     }
     
     //layer 2, mixing every other del
@@ -110,8 +110,8 @@ class Rev3 {
       //double fb = line2.perform(liveness/400, 35);
       double a = del[i] * fb;
       double b = del[i+1] * fb;
-      del[i] = a + b;
-      del[i+1] = a - b;      
+      del[i] = (a + b);
+      del[i+1] = (a - b);   
     }
     //layer 3, mix 1 with 3, 2 with 4
     for(int i = 0; i < delay.length; i += 4)
@@ -183,12 +183,11 @@ class Rev3 {
        del[14] = g - o;
        del[15] = h - p;
     
-       
-    //write our outputs
-    output[0] = del[12];
-    output[1] = del[13];
-    output[2] = del[14];
-    output[3] = del[15];
+       //write our outputs
+       output[0] = del[12];
+       output[1] = del[13];
+       output[2] = del[14];
+       output[3] = del[15];
     
     return output;
     
@@ -208,10 +207,13 @@ class Rev3 {
   private double [] computeEarly(double inputL, double inputR) {
       double [] output = new double[2];
       
-      delEarly[0].delayWrite(inputR);
+      double x = inputL - inputR;
+      double y = inputL + inputR;
+      
+      delEarly[0].delayWrite(x);
       early[0] = delEarly[0].perform(earlyDelTime[0]);
-      double a = inputL - early[0];
-      double b = inputL + early[0] ;
+      double a = y - early[0];
+      double b = y + early[0];
       
       delEarly[1].delayWrite(a);
       early[1] = delEarly[1].perform(earlyDelTime[1]);
