@@ -207,8 +207,8 @@ class Rev3 {
   private double [] computeEarly(double inputL, double inputR) {
       double [] output = new double[2];
       
-      double x = inputL - inputR;
-      double y = inputL + inputR;
+      double x = inputR;
+      double y = inputL;
       
       delEarly[0].delayWrite(x);
       early[0] = delEarly[0].perform(earlyDelTime[0]);

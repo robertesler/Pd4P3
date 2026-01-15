@@ -1,5 +1,18 @@
 import com.pdplusplus.*;
 
+/*
+This is an emulation of a reverberator with 16 delay lines
+and early reflections. 
+
+It is based on Miller Puckette's [rev3~] abstraction.  
+I've added some dither on the output to smooth things out
+a little, but you will notice it will sound different from
+Pd because we are using double precision and Pd uses single.
+
+The X-axis is pitch.
+The Y-axis is mix.
+*/
+
 //declare Pd and create new class that inherits PdAlgorithm
  Pd pd;
  MyMusic music;
@@ -69,7 +82,8 @@ import com.pdplusplus.*;
     float attack = 500;
     double env = 0;
     long counter = 0;
-     
+    static final double DITHER_SCALE = 1.0 / (1L << 32);
+    final java.util.Random rng = new java.util.Random();
      /*
      Set our four variables:
      1) Output level 0-100
@@ -94,10 +108,13 @@ import com.pdplusplus.*;
      double sigQuad = sigSq * sigSq;
      double sum = sig + sigSq + sigCube + sigQuad;
      double synth = hip.perform(sum * env);
-     double[] wet = rev3.perform(synth, synth);  
+     double[] wet = rev3.perform(synth, synth * -1);  
      outputL = (synth * (1-getMix())) + ((wet[0] + wet[1]) * getMix());//wet plus dry
      outputR = (synth * (1-getMix())) + ((wet[2] + wet[3]) * getMix());
-     
+     //outputL = (wet[0] + wet[1]) * getMix();//wet plus dry
+     //outputR = (wet[2] + wet[3]) * getMix();
+     outputL = ditherToFloat(outputL);
+     outputR = ditherToFloat(outputR);
      /*
      This is another way to create an envelope
      It creates a sinusoidal shape using cosine
@@ -120,6 +137,19 @@ import com.pdplusplus.*;
        line.perform(-.25, 0); 
      }
      
+   }
+  
+  private float ditherToFloat(double x) {
+    
+     double r1 = rng.nextDouble();
+     double r2 = rng.nextDouble();
+     double tpdf = (r1-r2) * DITHER_SCALE;
+     
+     double y = x + tpdf;
+     
+     if(y > 1.0) y = 1.0;
+     if(y < -1.0) y = -1.0;
+     return (float)y;
    }
   
   //We use synchronized to communicate with the audio thread
