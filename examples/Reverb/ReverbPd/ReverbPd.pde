@@ -5,9 +5,6 @@ This is an emulation of a reverberator with 16 delay lines
 and early reflections. 
 
 It is based on Miller Puckette's [rev3~] abstraction.  
-I've added some dither on the output to smooth things out
-a little, but you will notice it will sound different from
-Pd because we are using double precision and Pd uses single.
 
 The X-axis is pitch.
 The Y-axis is mix.
@@ -59,6 +56,7 @@ The Y-axis is mix.
  void mouseClicked() {
    music.setBang(true);
    circleDraw = true;
+   println(carrier);
  }
  
  public void dispose() {
@@ -75,6 +73,7 @@ The Y-axis is mix.
     HighPass hip = new HighPass();
     Cosine cos = new Cosine();
     Line line = new Line();
+    Noise ditherNoise = new Noise();
     Rev3 rev3 = new Rev3();
     float freq = 200;
     float mix = 1;
@@ -94,7 +93,7 @@ The Y-axis is mix.
      
    public MyMusic() 
    {
-      rev3.setAll(100, 90, 3000, 20); 
+      rev3.setAll(100, 90, 3000, 50); 
       hip.setCutoff(5);
       line.perform(-.25,0);
    }
@@ -111,8 +110,8 @@ The Y-axis is mix.
      double[] wet = rev3.perform(synth, synth * -1);  
      outputL = (synth * (1-getMix())) + ((wet[0] + wet[1]) * getMix());//wet plus dry
      outputR = (synth * (1-getMix())) + ((wet[2] + wet[3]) * getMix());
-     //outputL = (wet[0] + wet[1]) * getMix();//wet plus dry
-     //outputR = (wet[2] + wet[3]) * getMix();
+     
+     //We're going to apply some dither to smooth out our reverb tail, a little
      outputL = ditherToFloat(outputL);
      outputR = ditherToFloat(outputR);
      /*
@@ -143,8 +142,7 @@ The Y-axis is mix.
     
      double r1 = rng.nextDouble();
      double r2 = rng.nextDouble();
-     double tpdf = (r1-r2) * DITHER_SCALE;
-     
+     double tpdf = ditherNoise.perform() * DITHER_SCALE;
      double y = x + tpdf;
      
      if(y > 1.0) y = 1.0;
@@ -183,6 +181,7 @@ The Y-axis is mix.
      HighPass.free(hip);
      Cosine.free(cos);
      Line.free(line);
+     Noise.free(ditherNoise);
      rev3.free();
    }
    

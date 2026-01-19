@@ -1,13 +1,24 @@
 
 /*
-This is an emulation of Pure Data's rev3~ object.
-It has 16 delay lines and 4 early reverberators
-Each delay line is mixed across a 5-layer matrix
-There are four variables:
-output level = 0-100
-liveness = 0-100
-crossover freq = 0-nyquist
-damping = 0-100%
+This class emulates Pure Data’s rev3~ reverberator.
+It uses 4 early‑reflection delay lines followed by a 16‑delay 
+feedback network mixed through a stable, normalized 5-layer Hadamard matrix.
+
+The reverb tail is shaped by a two‑stage damping system:
+Primary damping: low‑pass filters on the first 4 delay lines
+Secondary damping: gentle high‑frequency loss on the remaining 12 lines
+
+Both stages use a smooth damping coefficient controlled by the user
+
+Reverb time (RT60) is controlled by a nonlinear liveness curve, 
+giving smooth control from short to long tails while maintaining 
+stability in double precision.
+
+User parameters
+output level: 0–100
+liveness: 0–100 (mapped through a power curve to feedback gain)
+crossover frequency: 0–Nyquist (sets damping filter cutoff)
+damping: 0–100% (controls HF decay rate)
 */
 
 class Rev3 {
@@ -18,31 +29,36 @@ class Rev3 {
   private double damping = 0;
   VariableDelay [] delEarly = new VariableDelay[4];
   VariableDelay [] delay = new VariableDelay[16];
-  LowPass [] lop = new LowPass[4];
+  LowPass [] lop = new LowPass[16];
+  Notch [] notch = new Notch[4];
   Line line0 = new Line();
   Line line1 = new Line();
   Line line2 = new Line();
+  Noise noiseL = new Noise();
+  Noise noiseR = new Noise();
   private double [] earlyDelTime = {1.42763, 3.23873,5.2345, 7.82312};
   private double [] delTime = {10,11.6356, 13.4567, 16.7345, 20.1862, 25.7417, 31.4693, 38.2944,
                         46.6838, 55.4567, 65.1755, 76.8243, 88.5623, 101.278, 115.397, 130.502};
   private double [] early = new double[4];
   private double [] del = new double[16];
   
-  private double kFactor = 1;
-  
   public Rev3() {
     
     for(int i = 0; i < delEarly.length; i++)
     {
         delEarly[i] = new VariableDelay();
-        lop[i] = new LowPass();
         early[i] = 0;
+        notch[i] = new Notch();
+        notch[i].setCenterFrequency(300);
+        notch[i].setQ(3);
     }
     
      for(int i = 0; i < delay.length; i++)
     {
         delay[i] = new VariableDelay();
         del[i] = 0;
+        lop[i] = new LowPass();
+        lop[i].setCutoff(10000);
     }
     
   }
@@ -54,13 +70,21 @@ class Rev3 {
     
     //early reflections
     earlyReflections = computeEarly(inputL, inputR);
-    output = doit(earlyReflections[0], earlyReflections[1]);
+    double nLeft = noiseL.perform() * 1e-07;
+    double nRight = noiseR.perform() * 1e-07;
+    output = doit(earlyReflections[0] + nLeft, 
+                  earlyReflections[1] + nRight);
     double vol = line0.perform(line0.dbtorms(outputLevel), 30);
-    vol = vol > 1 ? 1 : vol;
-    output[0] *= vol;
-    output[1] *= vol;
-    output[2] *= vol;
-    output[3] *= vol;
+    vol = Math.min(vol, .999);
+    /*
+    Our reverberator has a resonant frequency of around
+    300Hz so we notch that out a little so we don't get
+    any distortion in our system.
+    */
+    output[0] = notch[0].perform(output[0]) * vol;
+    output[1] = notch[1].perform(output[1]) * vol;
+    output[2] = notch[2].perform(output[2]) * vol;
+    output[3] = notch[3].perform(output[3]) * vol;
     return output;
   }
   
@@ -72,36 +96,39 @@ class Rev3 {
     for(int i = 0; i < delay.length; i++)
     {
        delay[i].delayWrite(del[i]); 
-       if(Double.isNaN(del[i]))
-       {
-         println("NaN top");
-       }
     }
     
     //layer 1, damping
     double [] damp = new double[4];
+    double target = Math.pow(damping / 100.0, 2.0);
+    double kDamping = line1.perform(target, 50);
+    kDamping = Math.min(kDamping, 1.0);
     for(int i = 0; i < delay.length/4; i++)
     {
-       double a = delay[i].perform(delTime[i] * kFactor);
+       double a = delay[i].perform(delTime[i]);
        double b = lop[i].perform(a);
        double c = b - a;
-       double kDamping = line1.perform(damping/100, 50);
-       kDamping = kDamping > 1 ? 1 : kDamping;
        double d = c * kDamping;
        damp[i] = a + d;
     }
     
     //add our input to the signal chains
-    double fb = line2.perform(liveness/400, 35);
-    fb = fb > .25 ? .25 : fb;
+    double x = line2.perform(liveness/100, 35);
+    double fb = 1.0 - Math.pow(1.0 - x, 1.3);
+    fb = Math.min(fb, 0.999);
     del[0] = (damp[0] + inputL);
     del[1] = (damp[1] + inputR);
     del[2] = damp[2];
     del[3] = damp[3];
     
+    //add general low pass on remaining delay lines
     for(int i = 4; i < delay.length - 4; i++)
     {
-      del[i] = delay[i].perform(delTime[i] * kFactor);
+      double a = delay[i].perform(delTime[i]);
+      double b = lop[i].perform(a);
+      double c = b - a;
+      double d = c * (kDamping * .1);
+      del[i] = a + d;
     }
     
     //layer 2, mixing every other del
@@ -120,10 +147,10 @@ class Rev3 {
        double b = del[i+1];
        double c = del[i+2];
        double d = del[i+3];
-       del[i] = a + c;
-       del[i+1] = b + d;
-       del[i+2] = a - c;
-       del[i+3] = b - d;
+       del[i] = (a + c);
+       del[i+1] = (b + d);
+       del[i+2] = (a - c);
+       del[i+3] = (b - d);
     }
     
     //layer 4, mix every four
@@ -137,14 +164,14 @@ class Rev3 {
        double f = del[i+5];
        double g = del[i+6];
        double h = del[i+7];
-       del[i] = a + e;
-       del[i+1] = b + f;
-       del[i+2] = c + g;
-       del[i+3] = d + h;
-       del[i+4] = a - e;
-       del[i+5] = b - f;
-       del[i+6] = c - g;
-       del[i+7] = d - h;
+       del[i] = (a + e);
+       del[i+1] = (b + f);
+       del[i+2] = (c + g);
+       del[i+3] = (d + h);
+       del[i+4] = (a - e);
+       del[i+5] = (b - f);
+       del[i+6] = (c - g);
+       del[i+7] = (d - h);
     }
     
     //layer 5, mix first 8, with second 8
@@ -166,22 +193,22 @@ class Rev3 {
        double n = del[13];
        double o = del[14];
        double p = del[15];
-       del[0] = a + i;
-       del[1] = b + j;
-       del[2] = c + k;
-       del[3] = d + l;
-       del[4] = e + m;
-       del[5] = f + n;
-       del[6] = g + o;
-       del[7] = h + p;
-       del[8] = a - i;
-       del[9] = b - j;
-       del[10] = c - k;
-       del[11] = d - l;
-       del[12] = e - m;
-       del[13] = f - n;
-       del[14] = g - o;
-       del[15] = h - p;
+       del[0] = (a + i) * .25;
+       del[1] = (b + j) * .25;
+       del[2] = (c + k) * .25;
+       del[3] = (d + l) * .25;
+       del[4] = (e + m) * .25;
+       del[5] = (f + n) * .25;
+       del[6] = (g + o) * .25;
+       del[7] = (h + p) * .25;
+       del[8] = (a - i) * .25;
+       del[9] = (b - j) * .25;
+       del[10] = (c - k) * .25;
+       del[11] = (d - l) * .25;
+       del[12] = (e - m) * .25;
+       del[13] = (f - n) * .25;
+       del[14] = (g - o) * .25;
+       del[15] = (h - p) * .25;
     
        //write our outputs
        output[0] = del[12];
@@ -198,10 +225,17 @@ class Rev3 {
     liveness = l;
     crossover = co;
     damping = d;
-    for(int i = 0; i < lop.length; i++)
+    //The crossover point only applies to the first 4 lop
+    for(int i = 0; i < lop.length/4; i++)
     {
       lop[i].setCutoff(crossover);
     }
+    
+    for(int i = 4; i < lop.length-4; i++)
+    {
+      lop[i].setCutoff(crossover * 2);
+    }
+    
   }
   
   private double [] computeEarly(double inputL, double inputR) {
@@ -241,16 +275,19 @@ class Rev3 {
     Line.free(line0);
     Line.free(line1);
     Line.free(line2);
+    Noise.free(noiseL);
+    Noise.free(noiseR);
     
     for(int i = 0; i < delEarly.length; i++)
     {
         VariableDelay.free(delEarly[i]);
-        LowPass.free(lop[i]);
+        notch[i].free();
     }
     
     for(int i = 0; i < delay.length; i++)
     {
         VariableDelay.free(delay[i]);
+        LowPass.free(lop[i]);
     }
     
   }
