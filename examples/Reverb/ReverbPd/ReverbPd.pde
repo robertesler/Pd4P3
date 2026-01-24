@@ -93,7 +93,7 @@ The Y-axis is mix.
      
    public MyMusic() 
    {
-      rev3.setAll(100, 90, 3000, 50); 
+      rev3.setAll(98, 92, 4000, 60); 
       hip.setCutoff(5);
       line.perform(-.25,0);
    }

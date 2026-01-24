@@ -63,27 +63,26 @@ class Notch extends PdMaster {
         BiQuad.free(biquad); 
      }
   
-     public boolean check_stability(float fb1, float fb2)
-{
-    float discriminant = fb1 * fb1 + 4 * fb2;
+     public boolean check_stability(float fb1, float fb2) {
+       float discriminant = fb1 * fb1 + 4 * fb2;
 
-    if (discriminant < 0) /* imaginary roots -- resonant filter */
-    {
+       if (discriminant < 0) /* imaginary roots -- resonant filter */
+       {
       /* they're conjugates so we just check that the product
       is less than one */
-        if (fb2 >= -1.0f) return true;
-    }
-    else    /* real roots */
-    {
-      /* check that the parabola 1 - fb1 x - fb2 x^2 has a
-    vertex between -1 and 1, and that it's nonnegative
-    at both ends, which implies both roots are in [1-,1]. */
-  if (fb1 <= 2.0f && fb1 >= -2.0f &&
-      1.0f - fb1 -fb2 >= 0 && 1.0f + fb1 - fb2 >= 0)
-     return true;
-    }
-    return false;
+          if (fb2 >= -1.0f) return true;
+       }
+       else    /* real roots */
+       {
+         /* check that the parabola 1 - fb1 x - fb2 x^2 has a
+          vertex between -1 and 1, and that it's nonnegative
+          at both ends, which implies both roots are in [1-,1]. */
+          if (fb1 <= 2.0f && fb1 >= -2.0f &&
+               1.0f - fb1 -fb2 >= 0 && 1.0f + fb1 - fb2 >= 0)
+           return true;
+       }
+       return false;
 
-}
+   } 
   
 }

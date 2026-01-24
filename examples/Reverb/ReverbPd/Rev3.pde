@@ -1,15 +1,14 @@
 
 /*
-This class emulates Pure Data’s rev3~ reverberator.
-It uses 4 early‑reflection delay lines followed by a 16‑delay 
-feedback network mixed through a stable, normalized 5-layer Hadamard matrix.
+This class emulates Pure Data's rev3~ reverberator.
+It uses 4 early-reflection delay lines followed by a 16-delay 
+feedback network mixed through a stable, normalized 4-layer Hadamard matrix.
 
 The reverb tail is shaped by a two‑stage damping system:
 Primary damping: low‑pass filters on the first 4 delay lines
 Secondary damping: gentle high‑frequency loss on the remaining 12 lines
 
-Both stages use a smooth damping coefficient controlled by the user
-
+Both stages use a smooth damping coefficient controlled by the user.
 Reverb time (RT60) is controlled by a nonlinear liveness curve, 
 giving smooth control from short to long tails while maintaining 
 stability in double precision.
@@ -70,8 +69,8 @@ class Rev3 {
     
     //early reflections
     earlyReflections = computeEarly(inputL, inputR);
-    double nLeft = noiseL.perform() * 1e-07;
-    double nRight = noiseR.perform() * 1e-07;
+    double nLeft = noiseL.perform() * 1e-06;
+    double nRight = noiseR.perform() * 1e-06;
     output = doit(earlyReflections[0] + nLeft, 
                   earlyReflections[1] + nRight);
     double vol = line0.perform(line0.dbtorms(outputLevel), 30);
@@ -95,7 +94,7 @@ class Rev3 {
      //we write to our delay line
     for(int i = 0; i < delay.length; i++)
     {
-       delay[i].delayWrite(del[i]); 
+       delay[i].delayWrite(del[i] + (noiseL.perform() * 1e-06)); 
     }
     
     //layer 1, damping
@@ -127,7 +126,7 @@ class Rev3 {
       double a = delay[i].perform(delTime[i]);
       double b = lop[i].perform(a);
       double c = b - a;
-      double d = c * (kDamping * .1);
+      double d = c * (kDamping * .2);
       del[i] = a + d;
     }
     
@@ -233,7 +232,7 @@ class Rev3 {
     
     for(int i = 4; i < lop.length-4; i++)
     {
-      lop[i].setCutoff(crossover * 2);
+      lop[i].setCutoff(crossover * 1.8);
     }
     
   }
