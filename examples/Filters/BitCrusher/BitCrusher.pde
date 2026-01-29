@@ -79,7 +79,7 @@ y-axis = mix between original and bit crushed
    double[] soundFile;
    double fileSize;
    int counter = 0;
-   int blockCounter = 9;
+   int blockCounter = 0;
    int bit = 2;
    float crossfade = 0;
    int block = 1024; //change this to bigger or smaller to get better graphing
