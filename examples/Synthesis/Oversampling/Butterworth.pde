@@ -29,15 +29,11 @@ class Butterworth {
   ComplexZero czero1 = new ComplexZero();
   ComplexZero czero2 = new ComplexZero();
   
-  public Butterworth()
-  {
-     this.setLowPass(400, 0); //default cutoff is 400Hz low-pass
-     this.setHighPass(rpole.getSampleRate()*.5, 0);
-  }
+  RealZero rzero1 = new RealZero();
+  RealZero rzero2 = new RealZero();
   
   public Butterworth(double lop, double hip, double normal, int oversamp)
   {
-    if(oversamp == 0) oversamp = 1;
     oversample = oversamp;
     this.setLowPass(lop, normal);
     this.setHighPass(hip, normal);
@@ -50,17 +46,18 @@ class Butterworth {
      double [] b = cpole1.perform(a, 0, lowPassCoefs[3], lowPassCoefs[4]);
      double [] c = cpole2.perform(b[0], b[1], lowPassCoefs[3], lowPassCoefs[5]);
      // high pass stage
-     double d = rzero.perform(c[0] / highPassCoefs[0], highPassCoefs[2]) / highPassCoefs[1];
+     double d = rzero.perform(c[0] / (highPassCoefs[0]), highPassCoefs[2]) / highPassCoefs[1];
      double [] e = czero1.perform(d, 0, highPassCoefs[3], highPassCoefs[4]);
      double [] f = czero2.perform(e[0], e[1], highPassCoefs[3], highPassCoefs[5]);
-     //high pass stage
+    
      return f[0];
   }
   
   double [] butterworthCoef(double freq, double normalize) 
   {
     //convert our frequency first
-    double f = (freq / (rpole.getSampleRate()*.5) ) / oversample; 
+    double sr = rpole.getSampleRate();
+    double f = (freq / (sr*.5) ) / oversample; 
     //This theta in units of pi/2
     double [] coefs = new double[6];
     double theta = .667 * 1.5708;
@@ -106,6 +103,8 @@ class Butterworth {
     RealZero.free(rzero);
     ComplexZero.free(czero1);
     ComplexZero.free(czero2);
+    RealZero.free(rzero1);
+    RealZero.free(rzero2);
   }
   
 }

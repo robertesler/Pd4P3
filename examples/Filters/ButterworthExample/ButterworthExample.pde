@@ -76,7 +76,7 @@ difference.
    float freq = 0;
    Noise noise = new Noise();
    LowPass lop = new LowPass();
-   Butterworth butterworth = new Butterworth(830.6, 47359.3, 0);
+   Butterworth butterworth = new Butterworth(830.6, 47359.3, 0, 1);
    
    boolean compare = false;
    
